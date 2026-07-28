@@ -215,7 +215,7 @@
     .install-tab { flex: 1 1 auto; min-width: 90px; padding: 10px 8px; border-radius: 14px; border: 1.5px solid var(--border); background: var(--chip-bg); color: var(--text); font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.18s; font-family: var(--font-cute); }
     .install-tab:hover { border-color: var(--accent); }
     .install-tab.active { background: linear-gradient(120deg, var(--accent), var(--accent-deep)); color: #fff; border-color: transparent; box-shadow: 0 8px 18px -8px rgba(91,141,239,0.6); }
-    .install-pane { animation: fadeIn 0.25s ease; }
+    .install-pane { animation: fadeIn 0.25s ease; display: none; }
     .install-pane ol { margin: 0; }
     .install-note { font-size: 12px; color: var(--muted); margin-top: 8px; padding: 8px 10px; border-radius: 10px; background: rgba(91,141,239,0.10); border: 1px solid rgba(91,141,239,0.22); }
     .bear-ring { background: #fff; border-radius: 50%; padding: 4px; box-shadow: 0 8px 20px -8px rgba(91,141,239,0.5); border: 2px solid var(--border); }
@@ -2418,7 +2418,7 @@
         <div class="install-note">⚠️ iOS 不支持“一键安装弹窗”，只能通过 Safari 的分享菜单手动添加；图标会用到页面里的 apple-touch-icon，桌面显示名为「泰旅行程」。</div>
       </div>
 
-      <div id="installPaneAndroid" class="install-pane mt-4" style="display:none;">
+      <div id="installPaneAndroid" class="install-pane mt-4">
         <div class="text-sm font-semibold mb-2 text-[var(--accent)]">安卓（Chrome / Edge / 三星浏览器）</div>
         <ol class="text-sm text-[var(--muted)] list-decimal pl-5 space-y-1">
           <li>用 Chrome 等浏览器打开本页面</li>
@@ -2429,7 +2429,7 @@
         <div class="install-note">若地址栏右侧直接出现 <b>“安装”</b> 图标（⬇️ 或 ⊕），点它可一键安装，无需进菜单。</div>
       </div>
 
-      <div id="installPaneDesktop" class="install-pane mt-4" style="display:none;">
+      <div id="installPaneDesktop" class="install-pane mt-4">
         <div class="text-sm font-semibold mb-2 text-[var(--accent)]">电脑桌面（Windows / macOS · Chrome / Edge）</div>
         <ol class="text-sm text-[var(--muted)] list-decimal pl-5 space-y-1">
           <li>用 Chrome 或 Edge 打开本页面</li>
