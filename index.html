@@ -181,6 +181,12 @@
     .dark .urg-urgent { color:#ff8a8e; } .dark .urg-warn { color:#f0b35a; } .dark .urg-normal { color:#5fd6c8; }
     .urg-legend { display:flex; flex-wrap:wrap; gap:10px; font-size:11px; color:var(--muted); margin:-4px 0 10px; }
     .urg-legend span { display:inline-flex; align-items:center; gap:3px; }
+    /* 时间小提醒卡片可点击 → 跳到对应行程点编辑 */
+    .urg-jump { cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; position: relative; }
+    .urg-jump:hover { transform: translateY(-2px); box-shadow: 0 8px 22px -10px rgba(0,0,0,0.28); }
+    .urg-jump:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .urg-jump .jump-hint { display: none; margin-top: 8px; font-size: 11px; color: var(--accent); font-weight: 700; }
+    .urg-jump:hover .jump-hint, .urg-jump:focus-visible .jump-hint { display: block; }
     .day-tab { transition: all 0.2s; border-radius: 999px; background: var(--chip-bg); display: inline-flex; align-items: center; gap: 4px; }
     .day-tab.active { background: linear-gradient(120deg, var(--accent), var(--accent-deep)); color: #fff; border-color: transparent; box-shadow: 0 8px 18px -8px rgba(91,141,239,0.6); transform: translateY(-1px); }
     .dayno-badge { background: rgba(91,141,239,0.15); color: var(--accent); font-size: 10px; padding: 1px 8px; border-radius: 999px; margin-left: 3px; font-weight: 700; letter-spacing: 0.3px; }
@@ -500,21 +506,25 @@
         <span><span class="urg-tag urg-normal">🟢 没那么紧急</span> 行前确认即可</span>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-        <div class="danger-badge rounded-lg p-3">
+        <div class="danger-badge rounded-lg p-3 urg-jump" role="button" tabindex="0" title="点击跳到 8.4 丛林飞跃去修改" onclick="jumpToUrgent('d5','d5_2')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToUrgent('d5','d5_2')}">
           <div class="font-bold mb-1">8.4 当天行程偏紧<span class="urg-tag urg-urgent">🔴 紧急</span></div>
           <div>丛林飞跃约 11:30 结束 → 12:00 退房寄存 → 13:00 瓦洛洛采购。建议行李随车或先寄存前台，别卡点；若加射击场需顺延瓦洛洛。</div>
+          <div class="jump-hint">✏️ 点我去改 · 跳到 8.4 丛林飞跃</div>
         </div>
-        <div class="warning-badge rounded-lg p-3">
+        <div class="warning-badge rounded-lg p-3 urg-jump" role="button" tabindex="0" title="点击跳到 8.3 椰林市集去修改" onclick="jumpToUrgent('d4','d4_5')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToUrgent('d4','d4_5')}">
           <div class="font-bold mb-1">8.3 椰林/JJ 市集（周一不开）<span class="urg-tag urg-warn">🟠 注意</span></div>
           <div>8.3 实际是周一，椰林市集、JJ 市集仅周末开放，当日不开。已在本点标注⚠️；建议改到 8.2（周日）或用 🔀 移动，否则放弃这两项。</div>
+          <div class="jump-hint">✏️ 点我去改 · 跳到 8.3 椰林市集</div>
         </div>
-        <div class="warning-badge rounded-lg p-3">
+        <div class="warning-badge rounded-lg p-3 urg-jump" role="button" tabindex="0" title="点击跳到 8.3 女子监狱按摩去修改" onclick="jumpToUrgent('d4','d4_3')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToUrgent('d4','d4_3')}">
           <div class="font-bold mb-1">8.3 女子监狱按摩需早到排队<span class="urg-tag urg-warn">🟠 注意</span></div>
           <div>周末 9:00-16:30 营业，不接受预约，仅现场取号。9:00 到可能仍要排队，建议 8:30 前到店取号。</div>
+          <div class="jump-hint">✏️ 点我去改 · 跳到 8.3 女子监狱按摩</div>
         </div>
-        <div class="warning-badge rounded-lg p-3">
+        <div class="warning-badge rounded-lg p-3 urg-jump" role="button" tabindex="0" title="点击跳到 8.4 丛林飞跃去修改" onclick="jumpToUrgent('d5','d5_2')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToUrgent('d5','d5_2')}">
           <div class="font-bold mb-1">8.4 丛林飞跃场次接人时间<span class="urg-tag urg-normal">🟢 没那么紧急</span></div>
           <div>官网早鸟场为 7:00-7:30 接人、8:30 开始；8:00-8:30 接人对应 8:30 后场次。需与供应商确认准确接人时间。</div>
+          <div class="jump-hint">✏️ 点我去改 · 跳到 8.4 丛林飞跃</div>
         </div>
       </div>
       <span class="deco text-2xl" style="top:8px; right:6%; animation-delay:-3.1s;">🐻</span>
@@ -1207,6 +1217,15 @@
           selectAndShow(ns.spot.id);
         }
       }, 150);
+    }
+    // 时间小提醒卡片点击 → 跳到对应天的行程点并直接打开编辑框，便于修改
+    function jumpToUrgent(dayId, spotId) {
+      if (typeof currentDay === 'undefined' || currentDay !== dayId) switchDay(dayId);
+      setTimeout(function () {
+        const el = document.querySelector('.spot-row[data-id="' + spotId + '"]');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        editSpot(spotId);
+      }, 170);
     }
     function closeNowSim() {
       const m = document.getElementById('nowSimModal');
