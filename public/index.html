@@ -406,9 +406,32 @@
     .trip-code-bar .tc-status.ok { color:var(--accent-3); }
     .trip-code-input { padding:5px 10px; border-radius:8px; border:1.5px solid var(--border); background:var(--panel); color:var(--text); font-size:14px; font-family:var(--font-mono); letter-spacing:3px; text-transform:uppercase; width:120px; outline:none; }
     .trip-code-input:focus { border-color:var(--accent); }
+    /* ===== 足迹首页 / 视图切换 ===== */
+    #viewNav .vbtn { border-radius:999px; font-family:var(--font-cute); transition:all .18s; border:2px solid var(--border); background:var(--panel); color:var(--text); }
+    #viewNav .vbtn:hover { border-color:var(--accent); }
+    #viewNav .vbtn.active { background:linear-gradient(120deg,var(--accent),var(--accent-deep)); color:#fff; border-color:transparent; box-shadow:0 8px 18px -8px rgba(91,141,239,.6); transform:translateY(-1px); }
+    #tripContentView { display:none; }
+    body.view-home #tripContentView { display:none; }
+    body.view-home #homeView { display:block; }
+    body.view-trip #homeView { display:none; }
+    body.view-trip #tripContentView { display:block; }
+    #homeView { display:none; }
+    .home-h { font-family:var(--font-cute); font-weight:800; font-size:18px; display:flex; align-items:center; gap:8px; }
+    .home-city-card { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:16px; background:var(--chip-bg); border:1.5px solid var(--border); cursor:pointer; transition:all .15s; }
+    .home-city-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 10px 24px -12px rgba(0,0,0,.3); }
+    .home-city-card .hc-emoji { font-size:22px; flex:none; }
+    .home-city-card .hc-name { font-weight:800; font-size:15px; }
+    .home-city-card .hc-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+    .home-city-card.visited { border-color:var(--accent-3); }
+    .home-city-card.wish { border-style:dashed; }
+    .home-search-res { padding:6px 13px; border-radius:999px; background:var(--chip-bg); border:1.5px solid var(--border); font-size:13px; cursor:pointer; transition:all .15s; font-family:var(--font-cute); }
+    .home-search-res:hover { border-color:var(--accent); color:var(--accent); }
+    .home-search-res.visited { border-color:var(--accent-3); color:var(--accent-3); }
+    .home-search-res.wish { border-style:dashed; }
+    .home-empty { color:var(--muted); font-size:13px; padding:8px 2px; }
   </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen view-home">
   <div id="bgDeco"></div>
   <div class="max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
 
@@ -461,11 +484,69 @@
       <span class="deco text-2xl" style="top:10px; right:8%; animation-delay:-2.4s;">🍑</span>
     </div>
 
+    <!-- 视图切换：足迹首页 / 行程 -->
+    <div class="flex gap-2 mb-6" id="viewNav">
+      <button class="vbtn px-4 py-2 text-sm cute-font active" id="navHome" onclick="setView('home')">🌍 我的足迹</button>
+      <button class="vbtn px-4 py-2 text-sm cute-font" id="navTrip" onclick="setView('trip')">🗓️ 我的行程</button>
+    </div>
+
+    <!-- ===== 足迹首页 ===== -->
+    <div id="homeView" class="space-y-6">
+      <div class="panel p-5 overflow-hidden">
+        <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+          <div class="home-h">🌍 我的世界足迹</div>
+          <div class="flex items-center gap-2">
+            <button onclick="openPoi()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap hover:border-[var(--accent)] transition">📚 行程点库</button>
+            <div id="homeStats" class="text-xs text-[var(--muted)]"></div>
+          </div>
+        </div>
+        <div class="wm-map-wrap" id="homeMapWrap">
+          <svg id="homeMapSvg" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="homeGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#5eead4"/><stop offset="100%" stop-color="#0ea5e9"/>
+              </radialGradient>
+              <filter id="homeBlur" x="-60%" y="-60%" width="220%" height="220%">
+                <feGaussianBlur stdDeviation="3" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <linearGradient id="homeArc" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#22d3ee" stop-opacity="0"/>
+                <stop offset="50%" stop-color="#22d3ee" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#22d3ee" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <g id="homeMapGrid"></g>
+            <path id="homeMapLand" fill="rgba(94,234,212,0.05)" stroke="rgba(94,234,212,0.30)" stroke-width="0.6" style="filter:url(#homeBlur)"></path>
+            <g id="homeMapArcs"></g>
+            <g id="homeMapPoints"></g>
+          </svg>
+          <div id="homeTip" class="wm-tip hidden"></div>
+        </div>
+        <div class="mt-3">
+          <input id="homeSearch" class="input-field w-full" placeholder="🔍 搜索城市（去过 / 想去都行，如 曼谷 / 清迈 / 东京）" oninput="homeSearch(this.value)">
+          <div id="homeSearchResults" class="mt-2 flex flex-wrap gap-2"></div>
+        </div>
+      </div>
+
+      <div class="panel p-5">
+        <div class="home-h mb-3">✅ 我去过的地方</div>
+        <div id="homeVisited" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+      </div>
+
+      <div class="panel p-5">
+        <div class="home-h mb-3">🗺️ 我还想去 / 没去过（点开看推荐）</div>
+        <div id="homeWish" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+      </div>
+    </div>
+
+    <div id="tripContentView">
+
     <div class="panel p-4 mb-6" id="tripBarPanel">
       <div class="flex items-center gap-3 flex-wrap">
         <span class="text-sm font-bold cute-font text-[var(--accent)] whitespace-nowrap">🗂 我的行程库</span>
         <button onclick="openWorldMap()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap hover:border-[var(--accent)] transition">🌍 我的足迹</button>
-        <button onclick="openPoi()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap hover:border-[var(--accent)] transition">📚 城市景点库</button>
+        <button onclick="openPoi()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap hover:border-[var(--accent)] transition">📚 行程点库</button>
         <div id="tripChips" class="flex gap-2 flex-wrap flex-1"></div>
         <button onclick="createTrip()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap">➕ 新建行程</button>
       </div>
@@ -897,6 +978,42 @@
     </div>
   </div>
 
+  <!-- 行程点大库（按城市分组的 master POI 库） -->
+  <div class="modal-overlay" id="poiModal" onclick="if(event.target===this)closeModal('poiModal')">
+    <div class="panel rounded-2xl poi-panel w-full max-w-3xl">
+      <div class="flex items-center justify-between p-5 pb-3 border-b border-[var(--border)]">
+        <div>
+          <h3 class="text-xl font-bold cute-font">📚 行程点大库</h3>
+          <div class="text-xs text-[var(--muted)] mt-1">所有城市的有名气地点都收在这里，<b>按城市区分</b>；点「➕ 加入」就放进当前行程（默认未勾选）。</div>
+        </div>
+        <button class="icon-btn" onclick="closeModal('poiModal')">✕</button>
+      </div>
+      <div class="px-5 py-3 flex items-center gap-3 flex-wrap border-b border-[var(--border)]">
+        <input id="poiSearch" class="input-field flex-1 min-w-[180px]" placeholder="🔍 搜城市 / 地点 / 关键词" oninput="renderPoi(this.value)">
+        <label class="flex items-center gap-2 text-sm text-[var(--muted)] cursor-pointer select-none">
+          <input type="checkbox" id="poiOnlyTrip" class="custom-checkbox" onchange="setPoiOnlyTrip(this.checked)"> 只看本程城市
+        </label>
+        <span id="poiCount" class="text-xs text-[var(--muted)]"></span>
+        <select id="poiDaySel" class="input-field w-auto"></select>
+      </div>
+      <div class="poi-body p-5" id="poiBody"></div>
+    </div>
+  </div>
+
+  <!-- 没去过城市的推荐弹层 -->
+  <div class="modal-overlay" id="recModal" onclick="if(event.target===this)closeRecs()">
+    <div class="panel rounded-2xl poi-panel w-full max-w-2xl">
+      <div class="flex items-center justify-between p-5 pb-3 border-b border-[var(--border)]">
+        <div>
+          <h3 class="text-xl font-bold cute-font">✨ <span id="recCityName"></span> · 推荐去处</h3>
+          <div class="text-xs text-[var(--muted)] mt-1">点「➕ 加入行程」即可放进当前行程（需先有一个进行中的行程）。</div>
+        </div>
+        <button class="icon-btn" onclick="closeRecs()">✕</button>
+      </div>
+      <div class="poi-body p-5" id="recBody"></div>
+    </div>
+  </div>
+
   <script>
     function lsGet(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
     function escAttr(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -1073,10 +1190,125 @@
     function openWorldMap(){ document.getElementById('worldMapModal').classList.add('show'); renderWorldMap(); }
     function closeWorldMap(){ document.getElementById('worldMapModal').classList.remove('show'); }
 
+    // ===== 足迹首页（默认落地页）=====
+    var currentView = 'home';
+    function setView(v){
+      currentView = (v==='trip') ? 'trip' : 'home';
+      document.body.classList.toggle('view-home', currentView==='home');
+      document.body.classList.toggle('view-trip', currentView==='trip');
+      var nh=document.getElementById('navHome'), nt=document.getElementById('navTrip');
+      if(nh) nh.classList.toggle('active', currentView==='home');
+      if(nt) nt.classList.toggle('active', currentView==='trip');
+      if (currentView==='trip'){ if (!DAYS || !DAYS.some(function(d){return d.id===currentDay;})) currentDay = (DAYS&&DAYS.length)?DAYS[0].id:'overview'; }
+      render();
+    }
+    function renderHome(){
+      renderHomeMap(); renderVisited(); renderWish();
+      var v=aggregateCities(); var conts={};
+      v.forEach(function(c){ var k=CONTINENT_OF[(c.country||'').trim()]||'其他'; conts[k]=(conts[k]||0)+1; });
+      var contStr=Object.keys(conts).map(function(k){return k+' '+conts[k];}).join(' · ');
+      var hs=document.getElementById('homeStats'); if(hs) hs.textContent='已点亮 '+v.length+' 个城市'+(contStr?(' · '+contStr):'');
+    }
+    function renderHomeMap(){
+      var grid=document.getElementById('homeMapGrid'); if(!grid) return;
+      var g='';
+      for(var x=0;x<=1000;x+=1000/12){ g+='<line x1="'+x+'" y1="0" x2="'+x+'" y2="500" stroke="rgba(94,234,212,0.07)" stroke-width="0.5"/>'; }
+      for(var y=0;y<=500;y+=500/6){ g+='<line x1="0" y1="'+y+'" x2="1000" y2="'+y+'" stroke="rgba(94,234,212,0.07)" stroke-width="0.5"/>'; }
+      grid.innerHTML=g;
+      document.getElementById('homeMapLand').setAttribute('d', WORLD_PATH);
+      var cities=aggregateCities();
+      var arcs=document.getElementById('homeMapArcs'); var a='';
+      for(var i=0;i<cities.length-1;i++){
+        var p1=geoToXY(cities[i].lat,cities[i].lng), p2=geoToXY(cities[i+1].lat,cities[i+1].lng);
+        var mx=(p1[0]+p2[0])/2, my=(p1[1]+p2[1])/2 - Math.abs(p2[0]-p1[0])*0.18 - 12;
+        a+='<path d="M'+p1[0]+' '+p1[1]+' Q'+mx+' '+my+' '+p2[0]+' '+p2[1]+'" fill="none" stroke="url(#homeArc)" stroke-width="0.8" stroke-dasharray="3 5" class="wm-arc"/>';
+      }
+      arcs.innerHTML=a;
+      var pts=document.getElementById('homeMapPoints'); var h='';
+      cities.forEach(function(c){
+        var xy=geoToXY(c.lat,c.lng);
+        var tripsStr=c.trips.map(function(t){return t.title+' ('+(t.start||'')+(t.end?('→'+t.end):'')+')';}).join(' | ');
+        h+='<g class="wm-pt" data-name="'+escAttr(c.name)+'" data-country="'+escAttr(c.country||'')+'" data-trips="'+escAttr(tripsStr)+'" transform="translate('+xy[0]+','+xy[1]+')">'
+          +'<circle r="9" class="wm-pulse" fill="none" stroke="#22d3ee" stroke-width="0.8"/>'
+          +'<circle r="3.4" fill="url(#homeGlow)" stroke="#e0f7ff" stroke-width="0.4" style="filter:url(#homeBlur)"/>'
+          +'</g>';
+      });
+      pts.innerHTML=h;
+      var tip=document.getElementById('homeTip'); var wrap=document.getElementById('homeMapWrap');
+      pts.querySelectorAll('.wm-pt').forEach(function(gp){
+        gp.addEventListener('mouseenter',function(){ tip.innerHTML='<div class="wm-tip-name">'+gp.dataset.name+'</div><div class="wm-tip-sub">'+(gp.dataset.country||'')+'</div><div class="wm-tip-trips">'+gp.dataset.trips+'</div>'; tip.classList.remove('hidden'); });
+        gp.addEventListener('mousemove',function(ev){ var wr=wrap.getBoundingClientRect(); tip.style.left=(ev.clientX-wr.left+12)+'px'; tip.style.top=(ev.clientY-wr.top+12)+'px'; });
+        gp.addEventListener('mouseleave',function(){ tip.classList.add('hidden'); });
+        gp.addEventListener('click',function(){ jumpToCityTrip(gp.dataset.name); });
+      });
+    }
+    function renderVisited(){
+      var box=document.getElementById('homeVisited'); if(!box) return;
+      var v=aggregateCities();
+      if(!v.length){ box.innerHTML='<div class="home-empty col-span-full">还没有点亮任何城市。去「🗓️ 我的行程 → 编辑行程信息 → 📍 点亮城市」加一下吧。</div>'; return; }
+      box.innerHTML=v.map(function(c){
+        return '<div class="home-city-card visited" onclick="jumpToCityTrip(\''+escAttr(c.name)+'\')">'
+          +'<span class="hc-emoji">📍</span>'
+          +'<div><div class="hc-name">'+escHtml(c.name)+'</div><div class="hc-sub">'+(c.country||'')+' · '+c.trips.length+' 次到访</div></div></div>';
+      }).join('');
+    }
+    function renderWish(){
+      var box=document.getElementById('homeWish'); if(!box) return;
+      var visited={}; aggregateCities().forEach(function(c){ visited[c.name]=1; });
+      var wish=Object.keys(POI_DB).filter(function(n){ return !visited[n]; });
+      if(!wish.length){ box.innerHTML='<div class="home-empty col-span-full">已收录的城市你都去过啦 🎉 想加新城市，告诉我城市名即可。</div>'; return; }
+      box.innerHTML=wish.map(function(n){
+        var co=(CITY_DB[n]?CITY_DB[n][2]:'');
+        return '<div class="home-city-card wish" onclick="openRecs(\''+escAttr(n)+'\')">'
+          +'<span class="hc-emoji">✨</span>'
+          +'<div><div class="hc-name">'+escHtml(n)+'</div><div class="hc-sub">'+(co?co+' · ':'')+(POI_DB[n]?POI_DB[n].length+' 个推荐':'')+'</div></div></div>';
+      }).join('');
+    }
+    function homeSearch(q){
+      var box=document.getElementById('homeSearchResults'); if(!box) return;
+      q=(q||'').trim();
+      if(!q){ box.innerHTML=''; return; }
+      var visited={}; aggregateCities().forEach(function(c){ visited[c.name]=1; });
+      var all=[]; var seen={};
+      aggregateCities().forEach(function(c){ if(!seen[c.name]){ seen[c.name]=1; all.push({name:c.name,country:c.country,visited:true}); } });
+      Object.keys(POI_DB).forEach(function(n){ if(!seen[n]){ seen[n]=1; all.push({name:n,country:(CITY_DB[n]?CITY_DB[n][2]:''),visited:!!visited[n]}); } });
+      var res=all.filter(function(c){ return c.name.indexOf(q)>=0 || (c.country&&c.country.indexOf(q)>=0); }).slice(0,12);
+      if(!res.length){ box.innerHTML='<span class="home-empty">没找到「'+escHtml(q)+'」，换个词试试？</span>'; return; }
+      box.innerHTML=res.map(function(c){
+        return '<span class="home-search-res '+(c.visited?'visited':'wish')+'" onclick="'+(c.visited?'jumpToCityTrip':'openRecs')+'(\''+escAttr(c.name)+'\')">'
+          +(c.visited?'📍 ':'✨ ')+escHtml(c.name)+(c.country?(' · '+escHtml(c.country)):'')+(c.visited?' (去过)':' (想去)')+'</span>';
+      }).join('');
+    }
+    var recCity = '';
+    function openRecs(city){
+      recCity = city;
+      var items=POI_DB[city]||[];
+      document.getElementById('recCityName').textContent=city;
+      var order=['景点','美食','玩乐']; var html='';
+      if(!items.length){ html='<div class="poi-empty">暂时还没收录「'+escHtml(city)+'」的攻略清单。告诉我城市名，我帮你加进去～</div>'; }
+      else {
+        var added=poiAddedNames();
+        order.forEach(function(cat){
+          var grp=items.filter(function(p){return p.cat===cat;});
+          if(!grp.length) return;
+          html+='<div class="poi-cat">'+cat+'</div><div class="poi-list">';
+          grp.forEach(function(p){
+            var isIn=!!added[p.name];
+            html+='<div class="poi-row'+(isIn?' in':'')+'"><div class="poi-info"><div class="poi-name">'+escHtml(p.name)+'</div>'+(p.note?'<div class="poi-note">'+escHtml(p.note)+'</div>':'')+'</div>'
+              +'<button class="poi-add'+(isIn?' added':'')+'" onclick="togglePoi(\''+escAttr(city)+'\',\''+escAttr(p.name)+'\')">'+(isIn?'✓ 已加入':'➕ 加入行程')+'</button></div>';
+          });
+          html+='</div>';
+        });
+      }
+      document.getElementById('recBody').innerHTML=html;
+      document.getElementById('recModal').classList.add('show');
+    }
+    function closeRecs(){ document.getElementById('recModal').classList.remove('show'); }
+
     function jumpToCityTrip(name){
       name=(name||'').trim();
       var t=(TRIPS||[]).find(function(x){return (x.cities||[]).some(function(c){return (c.name||'').trim()===name;});});
-      if(t){ setActiveTrip(t.id); closeWorldMap(); }
+      if(t){ setActiveTrip(t.id); closeWorldMap(); setView('trip'); }
       else alert('未找到包含该城市的行程');
     }
 
@@ -1338,28 +1570,32 @@
       Object.assign(t, meta); persistAll(); render();
     }
     // ===== 城市景点库：浏览某行程关联城市的「有名气地点」，可选入行程 =====
+    var poiOnlyTrip = false;
     function poiCities(){
+      // 主库：所有已收录城市；勾选「只看本程」时过滤成当前行程涉及的城市
+      const all = Object.keys(POI_DB).filter(function(n){ return POI_DB[n] && POI_DB[n].length; });
+      if (!poiOnlyTrip) return all;
       const t = currentTrip(); if(!t) return [];
-      const set = [];
-      (t.cities||[]).forEach(function(c){ if(c.name && set.indexOf(c.name)<0) set.push(c.name); });
-      return set.filter(function(n){ return POI_DB[n] && POI_DB[n].length; });
+      const inTrip = {};
+      (t.cities||[]).forEach(function(c){ if(c.name) inTrip[c.name]=1; });
+      return all.filter(function(n){ return inTrip[n]; });
     }
     function poiAddedNames(){
       const set = {};
       DAYS.forEach(function(d){ (d.spots||[]).forEach(function(s){ if(s.name) set[s.name]=true; }); });
       return set;
     }
-    function openPoi(){
-      const cities = poiCities();
-      if (!cities.length){ alert('当前行程还没关联城市，无法显示景点库。\n请先在「编辑行程信息 → 📍 点亮城市」里加上城市（如 曼谷、清迈）。'); return; }
+    function openPoi(onlyTrip){
+      poiOnlyTrip = !!onlyTrip;
       const sel = document.getElementById('poiDaySel');
       sel.innerHTML = DAYS.map(function(d,i){ return '<option value="'+d.id+'">Day '+(i+1)+' · '+(d.date||'')+' '+(d.weekday||'')+'</option>'; }).join('');
       sel.value = (currentDay && currentDay!=='overview' && DAYS.some(function(d){return d.id===currentDay;})) ? currentDay : (DAYS[0]&&DAYS[0].id);
-      document.getElementById('poiCitiesTitle').textContent = cities.join(' · ');
+      var cb=document.getElementById('poiOnlyTrip'); if(cb) cb.checked = poiOnlyTrip;
       renderPoi('');
       document.getElementById('poiModal').classList.add('show');
       setTimeout(function(){ const i=document.getElementById('poiSearch'); if(i) i.focus(); }, 60);
     }
+    function setPoiOnlyTrip(v){ poiOnlyTrip=v; renderPoi(document.getElementById('poiSearch').value||''); }
     function renderPoi(q){
       q = (q||'').trim();
       const cities = poiCities();
@@ -1384,8 +1620,9 @@
         });
         html += '</div>';
       });
-      if (!html) html = '<div class="poi-empty">没找到匹配的地点。换个关键词试试？</div>';
-      document.getElementById('poiBody').innerHTML = html;
+      if (!html) html = '<div class="poi-empty">这里还没有收录景点。告诉我国际城市名，我帮你补进去～</div>';
+      const body=document.getElementById('poiBody'); if(body) body.innerHTML = html;
+      const cnt=document.getElementById('poiCount'); if(cnt) cnt.textContent = cities.length+' 个城市';
     }
     function togglePoi(city, name){
       const added = poiAddedNames();
@@ -1393,12 +1630,14 @@
         DAYS.forEach(function(d){ d.spots = d.spots.filter(function(s){ return s.name!==name; }); });
       } else {
         const p = (POI_DB[city]||[]).find(function(x){ return x.name===name; }); if(!p) return;
-        const dayId = document.getElementById('poiDaySel').value || (DAYS[0]&&DAYS[0].id);
+        const dayId = document.getElementById('poiDaySel') ? (document.getElementById('poiDaySel').value || (DAYS[0]&&DAYS[0].id)) : (DAYS[0]&&DAYS[0].id);
         const day = DAYS.find(function(d){ return d.id===dayId; }); if(!day) return;
         const spot = { id:'poi_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), name:p.name, time:'自由安排', type:p.type||'sight', loc:null, addr:'', checked:false, recommended:false, hours:'', duration:'', notes:p.note||'', ticket:'', tips:'', boarding:'', warning:null, fromLib:true };
         day.spots.push(spot);
       }
-      persistAll(); render(); renderPoi(document.getElementById('poiSearch').value||'');
+      persistAll(); render();
+      if (document.getElementById('poiModal') && document.getElementById('poiModal').classList.contains('show')) renderPoi(document.getElementById('poiSearch').value||'');
+      if (typeof recCity !== 'undefined' && recCity && document.getElementById('recModal') && document.getElementById('recModal').classList.contains('show')) openRecs(recCity);
     }
     function renderTripBar(){
       const wrap = document.getElementById('tripChips'); if(!wrap) return;
@@ -3268,7 +3507,7 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
           </div>
         </div>`).join('');
     }
-    function render() { closeMoveMenu(); renderTripBar(); const _h1=document.getElementById('tripTitleH1'); if(_h1){const _t=currentTrip(); _h1.textContent=(_t&&_t.title)||'我的行程';} renderTabs(); renderNowBanner(); renderSpotList(); renderMap(); renderBacklog(); syncSave(); }
+    function render() { closeMoveMenu(); renderTripBar(); const _h1=document.getElementById('tripTitleH1'); if(_h1){const _t=currentTrip(); _h1.textContent=(_t&&_t.title)||'我的行程';} renderTabs(); renderNowBanner(); renderSpotList(); renderMap(); renderBacklog(); syncSave(); if(currentView==='home') renderHome(); }
     window.addEventListener('hashchange', () => { location.reload(); });
     initLayoutMode();
     registerSW();
@@ -3420,6 +3659,7 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
         <button onclick="clearNowSim()" class="px-4 py-2.5 rounded-xl border border-[var(--border)] text-sm">清除演示</button>
       </div>
     </div>
+  </div>
   </div>
 </body>
 </html>
