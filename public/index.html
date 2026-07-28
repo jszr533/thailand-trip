@@ -2317,9 +2317,8 @@
     }
 
     function copyShareLink() {
-      const obj = { days: DAYS.map(d => ({ id: d.id, spots: d.spots.map(s => ({ id: s.id, name: s.name, time: s.time, type: s.type, loc: s.loc, checked: s.checked, recommended: !!s.recommended, addr: s.addr, hours: s.hours, duration: s.duration, notes: s.notes, ticket: s.ticket, tips: s.tips, boarding: s.boarding, warning: s.warning, warn: s.warn || '', links: s.links })) })), currentDay };
-      const url = location.origin + location.pathname + '#data=' + encodeURIComponent(JSON.stringify(obj));
-      navigator.clipboard.writeText(url).then(() => alert('分享链接已复制到剪贴板！\n\n' + url)).catch(() => prompt('复制以下链接分享：', url));
+      const url = location.origin + location.pathname;
+      navigator.clipboard.writeText(url).then(() => alert('分享链接已复制！大家打开这个链接即可查看和编辑同一份行程。\n\n' + url)).catch(() => prompt('复制以下链接分享：', url));
     }
     // ===== 导出/导入 JSON 备份 =====
     function exportJSON() {
