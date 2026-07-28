@@ -383,6 +383,7 @@
           <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importJSON(event)">
           <button onclick="exportJSON()" class="btn-cute px-3 py-2 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)]" title="导出行程备份">💾 导出</button>
           <button onclick="document.getElementById('importFileInput').click()" class="btn-cute px-3 py-2 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)]" title="导入行程备份">📂 导入</button>
+          <button onclick="exportWord()" class="btn-cute px-3 py-2 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)]" title="导出 Word 文档">📄 Word</button>
         </div>
       </div>
       <span class="deco deco-sway text-4xl" style="top:6px; right:34%; animation-delay:-0.5s;">🌸</span>
@@ -2369,6 +2370,69 @@
       reader.readAsText(file);
       // 重置 input 以允许重复导入同一文件
       evt.target.value = '';
+    }
+    // ===== 导出 Word 文档（根据当前行程状态）=====
+    function exportWord() {
+      function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+      let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="UTF-8"><title>泰国旅行行程</title>
+<style>body{font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;padding:30px;line-height:1.6}
+h1{color:#5b8def;font-size:24px;border-bottom:2px solid #5b8def;padding-bottom:8px}
+h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 12px;border-radius:6px}
+.day-info{margin-bottom:4px;color:#666;font-size:13px}
+.spot{margin:6px 0 6px 16px;padding:6px 10px;border-left:3px solid #5b8def;background:#f8faff;border-radius:4px}
+.spot .time{font-weight:700;color:#5b8def;margin-right:8px}
+.spot .note{color:#888;font-size:12px;margin-top:2px}
+.spot .warn{color:#d9821a;font-size:12px;background:#fff8f0;padding:2px 6px;border-radius:4px;margin-top:2px}
+.spot .tip{color:#2a9d8f;font-size:12px;margin-top:2px}
+.footer{color:#999;font-size:12px;margin-top:40px;border-top:1px solid #ddd;padding-top:12px}
+.checked{opacity:1}.unchecked{opacity:0.5}
+.flight{background:#fff8f0;border-left-color:#f59e0b}
+.hotel{background:#f5f0ff;border-left-color:#a78bfa}
+</style></head><body>
+<h1>曼谷 · 清迈 双城旅行行程</h1>
+<p style="color:#666">导出于 ' + new Date().toLocaleString('zh-CN') + ' · 已勾选行程点</p>`;
+      
+      DAYS.forEach((day, idx) => {
+        const checkedSpots = day.spots.filter(s => s.checked);
+        if (!checkedSpots.length) return;
+        const dayNo = idx + 1;
+        html += '<h2>Day ' + dayNo + ' · ' + esc(day.date) + '（' + esc(day.weekday) + '）' + esc(day.title) + '</h2>';
+        if (day.weather) {
+          html += '<div class="day-info">🌤 ' + esc(day.weather.desc) + ' · ' + day.weather.low + '-' + day.weather.high + '°C · 提示：' + esc(day.weather.tip) + '</div>';
+        }
+        checkedSpots.forEach(s => {
+          const cls = 'spot' + (s.type === 'flight' ? ' flight' : '') + (s.type === 'hotel' ? ' hotel' : '');
+          html += '<div class="' + cls + '">';
+          html += '<span class="time">' + esc(s.time) + '</span> <b>' + esc(s.name) + '</b>';
+          if (s.type === 'flight') html += ' ✈️';
+          if (s.type === 'hotel') html += ' 🏨';
+          if (s.recommended) html += ' 🌟推荐';
+          if (s.warning === 'warning') html += ' ⚠️注意';
+          if (s.warning === 'danger') html += ' 🚨冲突';
+          if (s.warning === 'info') html += ' 💡提示';
+          if (s.duration) html += '<div style="font-size:12px;color:#666">⏱ ' + esc(s.duration) + '</div>';
+          if (s.addr) html += '<div style="font-size:12px;color:#666">📍 ' + esc(s.addr) + '</div>';
+          if (s.notes) html += '<div class="note">📝 ' + esc(s.notes) + '</div>';
+          if (s.tips) html += '<div class="tip">💡 ' + esc(s.tips) + '</div>';
+          if (s.warn) html += '<div class="warn">⚠️ ' + esc(s.warn) + '</div>';
+          if (s.ticket) html += '<div style="font-size:12px;color:#666">🎫 ' + esc(s.ticket) + '</div>';
+          if (s.boarding) html += '<div style="font-size:12px;color:#666">🛫 ' + esc(s.boarding) + '到机场</div>';
+          html += '</div>';
+        });
+      });
+      
+      const checkedAll = DAYS.reduce((sum, d) => sum + d.spots.filter(s => s.checked).length, 0);
+      const totalAll = DAYS.reduce((sum, d) => sum + d.spots.length, 0);
+      html += '<div class="footer">📌 共勾选 ' + checkedAll + '/' + totalAll + ' 个行程点 · 多人同步：https://thailand-trip-gilt.vercel.app</div>';
+      html += '</body></html>';
+      
+      const blob = new Blob(['\ufeff' + html], { type: 'application/msword;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = '泰国行程_' + new Date().toISOString().slice(0, 10) + '.doc';
+      a.click();
+      URL.revokeObjectURL(a.href);
     }
 
     function initBgDeco(){
