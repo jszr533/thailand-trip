@@ -67,28 +67,29 @@
     body.mode-mobile .custom-checkbox { width: 22px; height: 22px; }
     body.mode-mobile .spot-row { padding: 14px 12px; }
     /* 地图缩略图 */
-    #singleMapBox { max-height: 160px; transition: max-height 0.2s; }
+    #singleMapBox { max-height: 78vh; transition: max-height 0.2s; }
     #singleMapBox .map-expand-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.03); color:transparent; font-size:14px; font-weight:600; transition:all 0.2s; border-radius:inherit; pointer-events:none; }
     #singleMapBox:hover .map-expand-overlay { background:rgba(0,0,0,0.08); color:var(--accent); backdrop-filter:blur(2px); }
     .dark #singleMapBox:hover .map-expand-overlay { background:rgba(255,255,255,0.06); color:#7fb0ff; }
     #mapExpandModal .modal-panel { max-width:90vw !important; max-height:90vh !important; width:90vw; height:90vh; padding:0 !important; background:var(--panel-solid); }
-    #mapExpandModal .map-expand-svg { width:100%; height:100%; min-height:300px; }
-    body.mode-mobile #singleMapBox { max-height: 120px; }
+    #mapExpandModal .map-expand-svg { width:100%; height:100%; min-height:60vh; }
+    #mapExpandLegend .lg-dot { display:inline-block; width:11px; height:11px; border-radius:50%; flex-shrink:0; }
+    body.mode-mobile #singleMapBox { max-height: 64vh; }
     body { overflow-x: hidden; }
     body.mode-mobile .max-w-7xl { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
     body.mode-mobile .main-layout { grid-template-columns: 1fr !important; gap: 0.5rem !important; }
     body.mode-mobile .main-layout > * { grid-column: 1 !important; }
     body.mode-mobile .panel { padding: 0.65rem !important; }
-    body.mode-mobile #singleMapBox { aspect-ratio: 16/10 !important; }
-    body.mode-mobile .map-container { max-height: 180px; }
+    body.mode-mobile #singleMapBox { aspect-ratio: 26/21 !important; }
+    body.mode-mobile .map-container { max-height: none; }
     body.mode-mobile .svg-title { font-size: 7px; }
     body.mode-mobile .svg-label { font-size: 6px; }
-    body.mode-mobile .route-number { font-size: 5.5px; }
+    body.mode-mobile .route-number { font-size: 8px; }
     body.mode-mobile .ov-daynum { font-size: 5px; }
     body.mode-mobile #overviewMaps { grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; }
     /* 手机版：地图圆点和轨迹都缩小 */
-    body.mode-mobile .map-container svg circle.main-dot { r: 2; }
-    body.mode-mobile .map-container svg circle.sel-ring { r: 3; }
+    body.mode-mobile .map-container svg circle.main-dot { r: 4; }
+    body.mode-mobile .map-container svg circle.sel-ring { r: 6; }
     body.mode-mobile .map-container svg .route-number { font-size: 3px; }
     body.mode-mobile .map-container svg .svg-title { font-size: 4px; }
     body.mode-mobile .map-container svg .svg-label { font-size: 3.5px; }
@@ -112,17 +113,21 @@
     .day-anchor.end { margin-bottom:0; margin-top:8px; }
     .day-anchor:hover { background:rgba(168,139,250,0.16); color:var(--accent); }
     .day-anchor .a-ico { font-size:13px; }
-    .map-container { background: var(--map-bg); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border-radius: 18px; }
+    .map-container { background: var(--map-bg); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border-radius: 18px; position: relative; border: 1px solid var(--border); background-image: radial-gradient(rgba(127,140,200,0.18) 1px, transparent 1.4px); background-size: 15px 15px; background-position: center; box-shadow: inset 0 0 0 1px rgba(127,140,255,0.05), inset 0 0 46px rgba(91,141,239,0.06); }
+    .dark .map-container { background-image: radial-gradient(rgba(150,170,255,0.16) 1px, transparent 1.4px); box-shadow: inset 0 0 0 1px rgba(127,140,255,0.07), inset 0 0 46px rgba(91,141,239,0.10); }
     .map-land { fill: var(--map-land); stroke: var(--map-road); }
     .map-road { stroke: var(--map-road); fill: none; }
-    .route-line { fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.6; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.08)); }
+    .route-line { fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.5; filter: drop-shadow(0 0 3px currentColor); }
+    .route-flow { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 2.5 8; opacity: 0.95; filter: drop-shadow(0 0 4px currentColor); animation: routeFlow 1.1s linear infinite; }
+    @keyframes routeFlow { to { stroke-dashoffset: -21; } }
     .route-dot { transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); cursor: pointer; }
+    .route-dot circle { filter: drop-shadow(0 0 1.6px rgba(255,255,255,0.85)); }
     .route-dot:hover { transform: scale(1.18); }
     .route-dot.hidden { opacity: 0; transform: scale(0); }
     /* 选中行程点在地图上的着重高亮 */
     .sel-ring { fill: none; stroke: var(--accent); stroke-width: 1.6; transform-box: fill-box; transform-origin: center; animation: selPulse 1.4s ease-in-out infinite; }
     @keyframes selPulse { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.7); opacity: 0.18; } }
-    .route-dot.selected circle.main-dot { r: 7; fill-opacity: 0.88; stroke-width: 2; }
+    .route-dot.selected circle.main-dot { r: 9; fill-opacity: 0.92; stroke-width: 2.2; }
     .selected-note { border: 2px solid var(--accent) !important; box-shadow: 0 0 0 3px rgba(91,141,239,0.22); background: rgba(91,141,239,0.07) !important; }
     .custom-checkbox { appearance: none; width: 18px; height: 18px; border: 1.6px solid var(--border); border-radius: 6px; cursor: pointer; position: relative; transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1); flex-shrink:0; background: transparent; box-shadow: none; overflow: hidden; }
     .custom-checkbox:hover { border-color: var(--check); transform: scale(1.06); }
@@ -266,7 +271,12 @@
     .fly-line { stroke-dasharray: 7 6; }
     .svg-label { font-size: 11px; font-weight: 500; fill: var(--muted); }
     .svg-title { font-size: 13px; font-weight: 700; fill: var(--text); }
-    .route-number { fill: #fff; fill-opacity: 0.72; font-size: 11px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+    .route-number { fill: #fff; font-size: 12px; font-weight: 800; text-anchor: middle; dominant-baseline: central; paint-order: stroke; stroke: rgba(20,16,40,0.55); stroke-width: 2.6px; }
+    .map-tech-frame { fill: none; stroke: var(--map-road); stroke-opacity: 0.28; stroke-width: 0.5; }
+    .map-tech-line { stroke: var(--map-road); stroke-opacity: 0.16; stroke-width: 0.35; }
+    .map-tech-ring { fill: none; stroke: var(--accent); stroke-opacity: 0.16; stroke-width: 0.4; }
+    .map-tech-mark { fill: var(--muted); stroke: var(--muted); stroke-width: 0.4; }
+    .map-tech-txt { fill: var(--muted); font-size: 3px; font-weight: 600; text-anchor: middle; }
     /* ===== 世界足迹地图（科技感） ===== */
     #worldMapModal .wm-panel { width: min(1120px, 96vw); max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; }
     .wm-head { border-bottom: 1px solid var(--border); }
@@ -746,8 +756,8 @@
               <span class="ml-1">· 点击圆点看详情</span>
             </div>
           </div>
-          <div id="singleMapBox" class="map-container rounded-xl overflow-hidden relative aspect-[4/3] md:aspect-[16/9] cursor-pointer" onclick="openMapExpand()">
-            <svg id="mapSvg" viewBox="-55 -45 110 90" class="w-full h-full"></svg>
+          <div id="singleMapBox" class="map-container rounded-xl overflow-hidden relative aspect-[26/21] cursor-pointer" onclick="openMapExpand()">
+            <svg id="mapSvg" viewBox="-52 -42 104 84" preserveAspectRatio="xMidYMid meet" class="w-full h-full"></svg>
             <div class="absolute bottom-3 right-3 glass-chip rounded-lg px-3 py-2 text-xs border border-[var(--border)] shadow">
               <div id="routeInfo">请选择行程点</div>
             </div>
@@ -756,11 +766,11 @@
           <div id="transitMapPanel" class="grid grid-cols-1 md:grid-cols-2 gap-4" style="display:none;">
             <div>
               <div class="text-sm font-medium mb-2 text-[var(--muted)]">曼谷</div>
-              <div class="map-container rounded-xl overflow-hidden aspect-square"><svg id="transitBkk" viewBox="-55 -40 110 80" class="w-full h-full"></svg></div>
+              <div class="map-container rounded-xl overflow-hidden aspect-[26/21]"><svg id="transitBkk" viewBox="-52 -42 104 84" preserveAspectRatio="xMidYMid meet" class="w-full h-full"></svg></div>
             </div>
             <div>
               <div class="text-sm font-medium mb-2 text-[var(--muted)]">清迈</div>
-              <div class="map-container rounded-xl overflow-hidden aspect-square"><svg id="transitCnx" viewBox="-50 -42 100 84" class="w-full h-full"></svg></div>
+              <div class="map-container rounded-xl overflow-hidden aspect-[26/21]"><svg id="transitCnx" viewBox="-52 -42 104 84" preserveAspectRatio="xMidYMid meet" class="w-full h-full"></svg></div>
             </div>
           </div>
         </div>
@@ -770,14 +780,14 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="overviewMaps">
             <div>
               <div class="text-sm font-medium mb-2 text-[var(--muted)]">曼谷</div>
-              <div class="map-container rounded-xl overflow-hidden aspect-square">
-                <svg id="mapSvgBkk" viewBox="-55 -40 110 80" class="w-full h-full"></svg>
+              <div class="map-container rounded-xl overflow-hidden aspect-[26/21]">
+                <svg id="mapSvgBkk" viewBox="-52 -42 104 84" preserveAspectRatio="xMidYMid meet" class="w-full h-full"></svg>
               </div>
             </div>
             <div>
               <div class="text-sm font-medium mb-2 text-[var(--muted)]">清迈</div>
-              <div class="map-container rounded-xl overflow-hidden aspect-square">
-                <svg id="mapSvgCnx" viewBox="-50 -42 100 84" class="w-full h-full"></svg>
+              <div class="map-container rounded-xl overflow-hidden aspect-[26/21]">
+                <svg id="mapSvgCnx" viewBox="-52 -42 104 84" preserveAspectRatio="xMidYMid meet" class="w-full h-full"></svg>
               </div>
             </div>
           </div>
@@ -3156,9 +3166,16 @@
     }
 
     function drawBase(svg, type) {
-      if (type === 'bangkok') return `<rect x="-50" y="-40" width="100" height="80" fill="var(--map-bg)"/><circle cx="-18" cy="0" r="22" class="map-land" opacity="0.5"/><circle cx="0" cy="-8" r="12" class="map-land" opacity="0.4"/><text x="-18" y="-14" class="svg-title">曼谷市区</text><text x="38" y="36" class="svg-title">素万那普</text><text x="-38" y="-28" class="svg-title">廊曼</text><line x1="-18" y1="0" x2="0" y2="-8" class="map-road" stroke-width="0.5"/><line x1="-18" y1="0" x2="38" y2="28" class="map-road" stroke-width="0.5"/><line x1="-18" y1="0" x2="-38" y2="-22" class="map-road" stroke-width="0.5"/>`;
-      if (type === 'chiangmai') return `<rect x="-50" y="-40" width="100" height="80" fill="var(--map-bg)"/><rect x="-8" y="-8" width="20" height="20" rx="2" class="map-land"/><text x="2" y="-12" class="svg-title">清迈古城</text><text x="-4" y="1" class="svg-label">塔佩门</text><line x1="0" y1="0" x2="6" y2="0" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="-4" y2="-4" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="0" y2="14" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="14" y2="-6" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="-18" y2="-22" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="28" y2="-22" class="map-road" stroke-width="0.5"/><line x1="28" y1="-22" x2="34" y2="-28" class="map-road" stroke-width="0.5"/><text x="-32" y="34" class="svg-title">清迈机场</text><text x="36" y="-34" class="svg-title">丛林飞跃</text><text x="30" y="-26" class="svg-label">JJ市集</text><text x="-22" y="-26" class="svg-label">宁曼路</text><text x="16" y="-12" class="svg-label">瓦洛洛</text>`;
-      return `<rect x="-50" y="-40" width="100" height="80" fill="var(--map-bg)"/><text x="-42" y="-8" class="svg-title">曼谷</text><text x="32" y="-8" class="svg-title">清迈</text><line x1="-40" y1="0" x2="40" y2="0" class="map-road" stroke-width="0.5"/><text x="0" y="6" class="svg-label">跨城飞行</text>`;
+      const techDecor = `<g class="map-tech">
+        <circle cx="0" cy="-6" r="14" class="map-tech-ring"/>
+        <circle cx="0" cy="-6" r="27" class="map-tech-ring"/>
+        <rect x="-51" y="-41" width="102" height="82" rx="3" class="map-tech-frame"/>
+        <g class="map-tech-mark" opacity="0.5"><circle cx="44" cy="-34" r="4" fill="none"/><path d="M44 -39 L45.3 -34 L44 -29 L42.7 -34 Z" fill="var(--accent)"/><path d="M39 -34 L44 -32.7 L49 -34 L44 -35.3 Z" fill="none"/><text x="44" y="-43" class="map-tech-txt">N</text></g>
+        <g class="map-tech-mark" opacity="0.55"><line x1="-46" y1="36" x2="-32" y2="36"/><line x1="-46" y1="34.5" x2="-46" y2="37.5"/><line x1="-32" y1="34.5" x2="-32" y2="37.5"/><text x="-39" y="39.5" class="map-tech-txt">~5km</text></g>
+      </g>`;
+      if (type === 'bangkok') return `<rect x="-52" y="-42" width="104" height="84" fill="var(--map-bg)"/><circle cx="-18" cy="0" r="22" class="map-land" opacity="0.5"/><circle cx="0" cy="-8" r="12" class="map-land" opacity="0.4"/><text x="-18" y="-14" class="svg-title">曼谷市区</text><text x="38" y="36" class="svg-title">素万那普</text><text x="-38" y="-28" class="svg-title">廊曼</text><line x1="-18" y1="0" x2="0" y2="-8" class="map-road" stroke-width="0.5"/><line x1="-18" y1="0" x2="38" y2="28" class="map-road" stroke-width="0.5"/><line x1="-18" y1="0" x2="-38" y2="-22" class="map-road" stroke-width="0.5"/>` + techDecor;
+      if (type === 'chiangmai') return `<rect x="-52" y="-42" width="104" height="84" fill="var(--map-bg)"/><rect x="-8" y="-8" width="20" height="20" rx="2" class="map-land"/><text x="2" y="-12" class="svg-title">清迈古城</text><text x="-4" y="1" class="svg-label">塔佩门</text><line x1="0" y1="0" x2="6" y2="0" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="-4" y2="-4" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="0" y2="14" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="14" y2="-6" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="-18" y2="-22" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="28" y2="-22" class="map-road" stroke-width="0.5"/><line x1="28" y1="-22" x2="34" y2="-28" class="map-road" stroke-width="0.5"/><text x="-32" y="34" class="svg-title">清迈机场</text><text x="36" y="-34" class="svg-title">丛林飞跃</text><text x="30" y="-26" class="svg-label">JJ市集</text><text x="-22" y="-26" class="svg-label">宁曼路</text><text x="16" y="-12" class="svg-label">瓦洛洛</text>` + techDecor;
+      return `<rect x="-52" y="-42" width="104" height="84" fill="var(--map-bg)"/><text x="-42" y="-8" class="svg-title">曼谷</text><text x="32" y="-8" class="svg-title">清迈</text><line x1="-40" y1="0" x2="40" y2="0" class="map-road" stroke-width="0.5"/><text x="0" y="6" class="svg-label">跨城飞行</text>` + techDecor;
     }
 
     function renderMap() {
@@ -3187,10 +3204,12 @@
       const checked = getSortedChecked(day).filter(s => getMapCoord(day, s.loc));
       let routeSvg = '';
       if (checked.length > 1) {
-        routeSvg += `<polyline points="${checked.map(s => { const c = getMapCoord(day, s.loc); return c[0]+','+c[1]; }).join(' ')}" class="route-line" stroke="${day.color}" stroke-width="1"/>`;
+        const pts = checked.map(s => { const c = getMapCoord(day, s.loc); return c[0]+','+c[1]; }).join(' ');
+        routeSvg += `<polyline points="${pts}" class="route-line" stroke="${day.color}" stroke-width="2.6" style="color:${day.color}"/>`;
+        routeSvg += `<polyline points="${pts}" class="route-flow" stroke="${day.color}" stroke-width="2.6" style="color:${day.color}"/>`;
         for (let i = 0; i < checked.length - 1; i++) {
           const a = getMapCoord(day, checked[i].loc), b = getMapCoord(day, checked[i+1].loc);
-          routeSvg += `<circle cx="${(a[0]+b[0])/2}" cy="${(a[1]+b[1])/2}" r="1.5" fill="${day.color}" fill-opacity="0.5"/>`;
+          routeSvg += `<circle cx="${(a[0]+b[0])/2}" cy="${(a[1]+b[1])/2}" r="2.2" fill="${day.color}" fill-opacity="0.55"/>`;
         }
       }
       let dots = '';
@@ -3201,16 +3220,16 @@
         const isSel = s.id === selectedSpotId;
         if (isSel) {
           dots += `<g class="route-dot selected" onclick="selectAndShow('${s.id}')">
-            <circle class="sel-ring" cx="${c[0]}" cy="${c[1]}" r="6"/>
-            <circle class="main-dot" cx="${c[0]}" cy="${c[1]}" r="6" fill="${day.color}" fill-opacity="0.5" stroke="${day.color}" stroke-width="1.5"/>
-            ${num>0?`<text x="${c[0]}" y="${c[1]}" class="route-number" style="paint-order:stroke;stroke:rgba(30,24,48,0.4);stroke-width:0.5">${num}</text>`:''}
+            <circle class="sel-ring" cx="${c[0]}" cy="${c[1]}" r="8"/>
+            <circle class="main-dot" cx="${c[0]}" cy="${c[1]}" r="8" fill="${day.color}" fill-opacity="0.78" stroke="${day.color}" stroke-width="1.8"/>
+            ${num>0?`<text x="${c[0]}" y="${c[1]}" class="route-number">${num}</text>`:''}
           </g>`;
         } else if (s.checked) {
-          dots += `<g class="route-dot" onclick="selectAndShow('${s.id}')"><circle cx="${c[0]}" cy="${c[1]}" r="6" fill="${day.color}" fill-opacity="0.5" stroke="${day.color}" stroke-width="1.5"/>${num>0?`<text x="${c[0]}" y="${c[1]}" class="route-number" style="paint-order:stroke;stroke:rgba(30,24,48,0.4);stroke-width:0.5">${num}</text>`:''}</g>`;
+          dots += `<g class="route-dot" onclick="selectAndShow('${s.id}')"><circle cx="${c[0]}" cy="${c[1]}" r="7" fill="${day.color}" fill-opacity="0.7" stroke="${day.color}" stroke-width="1.8"/>${num>0?`<text x="${c[0]}" y="${c[1]}" class="route-number">${num}</text>`:''}</g>`;
         } else if (s.recommended) {
-          dots += `<g class="route-dot reco-unchecked" onclick="selectAndShow('${s.id}')"><circle cx="${c[0]}" cy="${c[1]}" r="5" fill="rgba(79,201,192,0.18)" stroke="var(--accent-3)" stroke-width="1.4" stroke-dasharray="2 1.6"/><circle cx="${c[0]}" cy="${c[1]}" r="1.8" fill="var(--accent-3)"/></g>`;
+          dots += `<g class="route-dot reco-unchecked" onclick="selectAndShow('${s.id}')"><circle cx="${c[0]}" cy="${c[1]}" r="5.5" fill="rgba(79,201,192,0.2)" stroke="var(--accent-3)" stroke-width="1.5" stroke-dasharray="2.4 1.8"/><circle cx="${c[0]}" cy="${c[1]}" r="2" fill="var(--accent-3)"/></g>`;
         } else {
-          dots += `<g class="route-dot" onclick="selectAndShow('${s.id}')"><circle cx="${c[0]}" cy="${c[1]}" r="3.5" fill="var(--muted)" fill-opacity="0.3"/></g>`;
+          dots += `<g class="route-dot" onclick="selectAndShow('${s.id}')"><circle cx="${c[0]}" cy="${c[1]}" r="4" fill="var(--muted)" fill-opacity="0.35"/></g>`;
         }
       });
       svg.innerHTML = bg + routeSvg + dots;
@@ -3230,7 +3249,7 @@
         dayPts.filter(s => s.loc.startsWith(prefix)).forEach(s => {
           const c = LOCATIONS[s.loc];
           const num = numOf[s.id];
-          html += `<g class="route-dot" onclick="selectAndShow('${s.id}')"><circle cx="${c[0]}" cy="${c[1]}" r="6" fill="${day.color}" fill-opacity="0.5" stroke="${day.color}" stroke-width="1.5"/>${num ? `<text x="${c[0]}" y="${c[1]}" class="route-number" style="paint-order:stroke;stroke:rgba(30,24,48,0.4);stroke-width:0.5">${num}</text>` : ''}</g>`;
+          html += `<g class="route-dot" onclick="selectAndShow('${s.id}')"><circle cx="${c[0]}" cy="${c[1]}" r="7" fill="${day.color}" fill-opacity="0.7" stroke="${day.color}" stroke-width="1.8"/>${num ? `<text x="${c[0]}" y="${c[1]}" class="route-number">${num}</text>` : ''}</g>`;
         });
         svg.innerHTML = html;
       };
@@ -3255,7 +3274,7 @@
         let html = drawBase(svg, type);
         pts.forEach(p => {
           const isSel = p.id === selectedSpotId;
-          html += `<g class="route-dot${isSel ? ' selected' : ''}" onclick="selectAndShow('${p.id}')">${isSel ? `<circle class="sel-ring" cx="${p.x}" cy="${p.y}" r="6"/>` : ''}<circle class="main-dot" cx="${p.x}" cy="${p.y}" r="6" fill="${p.color}" fill-opacity="0.5" stroke="${p.color}" stroke-width="1.5"/><text x="${p.x}" y="${p.y-9}" class="ov-daynum" style="fill:${p.color}">${p.dayNo}</text></g>`;
+          html += `<g class="route-dot${isSel ? ' selected' : ''}" onclick="selectAndShow('${p.id}')">${isSel ? `<circle class="sel-ring" cx="${p.x}" cy="${p.y}" r="8"/>` : ''}<circle class="main-dot" cx="${p.x}" cy="${p.y}" r="7" fill="${p.color}" fill-opacity="0.7" stroke="${p.color}" stroke-width="1.8"/><text x="${p.x}" y="${p.y-9}" class="ov-daynum" style="fill:${p.color}">${p.dayNo}</text></g>`;
         });
         svg.innerHTML = html;
       };
@@ -3293,8 +3312,17 @@
       const dst = document.getElementById('mapExpandSvg');
       if (!src || !dst) return;
       dst.innerHTML = src.innerHTML;
-      dst.setAttribute('viewBox', src.getAttribute('viewBox') || '-55 -45 110 90');
+      dst.setAttribute('viewBox', src.getAttribute('viewBox') || '-52 -42 104 84');
+      dst.setAttribute('preserveAspectRatio', src.getAttribute('preserveAspectRatio') || 'xMidYMid meet');
       document.getElementById('mapExpandTitle').textContent = document.getElementById('mapTitle').textContent || '当日路线轨迹';
+      const day = DAYS.find(d => d.id === currentDay);
+      const legend = document.getElementById('mapExpandLegend');
+      if (legend && day) {
+        legend.innerHTML = `<span class="inline-flex items-center gap-1.5"><span class="lg-dot" style="background:${day.color}"></span> 已勾选路线点</span>`
+          + `<span class="inline-flex items-center gap-1.5"><span class="lg-dot" style="background:rgba(79,201,192,0.35);border:1.5px dashed var(--accent-3)"></span> 推荐（可选）</span>`
+          + `<span class="inline-flex items-center gap-1.5"><span class="lg-dot" style="background:var(--muted);opacity:.4"></span> 未勾选</span>`
+          + `<span class="inline-flex items-center gap-1.5"><span style="color:var(--accent);font-weight:700">① ② ③</span> 路线顺序</span>`;
+      }
       document.getElementById('mapExpandModal').classList.add('show');
     }
     function closeMapExpand() {
@@ -3656,9 +3684,10 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
         <h3 class="cute-font font-bold text-base" id="mapExpandTitle">当日路线轨迹</h3>
         <button class="icon-btn" onclick="closeMapExpand()">✕</button>
       </div>
+      <div id="mapExpandLegend" class="px-3 pb-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--muted)]"></div>
       <div class="flex-1 p-3 pt-0 overflow-hidden">
         <div class="map-container rounded-xl overflow-hidden w-full h-full">
-          <svg id="mapExpandSvg" viewBox="-55 -45 110 90" class="w-full h-full map-expand-svg"></svg>
+          <svg id="mapExpandSvg" viewBox="-52 -42 104 84" preserveAspectRatio="xMidYMid meet" class="w-full h-full map-expand-svg"></svg>
         </div>
       </div>
     </div>
