@@ -665,7 +665,6 @@
         <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
           <div class="home-h">🗺️ 世界足迹地图</div>
           <div class="flex items-center gap-2">
-            <button onclick="openPoi()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap hover:border-[var(--accent)] transition">📚 行程点库</button>
             <div id="homeStats" class="text-xs text-[var(--muted)]"></div>
           </div>
         </div>
@@ -718,7 +717,8 @@
       </div>
 
       <div class="panel p-5">
-        <div class="home-h mb-3">✅ 我去过的地方</div>
+        <div class="home-h mb-1">📚 我去过的城市 · 我的城市库</div>
+        <div class="text-xs text-[var(--muted)] mb-3">每个城市都是一座「库」——点开任意城市，进去看它自己的<b>行程点库</b>（我的行程点 + 推荐去处 + 去过几次 + 评价）。</div>
         <div id="homeVisited" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
       </div>
 
@@ -739,10 +739,10 @@
     <div id="pagePoints" class="flow-page space-y-6">
       <div class="panel p-5">
         <div class="flex items-center justify-between flex-wrap gap-2 mb-1">
-          <div class="home-h">📍 行程点 · <span id="pointsCityName"></span></div>
+          <div class="home-h">📍 <span id="pointsCityName"></span> 的行程点库</div>
           <button class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)]" onclick="setFlow('cities')">← 返回城市</button>
         </div>
-        <div class="text-xs text-[var(--muted)] mb-3">以下是「<span id="pointsCityName2"></span>」在所有行程里的行程点，按行程 → 天 → 时间排好；下面还附推荐行程点库，点「➕ 加入」即可加进对应行程。</div>
+        <div class="text-xs text-[var(--muted)] mb-3">以下是「<span id="pointsCityName2"></span>」在所有行程里的行程点，按行程 → 天 → 时间排好；✅已结束行程里勾选过的点会显示<b>去过几次</b>，每个点可<b>多次评价</b>。下面还附推荐去处，点「➕ 加入」即可加进对应行程。</div>
         <div id="pointsBody" class="space-y-4"></div>
       </div>
     </div>
@@ -753,7 +753,6 @@
       <div class="flex items-center gap-3 flex-wrap">
         <span class="text-sm font-bold cute-font text-[var(--accent)] whitespace-nowrap">🗂 我的行程库</span>
         <button onclick="openWorldMap()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap hover:border-[var(--accent)] transition">🌍 我的足迹</button>
-        <button onclick="openPoi()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap hover:border-[var(--accent)] transition">📚 行程点库</button>
         <div id="tripChips" class="flex gap-2 flex-wrap flex-1"></div>
         <button onclick="createTrip()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap">➕ 新建行程</button>
       </div>
@@ -1189,26 +1188,6 @@
   </div>
 
   <!-- 行程点大库（按城市分组的 master POI 库） -->
-  <div class="modal-overlay" id="poiModal" onclick="if(event.target===this)closeModal('poiModal')">
-    <div class="panel rounded-2xl poi-panel w-full max-w-3xl">
-      <div class="flex items-center justify-between p-5 pb-3 border-b border-[var(--border)]">
-        <div>
-          <h3 class="text-xl font-bold cute-font">📚 行程点大库</h3>
-          <div class="text-xs text-[var(--muted)] mt-1">🧳 你每次行程里的行程点会<b>自动同步</b>到这里（不论已结束 / 待开始）；✅已结束行程里勾选过的点会显示<b>去过几次</b>，每个点可<b>多次评价</b>（日期 + 星级）。💡推荐地点点「➕ 加入」放进当前行程。</div>
-        </div>
-        <button class="icon-btn" onclick="closeModal('poiModal')">✕</button>
-      </div>
-      <div class="px-5 py-3 flex items-center gap-3 flex-wrap border-b border-[var(--border)]">
-        <input id="poiSearch" class="input-field flex-1 min-w-[180px]" placeholder="🔍 搜城市 / 地点 / 关键词" oninput="renderPoi(this.value)">
-        <label class="flex items-center gap-2 text-sm text-[var(--muted)] cursor-pointer select-none">
-          <input type="checkbox" id="poiOnlyTrip" class="custom-checkbox" onchange="setPoiOnlyTrip(this.checked)"> 只看本程城市
-        </label>
-        <span id="poiCount" class="text-xs text-[var(--muted)]"></span>
-        <select id="poiDaySel" class="input-field w-auto"></select>
-      </div>
-      <div class="poi-body p-5" id="poiBody"></div>
-    </div>
-  </div>
 
   <!-- 没去过城市的推荐弹层 -->
   <div class="modal-overlay" id="recModal" onclick="if(event.target===this)closeRecs()">
@@ -1497,7 +1476,7 @@
         box.innerHTML='<div class="home-empty">暂时没有「'+escHtml(city)+'」的行程点。去「🗂️ 行程模块 → 打开我的行程」里添加吧。</div>';
         return;
       }
-      var html=''; var added=poiAddedNames();
+      var html=''; var added=poiAddedNames(); var visitMap=computeVisitMap();
       trips.forEach(function(t){
         var st = tripTimeStatus(t);
         html+='<div class="pt-trip">';
@@ -1520,6 +1499,7 @@
               +(s.ticket?'<div class="pt-spot-sub">🎫 '+escHtml(s.ticket)+'</div>':'')
               +'</div>'
               +(links.length?'<div class="pt-spot-links">'+links.map(function(l){return '<a class="flight-link" href="'+escAttr(l.url)+'" target="_blank" rel="noopener">'+escHtml(l.icon||'🔗')+' '+escHtml(l.label||'链接')+'</a>';}).join('')+'</div>':'')
+              + reviewBlock(city, s.name||'', visitMap[reviewKey(city, s.name||'')]||0)
               +'</div>';
           });
           html+='</div>';
@@ -1528,7 +1508,7 @@
       });
       var recs=(POI_DB[city]||[]);
       if(recs.length){
-        html+='<div class="pt-rec"><div class="pt-trip-h"><span class="pt-trip-title">✨ '+escHtml(city)+' 推荐行程点库</span><span class="pt-trip-meta">点「➕ 加入」可加进对应行程</span></div>';
+        html+='<div class="pt-rec"><div class="pt-trip-h"><span class="pt-trip-title">✨ '+escHtml(city)+' 推荐去处</span><span class="pt-trip-meta">点「➕ 加入」可加进对应行程</span></div>';
         var order=['景点','美食','玩乐'];
         order.forEach(function(cat){
           var grp=recs.filter(function(p){ return p.cat===cat; });
@@ -1537,7 +1517,9 @@
           grp.forEach(function(p){
             var isIn=!!added[p.name];
             html+='<div class="pt-spot'+(isIn?' checked':'')+'"><div class="pt-spot-main"><div class="pt-spot-name">'+escHtml(p.name)+'</div>'+(p.note?'<div class="pt-spot-note">'+escHtml(p.note)+'</div>':'')+'</div>'
-              +'<button class="poi-add'+(isIn?' added':'')+'" onclick="togglePoi(\''+escAttr(city)+'\',\''+escAttr(p.name)+'\')">'+(isIn?'✓ 已加入':'➕ 加入')+'</button></div>';
+              +'<button class="poi-add'+(isIn?' added':'')+'" onclick="togglePoi(\''+escAttr(city)+'\',\''+escAttr(p.name)+'\')">'+(isIn?'✓ 已加入':'➕ 加入')+'</button>'
+              + reviewBlock(city, p.name, visitMap[reviewKey(city, p.name)]||0)
+              +'</div>';
           });
           html+='</div>';
         });
@@ -2008,8 +1990,6 @@
       const t = TRIPS.find(x=>x.id===id); if(!t) return;
       Object.assign(t, meta); persistAll(); render();
     }
-    // ===== 城市景点库：浏览某行程关联城市的「有名气地点」，可选入行程 =====
-    var poiOnlyTrip = false;
     // 行程点 → 显示城市（中文）：优先命中 addr/name 中的已知城市，其次按 loc 前缀，最后回退 day.city（slug 可多城市）
     function spotCitiesOf(day, spot){
       const out = {};
@@ -2043,109 +2023,10 @@
       });
       return map;
     }
-    // 从行程点库点某个「我的行程点」→ 跳到对应行程 / 当天 / 编辑视图
-    function gotoSpot(tripId, dayId){
-      setActiveTrip(tripId);
-      if (DAYS && DAYS.some(function(d){ return d.id===dayId; })) currentDay = dayId;
-      closeModal('poiModal');
-      setFlow('trip');
-    }
-    function poiCities(){
-      // 主库城市 = POI_DB 收录城市 ∪ 有行程点的城市
-      const recSet = {};
-      Object.keys(POI_DB).forEach(function(n){ if(POI_DB[n] && POI_DB[n].length) recSet[n]=1; });
-      const spotMap = collectTripSpots(poiOnlyTrip);
-      Object.keys(spotMap).forEach(function(n){ recSet[n]=1; });
-      let all = Object.keys(recSet);
-      if (poiOnlyTrip) {
-        const t = currentTrip();
-        const inTrip = {};
-        if (t) (t.cities||[]).forEach(function(c){ if(c.name) inTrip[c.name]=1; });
-        Object.keys(spotMap).forEach(function(n){ inTrip[n]=1; }); // 本程实际的行程点城市也算
-        all = all.filter(function(n){ return inTrip[n]; });
-      }
-      return all;
-    }
     function poiAddedNames(){
       const set = {};
       DAYS.forEach(function(d){ (d.spots||[]).forEach(function(s){ if(s.name) set[s.name]=true; }); });
       return set;
-    }
-    function openPoi(onlyTrip){
-      poiOnlyTrip = !!onlyTrip;
-      const sel = document.getElementById('poiDaySel');
-      sel.innerHTML = DAYS.map(function(d,i){ return '<option value="'+d.id+'">Day '+(i+1)+' · '+(d.date||'')+' '+(d.weekday||'')+'</option>'; }).join('');
-      sel.value = (currentDay && currentDay!=='overview' && DAYS.some(function(d){return d.id===currentDay;})) ? currentDay : (DAYS[0]&&DAYS[0].id);
-      var cb=document.getElementById('poiOnlyTrip'); if(cb) cb.checked = poiOnlyTrip;
-      renderPoi('');
-      document.getElementById('poiModal').classList.add('show');
-      setTimeout(function(){ const i=document.getElementById('poiSearch'); if(i) i.focus(); }, 60);
-    }
-    function setPoiOnlyTrip(v){ poiOnlyTrip=v; renderPoi(document.getElementById('poiSearch').value||''); }
-    function renderPoi(q){
-      q = (q||'').trim();
-      const cities = poiCities();
-      const added = poiAddedNames();
-      const order = ['景点','美食','玩乐'];
-      const spotMap = collectTripSpots(poiOnlyTrip);
-      const visitMap = computeVisitMap();
-      let html = '';
-      cities.forEach(function(city){
-        const recs = (POI_DB[city]||[]).filter(function(p){ return !q || (p.name+q).indexOf(q)>=0 || (p.note && p.note.indexOf(q)>=0); });
-        const mine = (spotMap[city]||[]).filter(function(e){
-          if(!q) return true;
-          const s=e.spot;
-          return (s.name+q).indexOf(q)>=0 || (s.addr&&s.addr.indexOf(q)>=0) || (s.notes&&s.notes.indexOf(q)>=0) || (e.trip.title&&e.trip.title.indexOf(q)>=0);
-        });
-        if (!recs.length && !mine.length) return;
-        html += '<div class="poi-city"><div class="poi-city-h">📍 '+escHtml(city)+' <span class="poi-city-n">'+(recs.length?'推荐 '+recs.length+' 处':'')+(mine.length?((recs.length?' · ':'')+'我的行程点 '+mine.length+' 个'):'')+'</span></div>';
-        // —— 我的行程点（自动同步，全部行程不论是否已结束/待开始）——
-        if (mine.length) {
-          const byTrip = {};
-          mine.forEach(function(e){ if(!byTrip[e.trip.id]) byTrip[e.trip.id]={trip:e.trip, entries:[]}; byTrip[e.trip.id].entries.push(e); });
-          html += '<div class="poi-cat">🧳 我的行程点（自动同步 · 不论已结束 / 待开始）</div>';
-          Object.keys(byTrip).forEach(function(tid){
-            const g = byTrip[tid];
-            const st = tripTimeStatus(g.trip);
-            html += '<div class="poi-trip-sub"><span class="poi-trip-title">🗂️ '+escHtml(g.trip.title||'未命名行程')+'</span>'
-              + '<span class="st-pill '+st+'">'+ST_LABEL[st]+'</span>'
-              + (g.trip.start?('<span class="poi-trip-date">'+(g.trip.end?(g.trip.start+'→'+g.trip.end):g.trip.start)+'</span>'):'')+'</div>';
-            html += '<div class="poi-list">';
-            g.entries.forEach(function(e){
-              const s=e.spot, d=e.day;
-              const dayNo = (TRIPS && g.trip.days) ? (g.trip.days.indexOf(d)+1) : 0;
-              html += '<div class="poi-row mine" onclick="gotoSpot(\''+escAttr(g.trip.id)+'\',\''+escAttr(d.id)+'\')" title="点击跳到该行程 / 当天">'
-                + '<div class="poi-info"><div class="poi-name">'+escHtml(s.name||'未命名')+(s.checked?' <span class="poi-done">✓已去</span>':'')+'</div>'
-                + '<div class="poi-note">Day '+(dayNo||'?')+(d.date?(' · '+escHtml(d.date)):'')+(s.time?(' · '+escHtml(s.time)):'')+(s.addr?(' · 📍'+escHtml(s.addr)):'')+'</div></div>'
-                + '<div class="poi-row-actions"><span class="poi-tag">'+ST_LABEL[st]+'</span>'
-                + reviewBlock(city, s.name||'', visitMap[reviewKey(city, s.name||'')]||0)
-                + '</div></div>';
-            });
-            html += '</div>';
-          });
-        }
-        // —— 推荐地点（可加入当前行程）——
-        if (recs.length) {
-          html += '<div class="poi-cat">💡 推荐地点</div><div class="poi-list">';
-          order.forEach(function(cat){
-            const grp = recs.filter(function(p){ return p.cat===cat; });
-            if (!grp.length) return;
-            grp.forEach(function(p){
-              const isIn = !!added[p.name];
-              html += '<div class="poi-row'+(isIn?' in':'')+'">'
-                + '<div class="poi-info"><div class="poi-name">'+escHtml(p.name)+'</div>'+(p.note?'<div class="poi-note">'+escHtml(p.note)+'</div>':'')+'</div>'
-                + '<div class="poi-row-actions"><button class="poi-add'+(isIn?' added':'')+'" onclick="togglePoi(\''+escAttr(city)+'\',\''+escAttr(p.name)+'\')">'+(isIn?'✓ 已加入':'➕ 加入')+'</button>'
-                + reviewBlock(city, p.name, visitMap[reviewKey(city, p.name)]||0)
-                + '</div></div>';
-            });
-          });
-          html += '</div>';
-        }
-        html += '</div>';
-      });
-      if (!html) html = '<div class="poi-empty">这里还没有内容。告诉我国际城市名，我帮你补进推荐库；或先把行程点加进某次行程，会自动同步到这里～</div>';
-      const body=document.getElementById('poiBody'); if(body) body.innerHTML = html;
-      const cnt=document.getElementById('poiCount'); if(cnt) cnt.textContent = cities.length+' 个城市';
     }
     function togglePoi(city, name){
       const added = poiAddedNames();
@@ -2219,7 +2100,7 @@
       SPOT_REVIEWS[k].sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
       persistReviews();
       closeModal('reviewModal');
-      if (document.getElementById('poiModal') && document.getElementById('poiModal').classList.contains('show')) renderPoi(document.getElementById('poiSearch').value||'');
+      refreshReviewHost();
     }
     function deleteReview(city, name, idx){
       const k = reviewKey(city, name);
@@ -2228,7 +2109,12 @@
       SPOT_REVIEWS[k].splice(idx, 1);
       if (!SPOT_REVIEWS[k].length) delete SPOT_REVIEWS[k];
       persistReviews();
-      renderPoi(document.getElementById('poiSearch').value||'');
+      refreshReviewHost();
+    }
+    function refreshReviewHost(){
+      if (document.getElementById('recModal') && document.getElementById('recModal').classList.contains('show') && typeof recCity !== 'undefined' && recCity) { openRecs(recCity); return; }
+      if (currentFlow === 'points') { renderPoints(pointsCity); return; }
+      render();
     }
     function toggleReviews(hk){
       const el = document.getElementById('rev-'+hk);
