@@ -454,15 +454,59 @@
     .trip-code-input { padding:5px 10px; border-radius:8px; border:1.5px solid var(--border); background:var(--panel); color:var(--text); font-size:14px; font-family:var(--font-mono); letter-spacing:3px; text-transform:uppercase; width:120px; outline:none; }
     .trip-code-input:focus { border-color:var(--accent); }
     /* ===== 足迹首页 / 视图切换 ===== */
-    #viewNav .vbtn { border-radius:999px; font-family:var(--font-cute); transition:all .18s; border:2px solid var(--border); background:var(--panel); color:var(--text); }
-    #viewNav .vbtn:hover { border-color:var(--accent); }
-    #viewNav .vbtn.active { background:linear-gradient(120deg,var(--accent),var(--accent-deep)); color:#fff; border-color:transparent; box-shadow:0 8px 18px -8px rgba(91,141,239,.6); transform:translateY(-1px); }
-    #tripContentView { display:none; }
-    body.view-home #tripContentView { display:none; }
-    body.view-home #homeView { display:block; }
-    body.view-trip #homeView { display:none; }
-    body.view-trip #tripContentView { display:block; }
-    #homeView { display:none; }
+    #flowNav { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:24px; }
+    #flowNav .flow-step { border-radius:999px; font-family:var(--font-cute); transition:all .18s; border:2px solid var(--border); background:var(--panel); color:var(--text); font-size:14px; padding:8px 16px; cursor:pointer; }
+    #flowNav .flow-step:hover { border-color:var(--accent); }
+    #flowNav .flow-step.active { background:linear-gradient(120deg,var(--accent),var(--accent-deep)); color:#fff; border-color:transparent; box-shadow:0 8px 18px -8px rgba(91,141,239,.6); transform:translateY(-1px); }
+    #flowNav .flow-step.trip-step.active { background:linear-gradient(120deg,var(--accent-3),#2f9c92); box-shadow:0 8px 18px -8px rgba(79,201,192,.6); }
+    #flowNav .flow-sep { color:var(--muted); font-size:16px; opacity:.55; }
+    /* 首页装饰头部 */
+    .home-hero { display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap; padding:22px 26px; border-radius:26px; background:linear-gradient(120deg, rgba(91,141,239,0.16), rgba(79,201,192,0.12)); border:2px solid var(--border); box-shadow:var(--shadow); position:relative; overflow:hidden; }
+    .home-hero-text { flex:1; min-width:240px; }
+    .home-hero-title { font-family:var(--font-cute); font-weight:800; font-size:26px; letter-spacing:.5px; }
+    .home-hero-sub { color:var(--muted); font-size:13.5px; margin-top:6px; line-height:1.6; max-width:520px; }
+    .home-stat-pills { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+    .stat-pill { background:var(--panel); border:1.5px solid var(--border); border-radius:999px; padding:4px 12px; font-size:12.5px; font-weight:700; color:var(--text); }
+    .stat-pill.wish { border-color:rgba(79,201,192,0.5); color:var(--accent-3); }
+    .home-hero-graphic { width:200px; height:110px; flex:none; opacity:.95; }
+    .home-hero-graphic .hg-arc { fill:none; stroke:url(#hgArc); stroke-width:2; stroke-dasharray:4 5; }
+    .home-hero-graphic .hg-dot { fill:var(--accent); }
+    .home-hero-graphic .hg-dot2 { fill:var(--accent-3); }
+    .home-hero-graphic .hg-plane { fill:var(--accent-deep); }
+    /* 首页装饰底部 */
+    .home-foot { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; padding:18px 24px; border-radius:22px; background:var(--chip-bg); border:1.5px dashed var(--border); }
+    .home-foot-stats { font-size:13.5px; color:var(--muted); }
+    .home-foot-stats b { color:var(--text); }
+    .home-cta { display:flex; gap:10px; flex-wrap:wrap; }
+    /* 城市页 - 行程模块 */
+    .city-module { border-left:4px solid var(--accent-3); }
+    .city-module-btn { background:linear-gradient(120deg,var(--accent-3),#2f9c92); }
+    /* 行程点页 */
+    .pt-trip { border:1.5px solid var(--border); border-radius:18px; padding:14px 16px; background:var(--chip-bg); }
+    .pt-trip + .pt-trip { margin-top:14px; }
+    .pt-trip-h { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+    .pt-trip-title { font-family:var(--font-cute); font-weight:800; font-size:16px; }
+    .pt-trip-meta { font-size:12px; color:var(--muted); }
+    .pt-day { margin-top:10px; }
+    .pt-day-h { font-weight:800; font-size:13.5px; color:var(--accent); margin-bottom:8px; }
+    .pt-empty { font-size:12.5px; color:var(--muted); padding:6px 0; }
+    .pt-spot { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:10px 12px; border-radius:12px; background:var(--panel); border:1px solid var(--border); margin-bottom:8px; }
+    .pt-spot.checked { border-left:3px solid var(--accent); }
+    .pt-spot.reco:not(.checked) { border-left:3px dashed var(--accent-3); }
+    .pt-spot.flight { border-left:3px solid var(--accent-2); }
+    .pt-spot-main { flex:1; min-width:0; }
+    .pt-spot-time { display:inline-block; font-size:11px; font-weight:800; color:var(--accent); background:rgba(91,141,239,0.12); border-radius:6px; padding:1px 7px; margin-bottom:3px; }
+    .pt-spot-name { font-weight:700; font-size:14px; }
+    .pt-spot-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+    .pt-spot-note { font-size:12.5px; color:var(--text); margin-top:3px; line-height:1.5; }
+    .pt-spot-warn { font-size:12px; color:var(--warn-text); margin-top:3px; }
+    .pt-spot-links { margin-top:6px; display:flex; gap:8px; flex-wrap:wrap; }
+    .pt-rec { margin-top:18px; border-top:1.5px dashed var(--border); padding-top:14px; }
+    #tripContentView, #pageHome, #pageCities, #pagePoints { display:none; }
+    body.flow-home #pageHome { display:block; }
+    body.flow-cities #pageCities { display:block; }
+    body.flow-points #pagePoints { display:block; }
+    body.flow-trip #tripContentView { display:block; }
     .home-h { font-family:var(--font-cute); font-weight:800; font-size:18px; display:flex; align-items:center; gap:8px; }
     .home-city-card { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:16px; background:var(--chip-bg); border:1.5px solid var(--border); cursor:pointer; transition:all .15s; }
     .home-city-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 10px 24px -12px rgba(0,0,0,.3); }
@@ -492,7 +536,7 @@
     .drill-chip.city .dc-emoji { color:var(--accent-3); }
   </style>
 </head>
-<body class="min-h-screen view-home">
+<body class="min-h-screen flow-home">
   <div id="bgDeco"></div>
   <div class="max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
 
@@ -544,17 +588,46 @@
       <span class="deco text-2xl" style="top:10px; right:8%; animation-delay:-2.4s;">🍑</span>
     </div>
 
-    <!-- 视图切换：足迹首页 / 行程 -->
-    <div class="flex gap-2 mb-6" id="viewNav">
-      <button class="vbtn px-4 py-2 text-sm cute-font active" id="navHome" onclick="setView('home')">🌍 我的足迹</button>
-      <button class="vbtn px-4 py-2 text-sm cute-font" id="navTrip" onclick="setView('trip')">🗓️ 我的行程</button>
+    <!-- 三级串联导航：首页 / 城市 / 行程点（编辑为第 4 步，从城市页进入） -->
+    <div id="flowNav">
+      <button class="flow-step active" id="navHome" onclick="setFlow('home')">🌍 首页</button>
+      <span class="flow-sep">›</span>
+      <button class="flow-step" id="navCities" onclick="setFlow('cities')">🏙️ 城市</button>
+      <span class="flow-sep">›</span>
+      <button class="flow-step" id="navPoints" onclick="setFlow('points')">📍 行程点</button>
+      <span class="flow-sep">›</span>
+      <button class="flow-step trip-step" id="navTrip" onclick="setFlow('trip')">✏️ 我的行程</button>
     </div>
 
-    <!-- ===== 足迹首页 ===== -->
-    <div id="homeView" class="space-y-6">
+    <!-- ===== 页面 1：首页（世界地图足迹 + 上下装饰） ===== -->
+    <div id="pageHome" class="flow-page space-y-6">
+      <!-- 装饰头部 -->
+      <div class="home-hero">
+        <div class="home-hero-text">
+          <div class="home-hero-title">🌍 我的世界足迹</div>
+          <div class="home-hero-sub">走过的城市在地图上亮起，没去过的在下面等你。点开地图上的点，或从「城市」一路走到每一处行程点。</div>
+          <div class="home-stat-pills" id="homeStatPills"></div>
+        </div>
+        <svg class="home-hero-graphic" viewBox="0 0 220 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="hgArc" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#5b8def" stop-opacity="0"/>
+              <stop offset="50%" stop-color="#5b8def" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#4fc9c0" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path class="hg-arc" d="M18 96 Q70 18 150 40 Q190 52 204 22"/>
+          <circle class="hg-dot" cx="18" cy="96" r="5"/>
+          <circle class="hg-dot2" cx="204" cy="22" r="5"/>
+          <circle class="hg-dot" cx="92" cy="46" r="3.4"/>
+          <circle class="hg-dot2" cx="138" cy="42" r="3.4"/>
+          <path class="hg-plane" d="M150 40 l16 -5 -5 16 3 -1 -3 9 4 -2 -1 6 5 -11 -12 -4 z" transform="rotate(-18 150 40)"/>
+        </svg>
+      </div>
+
       <div class="panel p-5 overflow-hidden">
         <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
-          <div class="home-h">🌍 我的世界足迹</div>
+          <div class="home-h">🗺️ 世界足迹地图</div>
           <div class="flex items-center gap-2">
             <button onclick="openPoi()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap hover:border-[var(--accent)] transition">📚 行程点库</button>
             <div id="homeStats" class="text-xs text-[var(--muted)]"></div>
@@ -589,9 +662,21 @@
         </div>
       </div>
 
+      <!-- 装饰底部 -->
+      <div class="home-foot">
+        <div class="home-foot-stats" id="homeFootStats"></div>
+        <div class="home-cta">
+          <button class="btn-cute px-4 py-2.5 bg-[var(--accent)] text-white text-sm cute-font" onclick="setFlow('cities')">🏙️ 浏览城市</button>
+          <button class="btn-cute px-4 py-2.5 border-2 border-[var(--border)] bg-[var(--panel)] text-sm cute-font text-[var(--text)]" onclick="setFlow('trip')">🗓️ 我的行程</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 页面 2：城市（大洲→国家→城市 + 行程模块） ===== -->
+    <div id="pageCities" class="flow-page space-y-6">
       <div class="panel p-5">
         <div class="home-h mb-1">🌏 按大洲逛 · 我去过的城市</div>
-        <div class="text-xs text-[var(--muted)] mb-3">手机上懒得戳地图小点？先选<b>大洲</b> → <b>国家</b> → <b>城市</b>，点城市直达对应行程。</div>
+        <div class="text-xs text-[var(--muted)] mb-3">手机上懒得戳地图小点？先选<b>大洲</b> → <b>国家</b> → <b>城市</b>，点城市直达对应行程点。</div>
         <div id="homeDrillCrumbs" class="home-drill-crumbs"></div>
         <div id="homeDrillBody" class="home-drill-body"></div>
       </div>
@@ -604,6 +689,25 @@
       <div class="panel p-5">
         <div class="home-h mb-3">🗺️ 我还想去 / 没去过（点开看推荐）</div>
         <div id="homeWish" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+      </div>
+
+      <!-- 行程模块：从这里打开原来的做攻略网页（功能不变，仅换入口） -->
+      <div class="city-module panel p-5">
+        <div class="home-h mb-1">🗂️ 行程模块</div>
+        <div class="text-xs text-[var(--muted)] mb-3">在这里打开你之前做好的攻略行程（可勾选、可编辑、可加行程点、可看总览图），功能和原来完全一样，只是从这里进入。</div>
+        <button class="btn-cute city-module-btn px-4 py-2.5 text-white text-sm cute-font" onclick="setFlow('trip')">✏️ 打开我的行程（做攻略）</button>
+      </div>
+    </div>
+
+    <!-- ===== 页面 3：行程点（某城市的行程点，按行程/天/时间分组） ===== -->
+    <div id="pagePoints" class="flow-page space-y-6">
+      <div class="panel p-5">
+        <div class="flex items-center justify-between flex-wrap gap-2 mb-1">
+          <div class="home-h">📍 行程点 · <span id="pointsCityName"></span></div>
+          <button class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)]" onclick="setFlow('cities')">← 返回城市</button>
+        </div>
+        <div class="text-xs text-[var(--muted)] mb-3">以下是「<span id="pointsCityName2"></span>」在所有行程里的行程点，按行程 → 天 → 时间排好；下面还附推荐行程点库，点「➕ 加入」即可加进对应行程。</div>
+        <div id="pointsBody" class="space-y-4"></div>
       </div>
     </div>
 
@@ -1235,7 +1339,7 @@
         gp.addEventListener('mouseenter',function(){ tip.innerHTML='<div class="wm-tip-name">'+gp.dataset.name+'</div><div class="wm-tip-sub">'+(gp.dataset.country||'')+'</div><div class="wm-tip-trips">'+gp.dataset.trips+'</div>'; tip.classList.remove('hidden'); });
         gp.addEventListener('mousemove',function(ev){ var wr=wrap.getBoundingClientRect(); tip.style.left=(ev.clientX-wr.left+12)+'px'; tip.style.top=(ev.clientY-wr.top+12)+'px'; });
         gp.addEventListener('mouseleave',function(){ tip.classList.add('hidden'); });
-        gp.addEventListener('click',function(){ jumpToCityTrip(gp.dataset.name); });
+        gp.addEventListener('click',function(){ openFlowCity(gp.dataset.name); });
       });
       var conts={}; cities.forEach(function(c){var k=CONTINENT_OF[(c.country||'').trim()]||'其他'; conts[k]=(conts[k]||0)+1;});
       var contStr=Object.keys(conts).map(function(k){return k+' '+conts[k];}).join(' · ');
@@ -1254,30 +1358,124 @@
       });
       var htree=document.getElementById('worldHierarchy');
       htree.innerHTML=ht||'<div class="text-xs text-[var(--muted)] p-3">还没有点亮任何城市。去「编辑行程信息 → 添加城市」填一下坐标吧。</div>';
-      htree.querySelectorAll('.wm-city').forEach(function(el){ el.addEventListener('click',function(){ jumpToCityTrip(el.dataset.name); }); });
+      htree.querySelectorAll('.wm-city').forEach(function(el){ el.addEventListener('click',function(){ openFlowCity(el.dataset.name); }); });
     }
 
     function openWorldMap(){ document.getElementById('worldMapModal').classList.add('show'); renderWorldMap(); }
     function closeWorldMap(){ document.getElementById('worldMapModal').classList.remove('show'); }
 
     // ===== 足迹首页（默认落地页）=====
-    var currentView = 'home';
-    function setView(v){
-      currentView = (v==='trip') ? 'trip' : 'home';
-      document.body.classList.toggle('view-home', currentView==='home');
-      document.body.classList.toggle('view-trip', currentView==='trip');
-      var nh=document.getElementById('navHome'), nt=document.getElementById('navTrip');
-      if(nh) nh.classList.toggle('active', currentView==='home');
-      if(nt) nt.classList.toggle('active', currentView==='trip');
-      if (currentView==='trip'){ if (!DAYS || !DAYS.some(function(d){return d.id===currentDay;})) currentDay = (DAYS&&DAYS.length)?DAYS[0].id:'overview'; }
+    var currentFlow = 'home';
+    function setNavActive(f){
+      ['home','cities','points','trip'].forEach(function(x){
+        var el=document.getElementById('nav'+x.charAt(0).toUpperCase()+x.slice(1));
+        if(el) el.classList.toggle('active', x===f);
+      });
+    }
+    function setFlow(f){
+      currentFlow = f;
+      ['home','cities','points','trip'].forEach(function(x){ document.body.classList.toggle('flow-'+x, x===f); });
+      setNavActive(f);
+      if(f==='trip'){ if(!DAYS || !DAYS.some(function(d){return d.id===currentDay;})) currentDay=(DAYS&&DAYS.length)?DAYS[0].id:'overview'; }
+      if(f==='points' && !pointsCity){ var c=aggregateCities(); if(c.length) pointsCity=c[0].name; }
       render();
     }
     function renderHome(){
-      renderHomeMap(); renderVisited(); renderWish(); renderHomeDrill();
+      renderHomeMap(); renderHomeHero();
       var v=aggregateCities(); var conts={};
       v.forEach(function(c){ var k=CONTINENT_OF[(c.country||'').trim()]||'其他'; conts[k]=(conts[k]||0)+1; });
       var contStr=Object.keys(conts).map(function(k){return k+' '+conts[k];}).join(' · ');
       var hs=document.getElementById('homeStats'); if(hs) hs.textContent='已点亮 '+v.length+' 个城市'+(contStr?(' · '+contStr):'');
+    }
+    function renderHomeHero(){
+      var v=aggregateCities();
+      var conts={}, countries={};
+      v.forEach(function(c){ conts[CONTINENT_OF[(c.country||'').trim()]||'其他']=1; countries[(c.country||'').trim()]=1; });
+      var nCont=Object.keys(conts).length, nCountry=Object.keys(countries).length;
+      var visited={}; v.forEach(function(c){ visited[c.name]=1; });
+      var nWish=Object.keys(POI_DB).filter(function(n){ return !visited[n]; }).length;
+      var pills=document.getElementById('homeStatPills');
+      if(pills) pills.innerHTML='<span class="stat-pill">📍 '+v.length+' 城</span>'
+        +'<span class="stat-pill">🌍 '+nCont+' 大洲</span>'
+        +'<span class="stat-pill">🏳️ '+nCountry+' 国家</span>'
+        +'<span class="stat-pill wish">✨ '+nWish+' 想去</span>';
+      var foot=document.getElementById('homeFootStats');
+      if(foot) foot.innerHTML='已经点亮 <b>'+v.length+'</b> 个城市，跨越 <b>'+nCont+'</b> 大洲 · 还有 <b>'+nWish+'</b> 个城市在想去清单里。';
+    }
+    function renderCities(){
+      renderHomeDrill(); renderVisited(); renderWish();
+    }
+    var pointsCity = '';
+    function openFlowCity(name){
+      name=(name||'').trim();
+      var c=aggregateCities().find(function(x){return x.name===name;});
+      if(c){ homeDrill.cont=CONTINENT_OF[(c.country||'').trim()]||'其他'; homeDrill.country=c.country||null; }
+      setFlow('cities');
+    }
+    function openCity(name){
+      pointsCity=(name||'').trim();
+      setFlow('points');
+    }
+    function renderPoints(city){
+      var box=document.getElementById('pointsBody'); if(!box) return;
+      pointsCity=city;
+      var cn=document.getElementById('pointsCityName'); if(cn) cn.textContent=city||'';
+      var cn2=document.getElementById('pointsCityName2'); if(cn2) cn2.textContent=city||'';
+      if(!city){ box.innerHTML='<div class="home-empty">请先在「城市」页选择一个城市。</div>'; return; }
+      var trips=(TRIPS||[]).map(function(t){
+        var days=(t.days||[]).filter(function(d){ return (d.city||'').trim()===city; });
+        return { id:t.id, title:t.title, start:t.start, end:t.end, status:t.status, days:days };
+      }).filter(function(t){ return t.days.length; });
+      if(!trips.length){
+        box.innerHTML='<div class="home-empty">暂时没有「'+escHtml(city)+'」的行程点。去「🗂️ 行程模块 → 打开我的行程」里添加吧。</div>';
+        return;
+      }
+      var html=''; var added=poiAddedNames(); var ST_LABEL={plan:'计划中',active:'进行中',closed:'已结束'};
+      trips.forEach(function(t){
+        html+='<div class="pt-trip">';
+        html+='<div class="pt-trip-h"><span class="pt-trip-title">🗂️ '+escHtml(t.title||'未命名行程')+'</span>'
+          +'<span class="tc-badge '+(t.status||'active')+'">'+(ST_LABEL[t.status||'active']||'进行中')+'</span>'
+          +(t.start?('<span class="pt-trip-meta">'+(t.end?(t.start+'→'+t.end):t.start)+'</span>'):'')+'</div>';
+        t.days.forEach(function(d){
+          var spots=(d.spots||[]).slice().sort(function(a,b){ return (a.time||'').localeCompare(b.time||''); });
+          html+='<div class="pt-day"><div class="pt-day-h">📅 '+(d.title||'某天')+(d.date?(' · '+d.date+' '+(d.weekday||'')):'')+'</div>';
+          if(!spots.length){ html+='<div class="pt-empty">这天还没安排行程点。</div>'; }
+          spots.forEach(function(s){
+            var links=buildSpotLinks(s);
+            html+='<div class="pt-spot'+(s.checked?' checked':'')+(s.recommended?' reco':'')+(s.type==='flight'?' flight':'')+'">'
+              +'<div class="pt-spot-main">'
+              +'<span class="pt-spot-time">'+(s.time||'自由安排')+'</span>'
+              +'<div class="pt-spot-name">'+escHtml(s.name||'未命名')+(s.type==='flight'&&s.flightNo?(' · ✈️'+escHtml(s.flightNo)):'')+'</div>'
+              +(s.addr?'<div class="pt-spot-sub">📍 '+escHtml(s.addr)+'</div>':'')
+              +(s.notes?'<div class="pt-spot-note">'+escHtml(s.notes)+'</div>':'')
+              +(s.warn?'<div class="pt-spot-warn">⚠️ '+escHtml(s.warn)+'</div>':'')
+              +(s.ticket?'<div class="pt-spot-sub">🎫 '+escHtml(s.ticket)+'</div>':'')
+              +'</div>'
+              +(links.length?'<div class="pt-spot-links">'+links.map(function(l){return '<a class="flight-link" href="'+escAttr(l.url)+'" target="_blank" rel="noopener">'+escHtml(l.icon||'🔗')+' '+escHtml(l.label||'链接')+'</a>';}).join('')+'</div>':'')
+              +'</div>';
+          });
+          html+='</div>';
+        });
+        html+='</div>';
+      });
+      var recs=(POI_DB[city]||[]);
+      if(recs.length){
+        html+='<div class="pt-rec"><div class="pt-trip-h"><span class="pt-trip-title">✨ '+escHtml(city)+' 推荐行程点库</span><span class="pt-trip-meta">点「➕ 加入」可加进对应行程</span></div>';
+        var order=['景点','美食','玩乐'];
+        order.forEach(function(cat){
+          var grp=recs.filter(function(p){ return p.cat===cat; });
+          if(!grp.length) return;
+          html+='<div class="pt-day"><div class="pt-day-h">🏷️ '+cat+'</div>';
+          grp.forEach(function(p){
+            var isIn=!!added[p.name];
+            html+='<div class="pt-spot'+(isIn?' checked':'')+'"><div class="pt-spot-main"><div class="pt-spot-name">'+escHtml(p.name)+'</div>'+(p.note?'<div class="pt-spot-note">'+escHtml(p.note)+'</div>':'')+'</div>'
+              +'<button class="poi-add'+(isIn?' added':'')+'" onclick="togglePoi(\''+escAttr(city)+'\',\''+escAttr(p.name)+'\')">'+(isIn?'✓ 已加入':'➕ 加入')+'</button></div>';
+          });
+          html+='</div>';
+        });
+        html+='</div>';
+      }
+      box.innerHTML=html;
     }
     function renderHomeMap(){
       var grid=document.getElementById('homeMapGrid'); if(!grid) return;
@@ -1309,7 +1507,7 @@
         gp.addEventListener('mouseenter',function(){ tip.innerHTML='<div class="wm-tip-name">'+gp.dataset.name+'</div><div class="wm-tip-sub">'+(gp.dataset.country||'')+'</div><div class="wm-tip-trips">'+gp.dataset.trips+'</div>'; tip.classList.remove('hidden'); });
         gp.addEventListener('mousemove',function(ev){ var wr=wrap.getBoundingClientRect(); tip.style.left=(ev.clientX-wr.left+12)+'px'; tip.style.top=(ev.clientY-wr.top+12)+'px'; });
         gp.addEventListener('mouseleave',function(){ tip.classList.add('hidden'); });
-        gp.addEventListener('click',function(){ jumpToCityTrip(gp.dataset.name); });
+        gp.addEventListener('click',function(){ openFlowCity(gp.dataset.name); });
       });
     }
     function renderVisited(){
@@ -1317,7 +1515,7 @@
       var v=aggregateCities();
       if(!v.length){ box.innerHTML='<div class="home-empty col-span-full">还没有点亮任何城市。去「🗓️ 我的行程 → 编辑行程信息 → 📍 点亮城市」加一下吧。</div>'; return; }
       box.innerHTML=v.map(function(c){
-        return '<div class="home-city-card visited" onclick="jumpToCityTrip(\''+escAttr(c.name)+'\')">'
+        return '<div class="home-city-card visited" onclick="openCity(\''+escAttr(c.name)+'\')">'
           +'<span class="hc-emoji">📍</span>'
           +'<div><div class="hc-name">'+escHtml(c.name)+'</div><div class="hc-sub">'+(c.country||'')+' · '+c.trips.length+' 次到访</div></div></div>';
       }).join('');
@@ -1372,7 +1570,7 @@
       } else {
         var cities=byCont[homeDrill.cont][homeDrill.country]||[];
         body.innerHTML=cities.map(function(c){
-          return '<button class="drill-chip city" onclick="jumpToCityTrip(\''+escAttr(c.name)+'\')"><span class="dc-emoji">📍</span><span class="dc-name">'+escHtml(c.name)+'</span><span class="dc-sub">'+c.trips.length+' 次</span></button>';
+          return '<button class="drill-chip city" onclick="openCity(\''+escAttr(c.name)+'\')"><span class="dc-emoji">📍</span><span class="dc-name">'+escHtml(c.name)+'</span><span class="dc-sub">'+c.trips.length+' 次</span></button>';
         }).join('');
       }
     }
@@ -1388,7 +1586,7 @@
       var res=all.filter(function(c){ return c.name.indexOf(q)>=0 || (c.country&&c.country.indexOf(q)>=0); }).slice(0,12);
       if(!res.length){ box.innerHTML='<span class="home-empty">没找到「'+escHtml(q)+'」，换个词试试？</span>'; return; }
       box.innerHTML=res.map(function(c){
-        return '<span class="home-search-res '+(c.visited?'visited':'wish')+'" onclick="'+(c.visited?'jumpToCityTrip':'openRecs')+'(\''+escAttr(c.name)+'\')">'
+        return '<span class="home-search-res '+(c.visited?'visited':'wish')+'" onclick="'+(c.visited?'openCity':'openRecs')+'(\''+escAttr(c.name)+'\')">'
           +(c.visited?'📍 ':'✨ ')+escHtml(c.name)+(c.country?(' · '+escHtml(c.country)):'')+(c.visited?' (去过)':' (想去)')+'</span>';
       }).join('');
     }
@@ -1421,7 +1619,7 @@
     function jumpToCityTrip(name){
       name=(name||'').trim();
       var t=(TRIPS||[]).find(function(x){return (x.cities||[]).some(function(c){return (c.name||'').trim()===name;});});
-      if(t){ setActiveTrip(t.id); closeWorldMap(); setView('trip'); }
+      if(t){ setActiveTrip(t.id); closeWorldMap(); setFlow('trip'); }
       else alert('未找到包含该城市的行程');
     }
 
@@ -3743,7 +3941,7 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
           </div>
         </div>`).join('');
     }
-    function render() { closeMoveMenu(); renderTripBar(); const _h1=document.getElementById('tripTitleH1'); if(_h1){const _t=currentTrip(); _h1.textContent=(_t&&_t.title)||'我的行程';} renderTabs(); renderNowBanner(); renderSpotList(); renderMap(); renderBacklog(); syncSave(); if(currentView==='home') renderHome(); }
+    function render() { closeMoveMenu(); renderTripBar(); const _h1=document.getElementById('tripTitleH1'); if(_h1){const _t=currentTrip(); _h1.textContent=(_t&&_t.title)||'我的行程';} renderTabs(); renderNowBanner(); renderSpotList(); renderMap(); renderBacklog(); syncSave(); if(currentFlow==='trip'){ /* 编辑器可见，无需额外渲染 */ } else if(currentFlow==='home'){ renderHome(); } else if(currentFlow==='cities'){ renderCities(); } else if(currentFlow==='points'){ renderPoints(pointsCity); } }
     window.addEventListener('hashchange', () => { location.reload(); });
     initLayoutMode();
     registerSW();
