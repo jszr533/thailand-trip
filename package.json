@@ -1,0 +1,9 @@
+{
+  "name": "thailand-trip",
+  "version": "1.0.0",
+  "description": "泰国曼谷/清迈双城旅行行程规划 - 多人实时同步",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js"
+  }
+}
