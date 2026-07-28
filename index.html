@@ -367,6 +367,8 @@
     @keyframes wmPulse { 0% { transform: scale(0.3); opacity: 0.85; } 70% { transform: scale(1.35); opacity: 0; } 100% { transform: scale(1.35); opacity: 0; } }
     .wm-pt { cursor: pointer; }
     .wm-pt:hover circle:last-child { stroke: #fff; }
+    .wm-legend { display:inline-flex; align-items:center; gap:3px; margin-left:6px; padding-left:8px; border-left:1px solid var(--border); }
+    .wm-legend-dot { width:9px; height:9px; border-radius:50%; display:inline-block; margin-right:1px; box-shadow:0 0 4px rgba(0,0,0,0.3); }
     .wm-tip { position: absolute; pointer-events: none; background: rgba(10,16,36,0.95); border: 1px solid rgba(94,234,212,0.5); border-radius: 10px; padding: 7px 10px; font-size: 12px; color: #d6f7f1; box-shadow: 0 6px 24px rgba(0,0,0,0.45); max-width: 240px; z-index: 5; }
     .wm-tip-name { font-weight: 700; color: #5eead4; }
     .wm-tip-sub { color: #9fb3c8; margin: 1px 0 3px; }
@@ -551,6 +553,8 @@
     .log-row:hover { border-color:var(--accent); background:rgba(91,141,239,.08); }
     .log-year { color:var(--accent); font-weight:700; }
     .log-edit { margin-left:auto; color:var(--accent-3); font-weight:700; white-space:nowrap; }
+    .log-row.checked { border-left:3px solid var(--ok,#22c55e); }
+    .multi-note { font-style:italic; opacity:.85; }
     @media (max-width:560px){
       .pt-spot { gap:8px; padding:9px 10px; }
       .poi-reviews { gap:5px; }
@@ -1394,16 +1398,19 @@
       for(var i=0;i<cities.length-1;i++){
         var p1=geoToXY(cities[i].lat,cities[i].lng), p2=geoToXY(cities[i+1].lat,cities[i+1].lng);
         var mx=(p1[0]+p2[0])/2, my=(p1[1]+p2[1])/2 - Math.abs(p2[0]-p1[0])*0.18 - 12;
-        a+='<path d="M'+p1[0]+' '+p1[1]+' Q'+mx+' '+my+' '+p2[0]+' '+p2[1]+'" fill="none" stroke="url(#wmArc)" stroke-width="0.8" stroke-dasharray="3 5" class="wm-arc"/>';
+        var yc = cityYearInfo(cities[i+1]).rep;
+        a+='<path d="M'+p1[0]+' '+p1[1]+' Q'+mx+' '+my+' '+p2[0]+' '+p2[1]+'" fill="none" stroke="'+yearColor(yc)+'" stroke-opacity="0.85" stroke-width="1.1" stroke-dasharray="3 5" class="wm-arc"/>';
       }
       arcs.innerHTML=a;
       var pts=document.getElementById('wmPoints'); var h='';
       cities.forEach(function(c){
         var xy=geoToXY(c.lat,c.lng);
+        var yi=cityYearInfo(c); var col=yearColor(yi.rep); var multi=yi.years.length>1;
         var tripsStr=c.trips.map(function(t){return t.title+' ('+(t.start||'')+(t.end?('→'+t.end):'')+(t.year?(' · '+t.year):'')+')';}).join(' | ');
-        h+='<g class="wm-pt" data-name="'+escAttr(c.name)+'" data-country="'+escAttr(c.country||'')+'" data-trips="'+escAttr(tripsStr)+'" transform="translate('+xy[0]+','+xy[1]+')">'
-          +'<circle r="9" class="wm-pulse" fill="none" stroke="#22d3ee" stroke-width="0.8"/>'
-          +'<circle r="3.4" fill="url(#wmGlow)" stroke="#e0f7ff" stroke-width="0.4" style="filter:url(#wmBlur)"/>'
+        h+='<g class="wm-pt'+(multi?' wm-multi':'')+'" data-name="'+escAttr(c.name)+'" data-country="'+escAttr(c.country||'')+'" data-trips="'+escAttr(tripsStr)+'" transform="translate('+xy[0]+','+xy[1]+')">'
+          +'<circle r="9" class="wm-pulse" fill="none" stroke="'+col+'" stroke-width="0.9"/>'
+          +(multi?'<circle r="6.6" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-dasharray="2 2" opacity="0.75"/>':'')
+          +'<circle r="3.6" fill="'+col+'" stroke="#e0f7ff" stroke-width="0.4" style="filter:url(#wmBlur)"/>'
           +'</g>';
       });
       pts.innerHTML=h;
@@ -1416,7 +1423,15 @@
       });
       var conts={}; cities.forEach(function(c){var k=CONTINENT_OF[(c.country||'').trim()]||'其他'; conts[k]=(conts[k]||0)+1;});
       var contStr=Object.keys(conts).map(function(k){return k+' '+conts[k];}).join(' · ');
-      document.getElementById('wmStats').textContent='已点亮 '+cities.length+' 个城市 · '+contStr;
+      var legend='';
+      if(cities.length){
+        var allY={}; cities.forEach(function(c){ cityYearInfo(c).years.forEach(function(y){ allY[y]=1; }); });
+        var yl=Object.keys(allY).map(Number).sort(function(a,b){ return a-b; });
+        legend=' <span class="wm-legend">';
+        yl.forEach(function(y){ legend+='<span class="wm-legend-dot" style="background:'+yearColor(y)+'"></span>'+y; });
+        legend+='</span>';
+      }
+      document.getElementById('wmStats').innerHTML='已点亮 '+cities.length+' 个城市 · '+contStr+legend;
       var tree=buildHierarchy(); var ht='';
       Object.keys(tree).forEach(function(cont){
         ht+='<div class="wm-cont"><div class="wm-cont-h">🌐 '+cont+' <span class="wm-cont-n">'+Object.keys(tree[cont]).length+' 国</span></div>';
@@ -1458,7 +1473,17 @@
       var v=aggregateCities(); var conts={};
       v.forEach(function(c){ var k=CONTINENT_OF[(c.country||'').trim()]||'其他'; conts[k]=(conts[k]||0)+1; });
       var contStr=Object.keys(conts).map(function(k){return k+' '+conts[k];}).join(' · ');
-      var hs=document.getElementById('homeStats'); if(hs) hs.textContent='已点亮 '+v.length+' 个城市'+(contStr?(' · '+contStr):'');
+      var hs=document.getElementById('homeStats'); if(hs){
+        var legend='';
+        if(v.length){
+          var allY={}; v.forEach(function(c){ cityYearInfo(c).years.forEach(function(y){ allY[y]=1; }); });
+          var yl=Object.keys(allY).map(Number).sort(function(a,b){ return a-b; });
+          legend=' <span class="wm-legend">';
+          yl.forEach(function(y){ legend+='<span class="wm-legend-dot" style="background:'+yearColor(y)+'"></span>'+y; });
+          legend+='</span>';
+        }
+        hs.innerHTML='已点亮 '+v.length+' 个城市'+(contStr?(' · '+contStr):'')+legend;
+      }
     }
     function renderHomeHero(){
       var v=aggregateCities();
@@ -1528,13 +1553,18 @@
           var visit = visitMap[reviewKey(city, name)] || { count:0, years:[] };
           var isIn = !!added[name];
           var multi = g.items.length > 1;
+          var hasVNotes = g.items.some(function(it){ return it.spot.notes || it.spot.warn; });
           html += '<div class="pt-spot lib-spot'+(s.checked?' checked':'')+(s.recommended?' reco':'')+(s.type==='flight'?' flight':'')+'">';
           html += '<div class="pt-spot-main lib-main" onclick="toggleSpotLog(\''+hk+'\')">';
           html += '<span class="pt-spot-time">'+(multi?('📋 多时段 ('+g.items.length+')'):(s.time||'自由安排'))+'</span>';
           html += '<div class="pt-spot-name">'+escHtml(name)+(s.type==='flight'&&s.flightNo?(' · ✈️'+escHtml(s.flightNo)):'')+'</div>';
           html += (s.addr?'<div class="pt-spot-sub">📍 '+escHtml(s.addr)+'</div>':'');
-          html += (s.notes?'<div class="pt-spot-note">'+escHtml(s.notes)+'</div>':'');
-          html += (s.warn?'<div class="pt-spot-warn">⚠️ '+escHtml(s.warn)+'</div>':'');
+          if (multi) {
+            if (hasVNotes) html += '<div class="pt-spot-note multi-note">📝 多条备注（点开卡片查看各次）</div>';
+          } else {
+            html += (s.notes?'<div class="pt-spot-note">'+escHtml(s.notes)+'</div>':'');
+            html += (s.warn?'<div class="pt-spot-warn">⚠️ '+escHtml(s.warn)+'</div>':'');
+          }
           html += (s.ticket?'<div class="pt-spot-sub">🎫 '+escHtml(s.ticket)+'</div>':'');
           html += '</div>';
           var links = buildSpotLinks(s);
@@ -1545,8 +1575,11 @@
             html += '<div class="spot-log collapsed" id="log-'+hk+'">';
             g.items.forEach(function(it){
               var dayLabel = (it.day.title||'某天') + (it.day.date?(' · '+it.day.date):'');
-              html += '<div class="log-row" onclick="event.stopPropagation();jumpToSpot(\''+escAttr(it.trip.id)+'\',\''+escAttr(it.day.id)+'\')">'
-                + '🗂️ '+escHtml(it.trip.title)+' <span class="log-year">('+it.year+')</span> · 📅 '+escHtml(dayLabel)+' · ⏰ '+(it.spot.time||'自由安排')
+              var extra='';
+              if(it.spot.notes) extra += ' · 📝 '+escHtml(it.spot.notes);
+              if(it.spot.warn) extra += ' · ⚠️ '+escHtml(it.spot.warn);
+              html += '<div class="log-row'+(it.spot.checked?' checked':'')+'" onclick="event.stopPropagation();jumpToSpot(\''+escAttr(it.trip.id)+'\',\''+escAttr(it.day.id)+'\')">'
+                + '🗂️ '+escHtml(it.trip.title)+' <span class="log-year">('+it.year+')</span> · 📅 '+escHtml(dayLabel)+' · ⏰ '+(it.spot.time||'自由安排')+extra
                 + ' <span class="log-edit">✏️ 编辑</span></div>';
             });
             html += '</div>';
@@ -1589,16 +1622,19 @@
       for(var i=0;i<cities.length-1;i++){
         var p1=geoToXY(cities[i].lat,cities[i].lng), p2=geoToXY(cities[i+1].lat,cities[i+1].lng);
         var mx=(p1[0]+p2[0])/2, my=(p1[1]+p2[1])/2 - Math.abs(p2[0]-p1[0])*0.18 - 12;
-        a+='<path d="M'+p1[0]+' '+p1[1]+' Q'+mx+' '+my+' '+p2[0]+' '+p2[1]+'" fill="none" stroke="url(#homeArc)" stroke-width="0.8" stroke-dasharray="3 5" class="wm-arc"/>';
+        var yc = cityYearInfo(cities[i+1]).rep;
+        a+='<path d="M'+p1[0]+' '+p1[1]+' Q'+mx+' '+my+' '+p2[0]+' '+p2[1]+'" fill="none" stroke="'+yearColor(yc)+'" stroke-opacity="0.85" stroke-width="1.1" stroke-dasharray="3 5" class="wm-arc"/>';
       }
       arcs.innerHTML=a;
       var pts=document.getElementById('homeMapPoints'); var h='';
       cities.forEach(function(c){
         var xy=geoToXY(c.lat,c.lng);
+        var yi=cityYearInfo(c); var col=yearColor(yi.rep); var multi=yi.years.length>1;
         var tripsStr=c.trips.map(function(t){return t.title+' ('+(t.start||'')+(t.end?('→'+t.end):'')+(t.year?(' · '+t.year):'')+')';}).join(' | ');
-        h+='<g class="wm-pt" data-name="'+escAttr(c.name)+'" data-country="'+escAttr(c.country||'')+'" data-trips="'+escAttr(tripsStr)+'" transform="translate('+xy[0]+','+xy[1]+')">'
-          +'<circle r="9" class="wm-pulse" fill="none" stroke="#22d3ee" stroke-width="0.8"/>'
-          +'<circle r="3.4" fill="url(#homeGlow)" stroke="#e0f7ff" stroke-width="0.4" style="filter:url(#homeBlur)"/>'
+        h+='<g class="wm-pt'+(multi?' wm-multi':'')+'" data-name="'+escAttr(c.name)+'" data-country="'+escAttr(c.country||'')+'" data-trips="'+escAttr(tripsStr)+'" transform="translate('+xy[0]+','+xy[1]+')">'
+          +'<circle r="9" class="wm-pulse" fill="none" stroke="'+col+'" stroke-width="0.9"/>'
+          +(multi?'<circle r="6.6" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-dasharray="2 2" opacity="0.75"/>':'')
+          +'<circle r="3.6" fill="'+col+'" stroke="#e0f7ff" stroke-width="0.4" style="filter:url(#homeBlur)"/>'
           +'</g>';
       });
       pts.innerHTML=h;
@@ -1966,6 +2002,14 @@
     function tripTimeStatus(t){
       if(!t) return 'active';
       if(t.status==='closed') return 'closed'; // 手动归档 → 已结束
+      // 年份明确时先做年份层面判断，支持历史/未来跨年行程（更准确）
+      var yr = (t.year!=null && !isNaN(t.year)) ? Number(t.year) : null;
+      var curY = new Date().getFullYear();
+      if (yr !== null) {
+        if (yr < curY) return 'closed';   // 过去的年份 → 已结束
+        if (yr > curY) return 'upcoming'; // 未来的年份 → 待开始
+        // yr === curY → 继续按 M.D 比较
+      }
       var s=parseMD(t.start), e=parseMD(t.end), now=todayMD();
       if(!s) return 'active'; // 无出发日期，默认进行中
       var cross = !!(e && cmpMD(e,s)<0); // 跨年行程（如 12.30 → 1.5）
@@ -1978,6 +2022,21 @@
         return 'closed';
       }
       return 'active';
+    }
+    // 年份 → 确定性色相，保证不同年份不同色（用于足迹地图着色）
+    function yearColor(y){
+      if(y==null) return '#22d3ee';
+      var hue = ((Number(y) - 2000) * 47) % 360;
+      if (hue < 0) hue += 360;
+      return 'hsl('+hue+', 78%, 60%)';
+    }
+    // 城市足迹的年份信息：rep=最新年份（代表色），years=去过的所有年份（去重排序）
+    function cityYearInfo(c){
+      var curY = new Date().getFullYear();
+      var ys = (c.trips||[]).map(function(t){ return (t.year!=null && !isNaN(t.year)) ? Number(t.year) : curY; });
+      if(!ys.length) ys=[curY];
+      var uniq = ys.filter(function(y,i){ return ys.indexOf(y)===i; }).sort(function(a,b){ return a-b; });
+      return { rep: uniq[uniq.length-1], years: uniq };
     }
     // ===== 行程点评价 + 去过次数（旅游日志）=====
     // SPOT_REVIEWS: { "城市:::行程点名": [ { date:'YYYY-MM-DD', rating:1-5, text:'' } ] }，可多次评价
@@ -4180,19 +4239,20 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
     }
     function render() { closeMoveMenu(); renderTripBar(); const _h1=document.getElementById('tripTitleH1'); if(_h1){const _t=currentTrip(); _h1.textContent=(_t&&_t.title)||'我的行程';} renderTabs(); renderNowBanner(); renderSpotList(); renderMap(); renderBacklog(); syncSave(); if(currentFlow==='trip'){ /* 编辑器可见，无需额外渲染 */ } else if(currentFlow==='home'){ renderHome(); } else if(currentFlow==='cities'){ renderCities(); } else if(currentFlow==='points'){ renderPoints(pointsCity); } }
     window.addEventListener('hashchange', () => { location.reload(); });
-    // 首屏：先渲染本地数据（此时所有 let/const 状态变量均已初始化），再异步拉取远程行程
-    (async function initTripCode() {
-      render();
+    // 统一启动入口：收敛所有初始化逻辑，确保所有 let/const 状态变量初始化后再 render，杜绝 TDZ
+    function boot() {
+      render(); // 先渲染本地数据
       if (typeof tripCode !== 'undefined' && tripCode) {
-        try { await autoInitSync(); } catch (e) { /* 远程失败不影响本地 */ }
+        autoInitSync().catch(function(e){ /* 远程失败不影响本地 */ });
       }
-    })();
-    initLayoutMode();
-    registerSW();
-    initBgDeco();
-    initBear();
-    render();
-    setTimeout(jumpToNow, 300);
+      initLayoutMode();
+      registerSW();
+      initBgDeco();
+      initBear();
+      render();
+      setTimeout(jumpToNow, 300);
+    }
+    boot();
   </script>
 
   <!-- 添加到主屏幕 指引 -->
