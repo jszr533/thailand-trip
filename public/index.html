@@ -482,19 +482,11 @@
       <span class="deco text-2xl" style="top:8px; right:6%; animation-delay:-3.1s;">🐻</span>
     </div>
 
-    <!-- 行程码同步栏 -->
-    <div class="trip-code-bar" id="tripCodeBar">
-      <span id="tcLabel" class="tc-label">🔗 多人同步：</span>
-      <span id="tcCodeDisplay" style="display:none;">
-        <span class="tc-code" id="tcCode">------</span>
-        <span class="tc-status" id="tcStatus">未同步</span>
-        <button class="tc-btn" onclick="copyTripCode()">📋 复制链接</button>
-        <button class="tc-btn" onclick="leaveTrip()">✕ 离开</button>
-      </span>
-      <span id="tcJoinDisplay">
-        <input type="text" class="trip-code-input" id="tcInput" placeholder="行程码" maxlength="6" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')joinTrip()">
-        <button class="tc-btn primary" onclick="joinTrip()">加入</button>
-        <button class="tc-btn" onclick="createTrip()">➕ 创建行程</button>
+    <!-- 同步状态（无码自动同步）-->
+    <div style="display:flex;align-items:center;gap:6px;margin:-8px 0 6px;font-size:11px;color:var(--muted);">
+      <span id="syncIndicator" style="display:none;">
+        <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent-3);animation:nbPulse 1.8s infinite;"></span>
+        <span id="syncStatusText">多人同步中</span>
       </span>
     </div>
 
@@ -908,43 +900,41 @@
 
     // ===== 多人实时同步（共享行程码）=====
     const SYNC_SERVER = (function(){
-      try {
-        const fromUrl = new URLSearchParams(location.search).get('server');
-        if (fromUrl) { localStorage.setItem('sync_server', fromUrl); return fromUrl; }
-        const fromLs = localStorage.getItem('sync_server');
-        if (fromLs) return fromLs;
-        const origin = location.origin;
-        if (origin && origin !== 'null' && !origin.includes('localhost') && !origin.includes('127.0.0.1')) return origin;
-      } catch(e){}
-      return 'http://localhost:3000';
+      try { return location.origin; }
+      catch(e){ return 'http://localhost:3000'; }
     })();
-    let tripCode = null;
+
+    const DEFAULT_CODE = (function(){
+      // Vercel 自动使用固定码，本地可切换
+      try {
+        const c = lsGet('sync_code') || location.search.match(/[?&]code=([^&]+)/)?.[1];
+        if (c) return c;
+        // 判断是否在 Vercel 上
+        if (location.hostname.includes('vercel.app')) return 'VERCEL0';
+      } catch(e){}
+      return null;
+    })();
+
+    let tripCode = DEFAULT_CODE;
     let localVersion = 0;
     let syncPollTimer = null;
     let syncSaveTimer = null;
     let syncSaving = false;
     let syncLoading = false;
 
-    function setTripCodeUI() {
-      const hasCode = tripCode && tripCode.length === 6;
-      document.getElementById('tcJoinDisplay').style.display = hasCode ? 'none' : '';
-      document.getElementById('tcCodeDisplay').style.display = hasCode ? '' : 'none';
-      if (hasCode) {
-        document.getElementById('tcCode').textContent = tripCode;
-        document.getElementById('tcStatus').textContent = syncSaving ? '保存中…' : (syncLoading ? '加载中…' : '✓ 已同步');
-        document.getElementById('tcStatus').className = 'tc-status' + (syncLoading || syncSaving ? '' : ' ok');
-      }
+    function updateSyncStatus(text, ok) {
+      const el = document.getElementById('syncIndicator');
+      const st = document.getElementById('syncStatusText');
+      if (!el || !st) return;
+      if (text) { el.style.display = ''; st.textContent = text; }
+      else { el.style.display = 'none'; return; }
+      el.style.opacity = ok !== false ? '1' : '0.5';
     }
     function saveTripCodeMeta(code) {
       tripCode = code;
-      if (code) { lsSet('trip_code', code); }
-      else { try { localStorage.removeItem('trip_code'); } catch(e){} }
-      // 更新 URL
-      const u = new URL(window.location.href);
-      if (code) u.searchParams.set('code', code);
-      else u.searchParams.delete('code');
-      window.history.replaceState({}, '', u);
-      setTripCodeUI();
+      if (code) { lsSet('sync_code', code); }
+      else { try { localStorage.removeItem('sync_code'); } catch(e){} }
+      updateSyncStatus(code ? '多人同步中' : null, true);
     }
     async function apiFetch(method, path, body) {
       const url = SYNC_SERVER + path;
@@ -981,66 +971,47 @@
       if (st.addedSugSpots) addedSugSpots = st.addedSugSpots;
       if (st.dismissedSugs) dismissedSugs = st.dismissedSugs;
     }
-    async function createTrip() {
-      const res = await apiFetch('POST', '/api/create', { state: exportTripState() });
-      if (res && res.ok) {
-        saveTripCodeMeta(res.code);
-        localVersion = res.version || 1;
-        startSyncPoll();
-        render();
-      } else { alert('创建行程失败，请确认同步服务器已启动（node server/server.js）'); }
-    }
-    async function joinTrip(code) {
-      const c = (code || document.getElementById('tcInput').value || '').toUpperCase().trim();
-      if (c.length !== 6) { alert('请输入 6 位行程码'); return; }
-      const res = await apiFetch('GET', '/api/' + c);
+    // ===== 自动同步（无码）=====
+    async function autoInitSync() {
+      if (!tripCode) return;
+      const res = await apiFetch('GET', '/api/' + tripCode);
       if (res && res.ok && res.state) {
-        saveTripCodeMeta(c);
         importTripState(res.state);
         localVersion = res.version || 1;
-        // 保存到 localStorage 作为本地回退
-        try { localStorage.setItem('days', JSON.stringify(DAYS)); } catch(e){}
-        startSyncPoll();
-        render();
-      } else { alert('未找到行程码 ' + c + '，请确认码正确且服务器已启动'); }
-    }
-    function leaveTrip() {
-      stopSyncPoll();
-      saveTripCodeMeta(null);
-      localVersion = 0;
+      } else {
+        // 首次访问，自动创建
+        const cr = await apiFetch('POST', '/api/create', { state: exportTripState() });
+        if (cr && cr.ok) { saveTripCodeMeta(tripCode); localVersion = cr.version || 1; }
+        else { updateSyncStatus('同步不可用', false); return; }
+      }
+      // 保存到 localStorage 作为本地回退
+      try { localStorage.setItem('days', JSON.stringify(DAYS)); } catch(e){}
+      updateSyncStatus('多人同步中', true);
+      startSyncPoll();
       render();
-    }
-    function copyTripCode() {
-      if (!tripCode) return;
-      const url = window.location.origin + window.location.pathname + '?code=' + tripCode;
-      navigator.clipboard.writeText(url).then(() => {
-        document.getElementById('tcStatus').textContent = '✓ 已复制';
-        setTimeout(() => setTripCodeUI(), 1500);
-      }).catch(() => { prompt('复制分享链接：', url); });
     }
     function syncSave() {
       if (!tripCode || syncLoading) return;
       if (syncSaveTimer) clearTimeout(syncSaveTimer);
       syncSaveTimer = setTimeout(async () => {
-        syncSaving = true; setTripCodeUI();
+        syncSaving = true; updateSyncStatus('保存中…');
         const res = await apiFetch('PUT', '/api/' + tripCode, { state: exportTripState() });
         syncSaving = false;
         if (res && res.ok) { localVersion = res.version || localVersion; }
-        setTripCodeUI();
+        updateSyncStatus('多人同步中', true);
       }, 800);
     }
     async function syncLoad() {
       if (!tripCode || syncSaving) return;
-      syncLoading = true; setTripCodeUI();
+      syncLoading = true; updateSyncStatus('加载中…');
       const res = await apiFetch('GET', '/api/' + tripCode);
       syncLoading = false;
       if (res && res.ok && res.state && res.version !== localVersion) {
-        const oldCode = tripCode;
         importTripState(res.state);
         localVersion = res.version;
         render();
       }
-      setTripCodeUI();
+      updateSyncStatus('多人同步中', true);
     }
     async function syncPoll() {
       if (!tripCode) return;
@@ -1048,7 +1019,6 @@
         const res = await apiFetch('GET', '/api/' + tripCode + '/version');
         if (res && res.ok && res.version !== localVersion) {
           await syncLoad();
-          setTripCodeUI();
         }
       } catch(e) {}
     }
@@ -1086,30 +1056,8 @@
 
     // ===== 初始化：尝试从 URL / localStorage 恢复行程码 =====
     (async function initTripCode() {
-      const urlCode = new URLSearchParams(location.search).get('code');
-      const savedCode = lsGet('trip_code');
-      const code = urlCode || savedCode;
-      if (code && code.length === 6) {
-        // 先恢复 UI 显示
-        tripCode = code;
-        setTripCodeUI();
-        // 尝试从服务器加载（异步）
-        const res = await apiFetch('GET', '/api/' + code);
-        if (res && res.ok && res.state) {
-          importTripState(res.state);
-          localVersion = res.version || 1;
-          startSyncPoll();
-        } else if (savedCode) {
-          // 服务器不可达，回退本地
-          localVersion = 0;
-          startSyncPoll(); // 继续轮询，等服务器起来后自动同步
-        }
-        render();
-      } else if (savedCode && savedCode.length === 6) {
-        tripCode = savedCode;
-        setTripCodeUI();
-        render();
-        startSyncPoll();
+      if (tripCode) {
+        await autoInitSync();
       }
     })();
 
