@@ -187,6 +187,8 @@
     .fix-opt.fix-none { cursor: default; opacity: 0.65; border-color: transparent; }
     .conflict-badge, .warning-badge, .danger-badge, .info-badge { cursor: pointer; }
     .transport-chip { display: flex; align-items: center; gap: 6px; margin: 2px 0 2px 34px; font-size: 11px; color: var(--accent); background: rgba(91,141,239,0.08); border: 1px dashed rgba(91,141,239,0.45); border-radius: 999px; padding: 3px 11px; width: fit-content; font-weight: 600; }
+    /* 手机窄屏：同步指示器只留圆点 */
+    @media (max-width: 640px) { #syncIndicator .sync-text { display: none; } }
     .ov-daynum { font-size: 10px; font-weight: 800; text-anchor: middle; }
     .note-card { border-left: 5px solid var(--accent-2); background: var(--chip-bg); border-radius: 16px; }
     .fly-line { stroke-dasharray: 7 6; }
@@ -347,8 +349,11 @@
           <button onclick="toggleNowSim()" id="nowSimBtn" class="btn-cute px-4 py-2.5 border-2 border-[var(--border)] bg-[var(--panel)] text-sm cute-font text-[var(--text)]">🕐 演示</button>
           <span id="syncIndicator" style="display:none;" class="px-2 py-1 text-xs rounded-full border border-[var(--accent-3)]/40 bg-[var(--accent-3)]/5 text-[var(--accent-3)] whitespace-nowrap">
             <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent-3);animation:nbPulse 1.8s infinite;margin-right:4px;vertical-align:middle;"></span>
-            <span id="syncStatusText" style="vertical-align:middle;">多人同步中</span>
+            <span id="syncStatusText" class="sync-text" style="vertical-align:middle;">多人同步中</span>
           </span>
+          <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importJSON(event)">
+          <button onclick="exportJSON()" class="btn-cute px-3 py-2 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)]" title="导出行程备份">💾 导出</button>
+          <button onclick="document.getElementById('importFileInput').click()" class="btn-cute px-3 py-2 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)]" title="导入行程备份">📂 导入</button>
         </div>
       </div>
       <span class="deco deco-sway text-4xl" style="top:6px; right:34%; animation-delay:-0.5s;">🌸</span>
@@ -795,7 +800,7 @@
       { id: 'bk_cook', icon: '🍳', name: '泰式家常菜烹饪课', type: 'sight', time: '09:30-13:00', suggestedDay: 'd4', loc: null,
         notes: '清迈多家泰厨学校（Thai Cookery School 等），半日体验：先去本地市场买菜，再学做冬阴功、绿咖喱、芒果糯米饭，适合亲子。', ticket: '约 1000-1500 泰铢/人', tips: '含接送的多，确认是否接酒店', warn: '确认是否含酒店接送，避免点到点自行往返奔波', addr: '' },
     ];
-    let BACKLOG = SEED_BACKLOG.map(b => Object.assign({}, b));
+    let BACKLOG = SEED_BACKLOG.map(b => JSON.parse(JSON.stringify(b)));
     let deletedIds = [];
     const TYPE_ICON = { flight: '✈️', hotel: '🏨', sight: '📍', food: '🍜', shop: '🛍️', relax: '💆', transit: '🚌' };
     function typeIcon(t) { return TYPE_ICON[t] || '📍'; }
@@ -895,6 +900,7 @@
     }
 
     // ===== 多人实时同步（共享行程码）=====
+    const DEBUG = false;
     const SYNC_SERVER = (function(){
       try { return location.origin; }
       catch(e){ return 'http://localhost:3000'; }
@@ -940,7 +946,7 @@
         const res = await fetch(url, opts);
         if (!res.ok) return null;
         return await res.json();
-      } catch (e) { console.warn('Sync API error:', e.message); return null; }
+      } catch (e) { if (DEBUG) console.warn('Sync API error:', e.message); return null; }
     }
     // 导出/导入 DAYS 状态为可传输 JSON
     function exportTripState() {
@@ -1038,6 +1044,7 @@
       } catch(e) {}
     }
     function startSyncPoll() {
+      if (!tripCode) return;
       stopSyncPoll();
       syncPollTimer = setInterval(syncPoll, 4000);
     }
@@ -1059,7 +1066,7 @@
             restoreBacklogMeta();
             return;
           }
-        } catch(e) { console.warn('解析分享链接失败', e); }
+        } catch(e) { if (DEBUG) console.warn('解析分享链接失败', e); }
       }
       DAYS.forEach(day => day.spots.forEach(spot => {
         const saved = lsGet('spot_' + spot.id);
@@ -1071,6 +1078,9 @@
 
     // ===== 初始化：尝试从 URL / localStorage 恢复行程码 =====
     (async function initTripCode() {
+      // 先显示本地数据（立即 render）
+      render();
+      // 再异步加载远程数据
       if (tripCode) {
         await autoInitSync();
       }
@@ -1439,8 +1449,8 @@
       if (!body) return;
       body.innerHTML = '<div class="text-xs text-[var(--muted)] mb-2 font-medium">📌 ' + escHtml(spot.name) + '</div>' + (reason ? '<div class="adj-reason mb-2">' + escHtml(reason) + '</div>' : '') +
         fixes.map((f, i) => {
-          if (f.kind === 'time') return '<button class="fix-opt" onclick="applyFixById(\'' + id + "','" + f.newTime.replace(/'/g, "\\'") + '\'); event.stopPropagation();">方案 ' + (i + 1) + '：' + escHtml(f.label) + '</button>';
-          if (f.kind === 'day') return '<button class="fix-opt" onclick="applyFixDay(\'' + id + "','" + f.targetDayId + '\'); event.stopPropagation();">方案 ' + (i + 1) + '：' + escHtml(f.label) + '</button>';
+          if (f.kind === 'time') return '<button class="fix-opt" onclick="applyFixById(\'' + escAttr(id) + "','" + escAttr(f.newTime) + '\'); event.stopPropagation();">方案 ' + (i + 1) + '：' + escHtml(f.label) + '</button>';
+          if (f.kind === 'day') return '<button class="fix-opt" onclick="applyFixDay(\'' + escAttr(id) + "','" + escAttr(f.targetDayId) + '\'); event.stopPropagation();">方案 ' + (i + 1) + '：' + escHtml(f.label) + '</button>';
           return '<div class="fix-opt fix-none">' + escHtml(f.label) + '</div>';
         }).join('');
       document.getElementById('conflictFixModal').classList.add('show');
@@ -2267,6 +2277,56 @@
       const url = location.origin + location.pathname + '#data=' + encodeURIComponent(JSON.stringify(obj));
       navigator.clipboard.writeText(url).then(() => alert('分享链接已复制到剪贴板！\n\n' + url)).catch(() => prompt('复制以下链接分享：', url));
     }
+    // ===== 导出/导入 JSON 备份 =====
+    function exportJSON() {
+      const obj = {
+        days: DAYS.map(d => ({ id: d.id, spots: d.spots.map(s => ({ id: s.id, name: s.name, time: s.time, type: s.type, loc: s.loc, checked: s.checked, recommended: !!s.recommended, addr: s.addr, hours: s.hours, duration: s.duration, notes: s.notes, ticket: s.ticket, tips: s.tips, boarding: s.boarding, warning: s.warning, warn: s.warn || '', links: s.links, fromBacklog: s.fromBacklog, fromSug: s.fromSug })) })),
+        backlog: BACKLOG,
+        deletedIds: deletedIds,
+        addedSugSpots: addedSugSpots,
+        dismissedSugs: dismissedSugs,
+        exportedAt: new Date().toISOString(),
+      };
+      const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'thailand-trip-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+    function importJSON(evt) {
+      const file = evt.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data.days && data.days.length) {
+            data.days.forEach(nd => {
+              const day = DAYS.find(d => d.id === nd.id);
+              if (day) day.spots = nd.spots;
+            });
+            if (data.backlog) BACKLOG = data.backlog;
+            if (data.deletedIds) deletedIds = data.deletedIds;
+            if (data.addedSugSpots) addedSugSpots = data.addedSugSpots;
+            if (data.dismissedSugs) dismissedSugs = data.dismissedSugs;
+            // 持久化到 localStorage
+            try { localStorage.setItem('days', JSON.stringify(DAYS)); } catch(e){}
+            persistBacklog();
+            persistSuggestMeta();
+            render();
+            alert('✅ 导入成功！共 ' + data.days.length + ' 天行程数据。');
+          } else {
+            alert('❌ 无效的备份文件：缺少 days 数据');
+          }
+        } catch(err) {
+          alert('❌ 导入失败：文件格式错误');
+        }
+      };
+      reader.readAsText(file);
+      // 重置 input 以允许重复导入同一文件
+      evt.target.value = '';
+    }
 
     function initBgDeco(){
       const layer = document.getElementById('bgDeco');
@@ -2375,7 +2435,11 @@
     });
     function registerSW() {
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js').then(r => {
+            if (DEBUG) console.log('SW registered:', r.scope);
+          }).catch(() => {});
+        });
       }
     }
 
