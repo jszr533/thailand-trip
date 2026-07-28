@@ -1,0 +1,11 @@
+name = "thailand-trip"
+main = "src/worker.js"
+compatibility_date = "2026-07-28"
+
+[[kv_namespaces]]
+binding = "TRIPS"
+id = ""  # 创建后替换
+preview_id = ""
+
+[env.production]
+vars = { ENVIRONMENT = "production" }
