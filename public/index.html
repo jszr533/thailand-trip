@@ -249,7 +249,45 @@
     .backlog-actions { display: flex; align-items: center; gap: 8px; flex: none; margin-left: auto; }
     .backlog-add { background: var(--accent); color: #fff; border: none; padding: 7px 14px; border-radius: 999px; font-size: 12.5px; font-family: var(--font-cute); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
     .backlog-add:hover { background: var(--accent-deep); transform: translateY(-1px); }
+    .bl-multi { display: inline-block; margin-left: 6px; font-size: 10.5px; font-weight: 600; color: var(--accent-3); background: rgba(79,201,192,0.14); border: 1.5px solid rgba(79,201,192,0.34); border-radius: 8px; padding: 1px 6px; vertical-align: middle; transform: translateY(-1px); }
     @media (max-width: 560px) { .backlog-card { flex-wrap: wrap; } .backlog-actions { margin-left: 0; width: 100%; justify-content: flex-end; } }
+    /* ===== 添加备选行程弹窗 ===== */
+    #addBacklogModal .ab-label { font-size: 12.5px; font-weight: 700; color: var(--muted); margin-bottom: 7px; letter-spacing: .2px; }
+    #addBacklogModal .ab-shops { display: flex; flex-direction: column; gap: 8px; }
+    #addBacklogModal .ab-shop { text-align: left; width: 100%; background: var(--chip-bg); border: 1.5px solid var(--border); border-radius: 14px; padding: 11px 13px; cursor: pointer; transition: all 0.16s; position: relative; }
+    #addBacklogModal .ab-shop:hover { border-color: var(--accent); transform: translateY(-1px); }
+    #addBacklogModal .ab-shop.sel { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--panel)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+    #addBacklogModal .ab-shop.sel::after { content: '✓'; position: absolute; top: 10px; right: 12px; color: #fff; background: var(--accent); width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; }
+    #addBacklogModal .ab-shop-name { font-weight: 700; font-size: 14px; padding-right: 22px; }
+    #addBacklogModal .ab-shop-rating { font-size: 11.5px; color: #e0a700; margin-top: 3px; font-weight: 600; }
+    #addBacklogModal .ab-shop-hi { font-size: 12px; color: var(--accent-3); margin-top: 2px; }
+    #addBacklogModal .ab-shop-addr { font-size: 11.5px; color: var(--muted); margin-top: 4px; line-height: 1.45; }
+    #addBacklogModal .ab-sug { background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, var(--panel)), color-mix(in srgb, var(--accent-3) 8%, var(--panel))); border: 1.5px solid color-mix(in srgb, var(--accent) 30%, var(--border)); border-radius: 14px; padding: 11px 13px; }
+    #addBacklogModal .ab-sug-title { font-size: 12.5px; font-weight: 800; color: var(--accent-deep); margin-bottom: 3px; }
+    .dark #addBacklogModal .ab-sug-title { color: var(--accent); }
+    #addBacklogModal .ab-sug-body { font-size: 13px; line-height: 1.55; }
+    #addBacklogModal .ab-sug-body b { color: var(--accent-deep); }
+    .dark #addBacklogModal .ab-sug-body b { color: var(--accent); }
+    #addBacklogModal .ab-days { display: flex; flex-wrap: wrap; gap: 8px; }
+    #addBacklogModal .ab-day { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; background: var(--chip-bg); border: 1.5px solid var(--border); border-radius: 12px; padding: 8px 11px; cursor: pointer; transition: all 0.15s; position: relative; min-width: 92px; }
+    #addBacklogModal .ab-day:hover { border-color: var(--accent); }
+    #addBacklogModal .ab-day.sel { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--panel)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+    #addBacklogModal .ab-day-no { font-weight: 800; font-size: 13px; }
+    #addBacklogModal .ab-day-date { font-size: 11px; color: var(--muted); }
+    #addBacklogModal .ab-day-flag { position: absolute; top: -7px; right: -6px; font-size: 9.5px; font-weight: 700; color: #fff; background: var(--accent-3); border-radius: 7px; padding: 1px 6px; white-space: nowrap; }
+    #addBacklogModal .ab-time { width: 100%; background: var(--panel); border: 1.5px solid var(--border); border-radius: 12px; padding: 9px 12px; font-size: 14px; color: var(--text); font-family: inherit; outline: none; transition: border-color .15s; }
+    #addBacklogModal .ab-time:focus { border-color: var(--accent); }
+    #addBacklogModal .ab-notes { background: var(--chip-bg); border: 1.5px solid var(--border); border-radius: 14px; padding: 12px 13px; }
+    #addBacklogModal .ab-notes-title { font-size: 12.5px; font-weight: 800; color: var(--muted); margin-bottom: 7px; }
+    #addBacklogModal .ab-note-line { font-size: 12.5px; line-height: 1.55; color: var(--text); }
+    #addBacklogModal .ab-warn { display: flex; gap: 6px; align-items: flex-start; font-size: 12.5px; line-height: 1.5; color: #b9650f; background: rgba(217,130,26,0.10); border: 1.5px solid rgba(217,130,26,0.32); border-radius: 10px; padding: 8px 10px; margin-top: 8px; }
+    .dark #addBacklogModal .ab-warn { color: #ffbc7e; }
+    #addBacklogModal .ab-tip { font-size: 12.5px; line-height: 1.5; color: var(--accent-3); margin-top: 7px; }
+    #addBacklogModal .ab-meta { font-size: 12px; color: var(--muted); margin-top: 5px; }
+    #addBacklogModal .ab-links { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+    #addBacklogModal .ab-link { font-size: 12px; color: var(--accent-deep); background: color-mix(in srgb, var(--accent) 10%, transparent); border: 1.5px solid color-mix(in srgb, var(--accent) 28%, var(--border)); border-radius: 9px; padding: 4px 9px; text-decoration: none; transition: all .15s; }
+    .dark #addBacklogModal .ab-link { color: var(--accent); }
+    #addBacklogModal .ab-link:hover { background: var(--accent); color: #fff; }
     /* 冲突/提醒徽标 → 推荐调整弹层 */
     #adjustPopover { position: fixed; z-index: 92; }
     #adjustPopover .panel { min-width: 252px; max-width: 306px; box-shadow: var(--shadow); border: 1.5px solid var(--border); }
@@ -1788,15 +1826,34 @@
     // 这里放「上述行程都没列、但值得考虑」的推荐备选，例如榴莲哪里好吃、泰式按摩、大象营等。
     // 每项的「添加行程」会把它作为【未勾选推荐行程点】并入所选那天的统一时间轴；
     // 行程里被删除的点也会自动移进这里，避免后期重复添加。
+    // 备选事项支持「多家店」：shops 为候选门店数组，添加时让用户在其中挑一家。
+    // 单店（或删除点）无 shops 时，逻辑自动回退到 item 自身字段。
     const SEED_BACKLOG = [
-      { id: 'bk_durian', icon: '🍈', name: '榴莲哪里好吃', type: 'food', time: '15:00-16:30', suggestedDay: 'd2', loc: null,
-        notes: '曼谷 Or Tor Kor 市场（品质最好、可试吃）或清迈 JJ 市集 / 夜市；雨季金枕更甜，挑刺软、气味浓、按得动的。', ticket: '', tips: '别在密闭车厢/商场里开，遵守当地规定', warn: '多数酒店禁止带榴莲上楼（气味重），开了尽快在室外吃完', addr: '' },
-      { id: 'bk_massage', icon: '💆', name: '泰式古法按摩（备选）', type: 'relax', time: '20:00-21:30', suggestedDay: 'd4', loc: null,
-        notes: '平价可选 Health Land，连锁可选 Let’s Relax；想体验「女子监狱按摩」需早到现场取号（周末 9:00 开、不预约）。雨季走了一天按一个很解乏。', ticket: '约 1 小时泰式 300-600 泰铢', tips: '别按过头误了后续安排', warn: '周末「女子监狱按摩」需现场取号、不预约，建议早点去', addr: '' },
-      { id: 'bk_elephant', icon: '🐘', name: '大象保护营（Elephant Nature Park）', type: 'sight', time: '09:00-16:00', suggestedDay: 'd4', loc: 'cnx_eles',
-        notes: '清迈近郊大象救助营，一日游含接送，可喂食、泥浴、散步，不骑乘；雨季也开放。需提前官网预约名额，旺季很快满。', ticket: '一日游约 2500+ 泰铢', tips: '提前 1-2 周预约；穿可弄脏的衣鞋', warn: '需提前官网预约名额、旺季很快满；不骑乘、雨季也开放', addr: '清迈湄林县近郊' },
-      { id: 'bk_cook', icon: '🍳', name: '泰式家常菜烹饪课', type: 'sight', time: '09:30-13:00', suggestedDay: 'd4', loc: null,
-        notes: '清迈多家泰厨学校（Thai Cookery School 等），半日体验：先去本地市场买菜，再学做冬阴功、绿咖喱、芒果糯米饭，适合亲子。', ticket: '约 1000-1500 泰铢/人', tips: '含接送的多，确认是否接酒店', warn: '确认是否含酒店接送，避免点到点自行往返奔波', addr: '' },
+      { id: 'bk_durian', icon: '🍈', name: '榴莲哪里好吃', area: '曼谷 Or Tor Kor / 清迈 JJ · 夜市', type: 'food', time: '15:00-16:30', suggestedDay: 'd2',
+        notes: '雨季金枕更甜，挑刺软、气味浓、按得动的。多数酒店禁止带榴莲上楼（气味重），开了尽快在室外吃完。',
+        shops: [
+          { name: 'Or Tor Kor 市场（曼谷）', loc: 'bkk_chatuchak', addr: 'Kamphaeng Phet Rd, Chatuchak, Bangkok（MRT Kamphaeng Phet，恰图恰旁）', hours: '约 06:00-18:00', duration: '约 1 小时', rating: '★★★★★ 品质最好·可试吃', highlight: '高端生鲜市场，榴莲/山竹品质全泰 Top', notes: '品质最好、可试吃，配山竹解腻；与恰图恰市集相邻可顺路。', warn: '多数酒店禁止带榴莲上楼，开了尽快在室外吃完', ticket: '按斤计价', tips: '认准金枕(Mon Thong)；试吃后再买', links: [] },
+          { name: 'JJ 真心市集（清迈）', loc: 'cnx_jjmarket', addr: 'Nimmanhaemin 与 Srimankalajarn 路口（One Nimman 旁）', hours: '周六日 6:30-15:00', duration: '约 1 小时', rating: '★★★★☆ 本地市集', highlight: '清迈本地人市集，水果新鲜便宜', notes: '清迈 JJ 真心市集水果摊多、价格友好；但仅周末开。', warn: '8.3 周一当日不开；仅周六日', ticket: '按斤计价', tips: '赶早摊位最齐', links: [] },
+          { name: '长康路夜市（清迈·每晚开）', loc: 'cnx_tapae', addr: 'Chang Khlan Rd, Chiang Mai（Night Bazaar）', hours: '约 17:00-24:00', duration: '约 1 小时', rating: '★★★★☆ 夜市', highlight: '天天开，水果摊+小吃一站式', notes: '天天开的夜市，榴莲摊位常年有，不用凑周末。', warn: '观光化价格略高', ticket: '按斤计价', tips: '可先尝后买', links: [] },
+        ] },
+      { id: 'bk_massage', icon: '💆', name: '泰式古法按摩（备选）', area: '曼谷 Siam/Asoke · 清迈塔佩/宁曼', type: 'relax', time: '20:00-21:30', suggestedDay: 'd4',
+        notes: '平价可选 Health Land，连锁可选 Let’s Relax；想体验「女子监狱按摩」需早到现场取号。',
+        shops: [
+          { name: 'Health Land（曼谷 Asoke）', loc: 'bkk_massage', addr: 'Sukhumvit 21 (Asoke), Bangkok（BTS Asoke / MRT Sukhumvit）', hours: '约 09:00-24:00', duration: '约 2 小时', rating: '★★★★☆ 连锁·明码标价', highlight: '空间大、性价比高，2h 泰式约 450', notes: '连锁老牌，环境干净、价格透明。', warn: '周末人多建议预约/早到', ticket: '2h 泰式约 450-550 泰铢', tips: 'Asoke 店离 Siam 不远可顺路', links: [] },
+          { name: 'Let’s Relax（曼谷 Siam）', loc: 'bkk_siam', addr: 'Siam Paragon / 暹罗一带', hours: '约 10:00-24:00', duration: '约 2 小时', rating: '★★★★★ 高端连锁', highlight: '环境最好，可官网预约时段', notes: '连锁里环境最佳，可官网预约。', warn: '需提前预约', ticket: '2h 泰式约 590-790 泰铢', tips: '逛 Siam 商场时顺路', links: [] },
+          { name: 'Lila 按摩（清迈·女子监狱毕业生）', loc: 'cnx_lila', addr: 'Loi Kroh Rd 近塔佩门 / 宁曼分店', hours: '约 11:00-23:00', duration: '约 2 小时', rating: '★★★★★ 口碑好·实惠', highlight: '女子监狱学校毕业生，手法稳', notes: '清迈口碑店，塔佩门店离酒店近、可现场取号。', warn: '周末人较多，建议 15:00 前到取号', ticket: '2h 泰式约 400-500 泰铢', tips: '塔佩门店离酒店近', links: [] },
+        ] },
+      { id: 'bk_elephant', icon: '🐘', name: '大象保护营（Elephant Nature Park）', area: '清迈近郊', type: 'sight', time: '09:00-16:00', suggestedDay: 'd4',
+        notes: '清迈近郊大象救助营，一日游含接送，可喂食、泥浴、散步，不骑乘；需提前官网预约名额。',
+        shops: [
+          { name: 'Elephant Nature Park（一日游）', loc: 'cnx_eles', addr: '清迈湄林县近郊（含酒店接送）', hours: '一日游 09:00 出发', duration: '约 7 小时', rating: '★★★★★ 最知名救助营', highlight: '不骑乘、可泥浴喂食', notes: '最知名的大象救助营，含接送；旺季名额很快满。', warn: '需提前官网预约名额、旺季很快满；不骑乘', ticket: '一日游约 2500+ 泰铢', tips: '提前 1-2 周预约；穿可弄脏衣鞋', links: [] },
+        ] },
+      { id: 'bk_cook', icon: '🍳', name: '泰式家常菜烹饪课', area: '清迈古城 / 宁曼', type: 'sight', time: '09:30-13:00', suggestedDay: 'd4',
+        notes: '清迈多家泰厨学校，半日体验：先去本地市场买菜，再学做冬阴功、绿咖喱、芒果糯米饭，适合亲子。',
+        shops: [
+          { name: 'Thai Cookery School（古城）', loc: 'cnx_tapae', addr: '古城内烹饪学校', hours: '半日 09:30-13:00', duration: '约 3.5 小时', rating: '★★★★☆ 老牌', highlight: '先市场买菜再下厨', notes: '经典半日课，含市场采购+烹饪。', warn: '确认是否含酒店接送', ticket: '约 1000-1500 泰铢/人', tips: '多含接送，确认范围', links: [] },
+          { name: '清迈泰厨学校（宁曼）', loc: 'cnx_nimman', addr: 'Nimmanhaemin 一带', hours: '半日 09:30-13:00', duration: '约 3.5 小时', rating: '★★★★☆', highlight: '宁曼区、交通方便', notes: '宁曼区学校，逛街顺路。', warn: '确认是否含酒店接送', ticket: '约 1000-1500 泰铢/人', tips: '适合和宁曼行程同天', links: [] },
+        ] },
     ];
     let BACKLOG = SEED_BACKLOG.map(b => JSON.parse(JSON.stringify(b)));
     let deletedIds = [];
@@ -1885,16 +1942,52 @@
 
     let currentDay = 'd4';
 
+    // 备选数据版本：结构升级（支持多家店）时 +1，触发重新播种（保留用户删点产生的 del_* 项）
+    const BACKLOG_VER = '3';
     // Load from URL hash (share) or localStorage
     function restoreBacklogMeta() {
       const del = lsGet('deleted_spots');
       if (del) { try { JSON.parse(del).forEach(id => DAYS.forEach(day => { const i = day.spots.findIndex(s => s.id === id); if (i >= 0) day.spots.splice(i, 1); })); } catch(e){} }
       const bl = lsGet('backlog');
-      if (bl) { try { BACKLOG = JSON.parse(bl); } catch(e){} }
+      const bv = lsGet('backlog_ver');
+      if (bl && bv === BACKLOG_VER) {
+        try { BACKLOG = JSON.parse(bl); } catch(e){ BACKLOG = SEED_BACKLOG.map(b => JSON.parse(JSON.stringify(b))); }
+      } else {
+        // 版本不符 → 重新播种，但保留用户在旧版本里「删除行程点」生成的事项（id 以 del_ 开头）
+        let kept = [];
+        if (bl) { try { kept = JSON.parse(bl).filter(x => x && typeof x.id === 'string' && x.id.indexOf('del_') === 0); } catch(e){} }
+        BACKLOG = SEED_BACKLOG.map(b => JSON.parse(JSON.stringify(b))).concat(kept);
+        persistBacklog();
+        lsSet('backlog_ver', BACKLOG_VER);
+      }
       const as = lsGet('added_sug_spots');
       if (as) { try { addedSugSpots = JSON.parse(as); addedSugSpots.forEach(a => { const day = DAYS.find(d => d.id === a.dayId); if (day && !day.spots.find(s => s.id === a.spot.id)) day.spots.push(a.spot); }); } catch(e){} }
       const ds = lsGet('dismissed_sugs');
       if (ds) { try { dismissedSugs = JSON.parse(ds); } catch(e){} }
+    }
+    // ===== 按「顺路」推荐最合适的那一天 + 时间 =====
+    function shopCity(loc) { if (!loc) return null; if (loc.indexOf('bkk') === 0) return 'bangkok'; if (loc.indexOf('cnx') === 0) return 'chiangmai'; return null; }
+    function dayHasCity(day, city) { if (!city) return true; return (day.city || '').split(',').map(x => x.trim()).indexOf(city) >= 0; }
+    function suggestRoute(shop, fallbackDayId) {
+      const city = shopCity(shop.loc);
+      const cand = DAYS.filter(d => dayHasCity(d, city));
+      let best = null;
+      cand.forEach(d => {
+        let nearest = null, nd = Infinity;
+        d.spots.filter(s => s.loc && LOCATIONS[s.loc] && LOCATIONS[shop.loc]).forEach(s => {
+          const c = LOCATIONS[s.loc], sc = LOCATIONS[shop.loc];
+          const dist = Math.hypot(c[0] - sc[0], c[1] - sc[1]);
+          if (dist < nd) { nd = dist; nearest = s; }
+        });
+        const busy = d.spots.filter(s => s.checked).length;
+        const cost = (nd === Infinity ? 4 : nd) + busy * 0.25;
+        if (!best || cost < best.cost) best = { day: d, nearest, dist: nd, cost };
+      });
+      if (!best) {
+        const d = DAYS.find(x => x.id === fallbackDayId) || DAYS[0];
+        return { day: d, nearest: null, reason: '按推荐日安排' };
+      }
+      return best;
     }
 
     // ===== 多人实时同步（共享行程码）=====
@@ -2774,49 +2867,112 @@
       persistSuggestMeta();
       render();
     }
+    let abState = null;
+    function singleFromBacklog(b) {
+      return { name: b.name, loc: b.loc || null, addr: b.addr || '', hours: b.hours || '', duration: b.duration || '',
+        notes: b.notes || '', warn: b.warn || '', ticket: b.ticket || '', tips: b.tips || '', rating: '', highlight: '', links: b.links || [] };
+    }
+    function parseStartTime(t) { if (!t) return ''; const m = String(t).match(/(\d{1,2}:\d{2})/); return m ? m[1] : t; }
     function addBacklogItem(evt, id) {
       const b = BACKLOG.find(x => x.id === id);
       if (!b) return;
-      const menu = document.getElementById('backlogMenu');
-      const list = document.getElementById('backlogMenuList');
-      list.innerHTML = DAYS.map((d, i) => `<button class="move-day-btn" onclick="commitBacklog('${id}','${d.id}'); event.stopPropagation();">Day ${i + 1} · ${d.date} ${d.weekday}</button>`).join('');
-      menu.style.display = 'block';
-      const r = evt.currentTarget.getBoundingClientRect();
-      menu.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 220)) + 'px';
-      menu.style.top = (r.bottom + 6) + 'px';
-      evt.stopPropagation();
+      const shops = (b.shops && b.shops.length) ? b.shops : [ singleFromBacklog(b) ];
+      // 默认选中「整体顺路成本最低」的那家店
+      let bestIdx = 0, bestCost = Infinity;
+      shops.forEach((sh, i) => {
+        const r = suggestRoute(sh, b.suggestedDay);
+        const cost = (r.dist === Infinity ? 4 : r.dist) + (r.day ? r.day.spots.filter(s => s.checked).length * 0.2 : 0);
+        if (cost < bestCost) { bestCost = cost; bestIdx = i; }
+      });
+      abState = { id, shops, shopIdx: bestIdx, dayId: null, time: null, area: b.area || '' };
+      renderAddBacklog();
+      document.getElementById('addBacklogModal').classList.add('show');
+      if (evt) evt.stopPropagation();
     }
-    function closeBacklogMenu() { const m = document.getElementById('backlogMenu'); if (m) m.style.display = 'none'; }
-    function commitBacklog(id, dayId) {
-      const idx = BACKLOG.findIndex(b => b.id === id);
-      if (idx < 0) { closeBacklogMenu(); return; }
-      const b = BACKLOG[idx];
-      const day = DAYS.find(d => d.id === dayId);
-      if (!day) { closeBacklogMenu(); return; }
+    function selectAbShop(i) { if (!abState) return; abState.shopIdx = i; abState.dayId = null; abState.time = null; renderAddBacklog(); }
+    function selectAbDay(id) { if (!abState) return; abState.dayId = id; renderAddBacklog(); }
+    function renderAddBacklog() {
+      if (!abState) return;
+      const b = BACKLOG.find(x => x.id === abState.id);
+      if (!b) { closeAddBacklogModal(); return; }
+      const sh = abState.shops[abState.shopIdx];
+      const r = suggestRoute(sh, b.suggestedDay);
+      abState.dayId = abState.dayId || (r.day ? r.day.id : DAYS[0].id);
+      abState.time = abState.time || parseStartTime(sh.time || b.time || '');
+      const multi = abState.shops.length > 1;
+      let shopHtml = '';
+      if (multi) {
+        shopHtml = '<div class="ab-label">🏪 选哪家店（' + abState.shops.length + ' 家备选 · 点一下切换）</div><div class="ab-shops">'
+          + abState.shops.map((s, i) => `<button class="ab-shop ${i === abState.shopIdx ? 'sel' : ''}" onclick="selectAbShop(${i})">
+              <div class="ab-shop-name">${escHtml(s.name)}</div>
+              ${s.rating ? `<div class="ab-shop-rating">${escHtml(s.rating)}</div>` : ''}
+              ${s.highlight ? `<div class="ab-shop-hi">${escHtml(s.highlight)}</div>` : ''}
+              <div class="ab-shop-addr">${escHtml(s.addr || '')}</div>
+            </button>`).join('') + '</div>';
+      }
+      const dayIdx = DAYS.findIndex(d => d.id === abState.dayId);
+      const sugHtml = `<div class="ab-sug">
+          <div class="ab-sug-title">💡 顺路推荐</div>
+          <div class="ab-sug-body">建议放在 <b>Day ${dayIdx + 1}（${r.day ? r.day.date + ' ' + r.day.weekday : '-'}）</b> · <b>${escHtml(abState.time || '自由安排')}</b>`
+          + (r.nearest ? ` — 离当天「${escHtml(r.nearest.name)}」最近，顺路不绕` : (r.reason ? ` — ${escHtml(r.reason)}` : ''))
+          + `</div></div>`;
+      const dayHtml = '<div class="ab-label">📅 放在哪一天（未勾选 · 推荐）</div><div class="ab-days">'
+        + DAYS.map((d, i) => `<button class="ab-day ${d.id === abState.dayId ? 'sel' : ''}" onclick="selectAbDay('${d.id}')">
+            <span class="ab-day-no">Day ${i + 1}</span>
+            <span class="ab-day-date">${escHtml(d.date)} ${escHtml(d.weekday)}</span>
+            ${d.id === (r.day && r.day.id) ? `<span class="ab-day-flag">顺路</span>` : ''}
+          </button>`).join('') + '</div>';
+      const timeHtml = '<div class="ab-label">🕒 时间（可改）</div><input id="abTime" class="ab-time" value="' + escHtml(abState.time || '') + '" placeholder="如 15:00 或 自由安排">';
+      const notesHtml = `<div class="ab-notes">
+          <div class="ab-notes-title">📋 注意事项 / 须知</div>
+          ${sh.notes ? `<div class="ab-note-line">${escHtml(sh.notes)}</div>` : ''}
+          ${sh.warn ? `<div class="ab-warn"><span>⚠️</span><span>${escHtml(sh.warn)}</span></div>` : ''}
+          ${sh.tips ? `<div class="ab-tip">💡 ${escHtml(sh.tips)}</div>` : ''}
+          ${sh.ticket ? `<div class="ab-meta">🎟️ ${escHtml(sh.ticket)}</div>` : ''}
+          ${sh.hours ? `<div class="ab-meta">🕒 营业 ${escHtml(sh.hours)}</div>` : ''}
+          ${sh.duration ? `<div class="ab-meta">⏳ 约 ${escHtml(sh.duration)}</div>` : ''}
+          ${(sh.links && sh.links.length) ? `<div class="ab-links">` + sh.links.map(l => `<a class="ab-link" href="${escHtml(l.url)}" target="_blank" rel="noopener">${l.icon || '🔗'} ${escHtml(l.label)}</a>`).join('') + `</div>` : ''}
+        </div>`;
+      document.getElementById('abBody').innerHTML = shopHtml + sugHtml + dayHtml + timeHtml + notesHtml;
+      document.getElementById('abIcon').textContent = b.icon || '📍';
+      document.getElementById('abTitle').textContent = b.name || '添加备选行程';
+      document.getElementById('abArea').textContent = abState.area || '';
+      setTimeout(() => { const t = document.getElementById('abTime'); if (t) t.focus(); }, 60);
+    }
+    function commitAddBacklog() {
+      if (!abState) return;
+      const b = BACKLOG.find(x => x.id === abState.id);
+      if (!b) { closeAddBacklogModal(); return; }
+      const sh = abState.shops[abState.shopIdx];
+      const day = DAYS.find(d => d.id === abState.dayId) || DAYS[0];
+      const time = (document.getElementById('abTime') && document.getElementById('abTime').value) || abState.time || '自由安排';
+      const shopName = abState.shops.length > 1 ? (b.name + ' · ' + sh.name) : sh.name;
       const spot = {
         id: 'bk_' + b.id + '_' + Date.now(),
-        name: b.name,
-        time: b.time || '自由安排',
-        type: b.type || 'sight',
-        loc: b.loc || null,
-        checked: false,
-        recommended: true,
-        addr: b.addr || '',
-        hours: b.hours || '',
-        duration: b.duration || '',
-        notes: b.notes || '',
-        warn: b.warn || '',
-        ticket: b.ticket || '',
-        tips: b.tips || '',
-        warning: b.warn ? 'warning' : null,
-        fromBacklog: true,
+        name: shopName, time, type: b.type || 'sight', loc: sh.loc || null,
+        checked: false, recommended: true, addr: sh.addr || '', hours: sh.hours || '', duration: sh.duration || '',
+        notes: sh.notes || '', warn: sh.warn || '', ticket: sh.ticket || '', tips: sh.tips || '',
+        warning: sh.warn ? 'warning' : null, fromBacklog: true,
       };
       day.spots.push(spot);
-      BACKLOG.splice(idx, 1);
+      const idx = BACKLOG.findIndex(x => x.id === b.id);
+      if (idx >= 0) BACKLOG.splice(idx, 1);
       persistBacklog();
-      currentDay = dayId;
-      closeBacklogMenu();
+      currentDay = day.id;
+      closeAddBacklogModal();
       render();
+    }
+    function declineBacklog() {
+      if (!abState) return;
+      const idx = BACKLOG.findIndex(x => x.id === abState.id);
+      if (idx >= 0) { BACKLOG.splice(idx, 1); persistBacklog(); }
+      closeAddBacklogModal();
+      render();
+    }
+    function closeAddBacklogModal() { const m = document.getElementById('addBacklogModal'); if (m) m.classList.remove('show'); abState = null; }
+    function deleteBacklog(id) {
+      const i = BACKLOG.findIndex(b => b.id === id);
+      if (i >= 0) { BACKLOG.splice(i, 1); persistBacklog(); render(); }
     }
     function deleteBacklog(id) {
       const i = BACKLOG.findIndex(b => b.id === id);
@@ -2926,7 +3082,7 @@
       currentDay = targetId;
       render();
     }
-    document.addEventListener('click', function (e) { closeMoveMenu(); closeAdjust(); closeBacklogMenu(); });
+    document.addEventListener('click', function (e) { closeMoveMenu(); closeAdjust(); if (e.target && e.target.id === 'addBacklogModal') closeAddBacklogModal(); });
     function newSpot() {
       if (currentDay === 'overview' || !DAYS.some(d => d.id === currentDay)) currentDay = DAYS[0].id;
       const day = DAYS.find(d => d.id === currentDay);
@@ -3576,7 +3732,7 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
           <div class="flex items-start gap-3 flex-1 min-w-0">
             <div class="backlog-icon">${b.icon || '📍'}</div>
             <div class="min-w-0 flex-1">
-              <div class="backlog-name">${escHtml(b.name)}</div>
+              <div class="backlog-name">${escHtml(b.name)} ${((b.shops && b.shops.length > 1) ? '<span class="bl-multi" title="添加时可从多家店中挑选">🏪 多家可选</span>' : '')}</div>
               <div class="backlog-note">${escHtml(b.notes || '')}</div>
               ${b.warn ? `<div class="backlog-warn"><span class="bw-ico">⚠️</span>${escHtml(b.warn)}</div>` : ''}
             </div>
@@ -3657,10 +3813,25 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
     </div>
   </div>
 
-  <div id="backlogMenu" style="display:none; position:fixed; z-index:90;">
-    <div class="panel rounded-2xl p-2" style="min-width:200px; box-shadow:var(--shadow); border:1.5px solid var(--border);">
-      <div class="text-xs text-[var(--muted)] px-2 py-1 font-medium">➕ 添加到哪一天（未勾选 · 推荐）</div>
-      <div id="backlogMenuList"></div>
+  <!-- 添加备选行程弹窗：选店 + 顺路推荐 + 须知 -->
+  <div class="modal-overlay" id="addBacklogModal" onclick="if(event.target===this)closeAddBacklogModal()">
+    <div class="panel rounded-2xl" style="max-width:486px; width:94%; max-height:90vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:var(--shadow); border:1.5px solid var(--border);">
+      <div class="flex items-center justify-between p-4 pb-3 border-b border-[var(--border)]" style="flex-shrink:0">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <span id="abIcon" class="text-2xl">📍</span>
+          <div class="min-w-0">
+            <h3 id="abTitle" class="cute-font font-bold text-base leading-tight truncate">添加备选行程</h3>
+            <div id="abArea" class="text-xs text-[var(--muted)] truncate mt-0.5"></div>
+          </div>
+        </div>
+        <button class="icon-btn" onclick="closeAddBacklogModal()">✕</button>
+      </div>
+      <div id="abBody" class="overflow-y-auto p-4 space-y-3.5"></div>
+      <div class="p-3 pt-2.5 border-t border-[var(--border)] flex gap-2" style="flex-shrink:0">
+        <button class="btn-cute flex-1" style="background:var(--accent);color:#fff" onclick="commitAddBacklog()">✓ 添加到行程</button>
+        <button class="btn-cute" style="border:1.5px solid var(--border)" onclick="declineBacklog()" title="从备选里移除">🚫 这次不去</button>
+        <button class="btn-cute" style="border:1.5px solid var(--border)" onclick="closeAddBacklogModal()" title="留着以后再说">稍后</button>
+      </div>
     </div>
   </div>
   <!-- 多方案推荐弹窗 -->
