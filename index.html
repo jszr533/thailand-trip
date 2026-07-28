@@ -102,6 +102,8 @@
     .spot-row.flight { border-left-color: var(--accent-2); box-shadow: inset 4px 0 0 var(--accent-2); background: rgba(239,154,58,0.07); }
     .spot-row.flight.checked { border-left-color: var(--accent-2); background: rgba(239,154,58,0.12); }
     .flight-badge { background: rgba(91,141,239,0.15); color: var(--accent); border: 1.5px solid rgba(91,141,239,0.35); padding: 2px 8px; border-radius: 8px; }
+    .flight-link { background: rgba(91,141,239,0.15); color: var(--accent); border: 1.5px solid rgba(91,141,239,0.35); padding: 2px 8px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: background .15s; white-space: nowrap; }
+    .flight-link:hover { background: rgba(91,141,239,0.3); }
     .board-badge { background: rgba(213,130,26,0.16); color: #b5640f; border: 1.5px solid rgba(213,130,26,0.42); padding: 2px 8px; border-radius: 8px; font-weight: 700; }
     .hotel-badge { background: rgba(168,139,250,0.16); color: #7c5cd6; border: 1.5px solid rgba(168,139,250,0.4); padding: 2px 8px; border-radius: 8px; font-weight: 700; }
     .dark .hotel-badge { color: #c4b5fd; }
@@ -368,17 +370,14 @@
     .src-tag { font-size: 10px; font-weight: 700; background: var(--accent-3); color: #063; border-radius: 999px; padding: 1px 6px; margin-left: 2px; line-height: 1.4; }
     .dark .src-tag { color: #043; }
 
-    /* ===== 当前进行中 / 下一站 高亮 + 演示 ===== */
+    /* ===== 当前进行中 / 下一站 高亮 ===== */
     .now-banner { display:none; align-items:center; gap:8px; padding:8px 14px; margin-bottom:12px; border-radius:14px; background:linear-gradient(120deg, rgba(91,141,239,0.14), rgba(79,201,192,0.14)); border:1.5px solid var(--accent); font-size:13px; }
     .now-banner.show { display:flex; }
-    .now-banner.demo { background:rgba(245,158,11,0.12); border-color:#f59e0b; }
     .now-banner .nb-dot { width:9px; height:9px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 0 rgba(91,141,239,0.6); animation:nbPulse 1.8s infinite; flex-shrink:0; }
     .spot-row.now-highlight { position:relative; border-color:var(--accent) !important; background:linear-gradient(135deg, rgba(91,141,239,0.08), rgba(79,201,192,0.08)) !important; box-shadow:0 0 0 2px rgba(91,141,239,0.15), 0 8px 20px -12px rgba(91,141,239,0.25); }
     .spot-row.now-highlight .now-arrow { position:absolute; left:-10px; top:50%; transform:translateY(-50%); font-size:16px; color:var(--accent); text-shadow:0 0 6px rgba(91,141,239,0.4); animation:nbPulse 1.8s infinite; }
     .spot-row.now-next-highlight { border-color:rgba(79,201,192,0.5) !important; background:rgba(79,201,192,0.04) !important; }
-    .now-banner.demo .nb-dot { background:#f59e0b; animation:nbPulseA 1.8s infinite; }
     @keyframes nbPulse { 0%{box-shadow:0 0 0 0 rgba(91,141,239,0.55);} 70%{box-shadow:0 0 0 9px rgba(91,141,239,0);} 100%{box-shadow:0 0 0 0 rgba(91,141,239,0);} }
-    @keyframes nbPulseA { 0%{box-shadow:0 0 0 0 rgba(245,158,11,0.55);} 70%{box-shadow:0 0 0 9px rgba(245,158,11,0);} 100%{box-shadow:0 0 0 0 rgba(245,158,11,0);} }
     .now-banner .nb-close { margin-left:auto; cursor:pointer; opacity:.6; font-size:15px; line-height:1; padding-left:8px; }
     .now-banner .nb-close:hover { opacity:1; }
     .spot-row.now-active { position:relative; border-color:var(--accent) !important; box-shadow:0 0 0 2px var(--accent), 0 0 24px -6px var(--accent); }
@@ -481,8 +480,7 @@
           <button id="installBtn" onclick="installApp()" class="btn-cute px-4 py-2.5 bg-[var(--accent-deep)] text-white text-sm cute-font">📲 加桌面</button>
           <button onclick="toggleLayoutMode()" id="modeBtn" class="btn-cute px-4 py-2.5 border-2 border-[var(--border)] bg-[var(--panel)] text-sm cute-font text-[var(--text)]">📱 手机版</button>
           <button onclick="toggleTheme()" class="btn-cute px-4 py-2.5 border-2 border-[var(--border)] bg-[var(--panel)] text-sm cute-font text-[var(--text)]">🌓 主题</button>
-          <button onclick="nowRef=null; nowSimActive=false; document.getElementById('nowSimBtn').textContent='🕐 演示'; jumpToNow();" class="btn-cute px-4 py-2.5 border-2 border-[var(--border)] bg-[var(--panel)] text-sm cute-font text-[var(--text)]">📍 定位当前</button>
-          <button onclick="toggleNowSim()" id="nowSimBtn" class="btn-cute px-4 py-2.5 border-2 border-[var(--border)] bg-[var(--panel)] text-sm cute-font text-[var(--text)]">🕐 演示</button>
+          <button onclick="jumpToNow()" class="btn-cute px-4 py-2.5 border-2 border-[var(--border)] bg-[var(--panel)] text-sm cute-font text-[var(--text)]">📍 定位当前</button>
           <span id="syncIndicator" style="display:none;" class="px-2 py-1 text-xs rounded-full border border-[var(--accent-3)]/40 bg-[var(--accent-3)]/5 text-[var(--accent-3)] whitespace-nowrap">
             <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent-3);animation:nbPulse 1.8s infinite;margin-right:4px;vertical-align:middle;"></span>
             <span id="syncStatusText" class="sync-text" style="vertical-align:middle;">多人同步中</span>
@@ -860,7 +858,7 @@
         <div class="grid grid-cols-2 gap-3">
           <div><label class="block text-xs text-[var(--muted)] mb-1">时间</label><input id="f_time" class="input-field" placeholder="如 09:00-11:00"></div>
           <div><label class="block text-xs text-[var(--muted)] mb-1">类型</label>
-            <select id="f_type" class="input-field">
+            <select id="f_type" class="input-field" onchange="toggleFlightFields()">
               <option value="flight">航班</option><option value="hotel">住宿</option>
               <option value="sight">景点</option><option value="food">美食</option>
               <option value="market">市集</option><option value="shop">购物</option>
@@ -875,6 +873,9 @@
         <div class="grid grid-cols-2 gap-3">
           <div><label class="block text-xs text-[var(--muted)] mb-1">预计耗时</label><input id="f_duration" class="input-field" placeholder="如 约 2 小时"></div>
           <div><label class="block text-xs text-[var(--muted)] mb-1">登机预留（机场点）</label><input id="f_boarding" class="input-field" placeholder="如 提前 2 小时"></div>
+        </div>
+        <div id="flightNoRow" style="display:none" class="grid grid-cols-2 gap-3">
+          <div><label class="block text-xs text-[var(--muted)] mb-1">✈️ 航班号（用于查实时航班）</label><input id="f_flightNo" class="input-field" placeholder="如 MU2803 / VZ2107"></div>
         </div>
         <div><label class="block text-xs text-[var(--muted)] mb-1">注意事项</label><textarea id="f_notes" class="input-field" rows="2"></textarea></div>
         <div><label class="block text-xs text-[var(--muted)] mb-1">门票 / 费用</label><input id="f_ticket" class="input-field" placeholder="如 免费 / 250泰铢 / 含接送"></div>
@@ -1696,7 +1697,7 @@
         const p = (POI_DB[city]||[]).find(function(x){ return x.name===name; }); if(!p) return;
         const dayId = document.getElementById('poiDaySel') ? (document.getElementById('poiDaySel').value || (DAYS[0]&&DAYS[0].id)) : (DAYS[0]&&DAYS[0].id);
         const day = DAYS.find(function(d){ return d.id===dayId; }); if(!day) return;
-        const spot = { id:'poi_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), name:p.name, time:'自由安排', type:p.type||'sight', loc:null, addr:'', checked:false, recommended:false, hours:'', duration:'', notes:p.note||'', ticket:'', tips:'', boarding:'', warning:null, fromLib:true };
+        const spot = { id:'poi_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), name:p.name, time:'自由安排', type:p.type||'sight', loc:null, addr:'', checked:false, recommended:false, hours:'', duration:'', notes:p.note||'', ticket:'', tips:'', boarding:'', flightNo:'', warning:null, fromLib:true };
         day.spots.push(spot);
       }
       persistAll(); render();
@@ -2103,8 +2104,7 @@
     // ===== 当前进行中 / 下一站 定位 =====
     // 行程基准日：Day1 = 7月31日（2026年）
     const TRIP_BASE = new Date(2026, 6, 31);
-    let nowRef = null; // 模拟时间字符串（ISO），null = 使用真实时间
-    let nowSimActive = false;
+    let nowRef = null; // 当前时间锚点（预留，目前恒为真实时间）
     function getNowDate() { return nowRef ? new Date(nowRef) : new Date(); }
     function getNowMin() { const d = getNowDate(); return d.getHours() * 60 + d.getMinutes(); }
     function getNowDayIdx() {
@@ -2137,21 +2137,20 @@
       const nowStr = minToTime(Math.round(nowMin));
       const bt = document.getElementById('nowBannerText');
       const bt2 = document.getElementById('nowBannerTime');
-      if (ns.dayIdx === -1) { bn.classList.remove('show','demo'); bt.textContent = '📅 旅行尚未开始（7月31日出发）'; bt2.textContent = ''; return; }
-      if (ns.dayIdx === -2) { bn.classList.add('show'); bn.classList.remove('demo'); bt.textContent = '🎉 旅行已结束！'; bt2.textContent = nowStr; return; }
+      if (ns.dayIdx === -1) { bn.classList.remove('show'); bt.textContent = '📅 旅行尚未开始（7月31日出发）'; bt2.textContent = ''; return; }
+      if (ns.dayIdx === -2) { bn.classList.add('show'); bt.textContent = '🎉 旅行已结束！'; bt2.textContent = nowStr; return; }
       const day = DAYS[ns.dayIdx];
-      const demo = nowSimActive ? ' demo' : '';
       const label = `Day${ns.dayIdx + 1}·${day.date} ${day.weekday}`;
       if (ns.spot) {
-        bn.className = 'now-banner show' + demo;
+        bn.className = 'now-banner show';
         bt.textContent = (ns.state === 'current' ? `🟢 ${label} · 进行中：` : `⏩ ${label} · 下一站：`) + escHtml(ns.spot.name);
         bt2.textContent = '🕐 ' + nowStr;
       } else if (ns.state === 'done' && day.spots.some(s => s.checked)) {
-        bn.className = 'now-banner show' + demo;
+        bn.className = 'now-banner show';
         bt.textContent = `✅ ${label} · 今日行程已完成`;
         bt2.textContent = '🕐 ' + nowStr;
       } else {
-        bn.classList.remove('show','demo');
+        bn.classList.remove('show');
       }
     }
     function jumpToNow() {
@@ -2175,36 +2174,6 @@
         editSpot(spotId);
       }, 170);
     }
-    function closeNowSim() {
-      const m = document.getElementById('nowSimModal');
-      if (m) m.classList.remove('show');
-    }
-    function openNowSim() {
-      const m = document.getElementById('nowSimModal');
-      if (!m) return;
-      const d = getNowDate();
-      document.getElementById('simDate').value = d.toISOString().slice(0, 10);
-      document.getElementById('simTime').value = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
-      m.classList.add('show');
-    }
-    function applyNowSim() {
-      const date = document.getElementById('simDate').value;
-      const time = document.getElementById('simTime').value;
-      if (date && time) { nowRef = date + 'T' + time + ':00+08:00'; nowSimActive = true; }
-      else { nowRef = null; nowSimActive = false; }
-      closeNowSim();
-      render();
-      setTimeout(jumpToNow, 200);
-    }
-    function clearNowSim() {
-      nowRef = null; nowSimActive = false; closeNowSim();
-      render();
-    }
-    function toggleNowSim() {
-      if (nowSimActive) { clearNowSim(); document.getElementById('nowSimBtn').textContent = '🕐 演示'; }
-      else { openNowSim(); }
-    }
-
     // ===== 实时冲突检测：只针对「已勾选」的行程点 =====
     // 三类冲突：① 当日不营业（开放星期不符）② 两个计划时间窗口重叠 ③ 计划时间超出商家当天开门/关门时间
     const WD = { '周一':1,'周二':2,'周三':3,'周四':4,'周五':5,'周六':6,'周日':7 };
@@ -2603,6 +2572,7 @@
               <span class="font-medium text-sm">${s.name}</span>
               ${(s.rating>0) ? `<span class="rv-stars" title="我的评分 ${s.rating}/5${s.reviewDate?(' · '+s.reviewDate):''}">${'★'.repeat(s.rating)}${'☆'.repeat(5-s.rating)}</span>` : ''}
               ${s.type === 'flight' ? '<span class="text-xs flight-badge">✈️ 机场</span>' : ''}
+              ${getFlightNo(s) ? `<a class="text-xs flight-link" href="${escAttr(buildFlightUrl(getFlightNo(s)))}" target="_blank" rel="noopener noreferrer" title="在 FlightRadar24 查看实时航班状态">🔗 实时航班 ${escHtml(getFlightNo(s))}</a>` : ''}
               ${s.type === 'hotel' ? '<span class="text-xs hotel-badge">🏨 住宿</span>' : ''}
               ${s.boarding ? `<span class="text-xs board-badge">🛫 ${s.boarding}到机场</span>` : ''}
               ${s.recommended ? '<span class="text-xs" style="background:rgba(79,201,192,0.16);color:var(--accent-3);border:1.5px solid rgba(79,201,192,0.35);padding:2px 8px;border-radius:8px;">🌟 推荐</span>' : ''}
@@ -2951,7 +2921,7 @@
       if (currentDay === 'overview' || !DAYS.some(d => d.id === currentDay)) currentDay = DAYS[0].id;
       const day = DAYS.find(d => d.id === currentDay);
       const id = day.id + '_n' + Date.now();
-      const spot = { id, name: '新行程点', time: '00:00', type: 'sight', loc: day.city.includes('chiangmai') ? 'cnx_tapae' : 'bkk_hotel', checked: true, addr: '', hours: '', duration: '', notes: '', ticket: '', tips: '', boarding: '', warning: null };
+      const spot = { id, name: '新行程点', time: '00:00', type: 'sight', loc: day.city.includes('chiangmai') ? 'cnx_tapae' : 'bkk_hotel', checked: true, addr: '', hours: '', duration: '', notes: '', ticket: '', tips: '', boarding: '', flightNo: '', warning: null };
       day.spots.push(spot);
       editSpot(id);
     }
@@ -2970,6 +2940,8 @@
       document.getElementById('f_hours').value = spot.hours || '';
       document.getElementById('f_duration').value = spot.duration || '';
       document.getElementById('f_boarding').value = spot.boarding || '';
+      document.getElementById('f_flightNo').value = spot.flightNo || '';
+      toggleFlightFields();
       document.getElementById('f_warning').value = spot.warning || '';
       document.getElementById('f_recommended').checked = !!spot.recommended;
       document.getElementById('f_rating').value = String(spot.rating || 0);
@@ -2991,6 +2963,7 @@
       spot.hours = document.getElementById('f_hours').value;
       spot.duration = document.getElementById('f_duration').value;
       spot.boarding = document.getElementById('f_boarding').value || '';
+      spot.flightNo = document.getElementById('f_flightNo').value.trim().toUpperCase() || '';
       spot.warning = document.getElementById('f_warning').value || null;
       spot.recommended = document.getElementById('f_recommended').checked;
       spot.rating = parseInt(document.getElementById('f_rating').value, 10) || 0;
@@ -3029,7 +3002,22 @@
         links.push({ icon: '🗺️', label: '地图导航', url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spot.name + ' ' + spot.addr)}` });
         links.push({ icon: '🚕', label: 'Grab 打车', url: 'https://www.grab.com/th/en/' });
       }
+      // 航班：链接到 FlightRadar24 实时追踪（已验证可解析）；想换 飞常准/航旅纵横 改 buildFlightUrl 即可
+      const fn = getFlightNo(spot);
+      if (fn) links.push({ icon: '✈️', label: '实时航班 ' + fn, url: buildFlightUrl(fn) });
       return links;
+    }
+    // 航班号：优先用结构化字段，否则从备注里提取（如「MU2803 客舱」）
+    function getFlightNo(s) {
+      if (s && s.flightNo) return s.flightNo.trim().toUpperCase();
+      if (s && s.notes) { const m = s.notes.match(/[A-Z]{2}\d{3,4}/); if (m) return m[0]; }
+      return '';
+    }
+    function buildFlightUrl(no) { return 'https://www.flightradar24.com/' + encodeURIComponent(no); }
+    // 编辑行程点时，按类型显示/隐藏「航班号」字段
+    function toggleFlightFields() {
+      const t = document.getElementById('f_type'); if (!t) return;
+      const row = document.getElementById('flightNoRow'); if (row) row.style.display = (t.value === 'flight') ? '' : 'none';
     }
 
     // 外部链接打开：普通浏览器用新标签页；预览 iframe（沙箱禁弹窗）被拦截时回退到同页/顶层打开，避免"点了没反应"
@@ -3320,7 +3308,7 @@
     // ===== 导出/导入 JSON 备份 =====
     function exportJSON() {
       const obj = {
-        days: DAYS.map(d => ({ id: d.id, spots: d.spots.map(s => ({ id: s.id, name: s.name, time: s.time, type: s.type, loc: s.loc, checked: s.checked, recommended: !!s.recommended, addr: s.addr, hours: s.hours, duration: s.duration, notes: s.notes, ticket: s.ticket, tips: s.tips, boarding: s.boarding, warning: s.warning, warn: s.warn || '', links: s.links, fromBacklog: s.fromBacklog, fromSug: s.fromSug })) })),
+        days: DAYS.map(d => ({ id: d.id, spots: d.spots.map(s => ({ id: s.id, name: s.name, time: s.time, type: s.type, loc: s.loc, checked: s.checked, recommended: !!s.recommended, addr: s.addr, hours: s.hours, duration: s.duration, notes: s.notes, ticket: s.ticket, tips: s.tips, boarding: s.boarding, flightNo: s.flightNo || '', warning: s.warning, warn: s.warn || '', links: s.links, fromBacklog: s.fromBacklog, fromSug: s.fromSug })) })),
         backlog: BACKLOG,
         deletedIds: deletedIds,
         addedSugSpots: addedSugSpots,
@@ -3706,24 +3694,6 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
     </div>
   </div>
 
-  <!-- 时间演示弹窗 -->
-  <div class="modal-overlay" id="nowSimModal" onclick="if(event.target===this)closeNowSim()">
-    <div class="modal-panel panel rounded-2xl p-5" style="max-width:360px; width:92%; box-shadow:var(--shadow); border:1.5px solid var(--border);">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="cute-font font-bold text-lg">🕐 时间演示</h3>
-        <span class="row-action" title="关闭" onclick="closeNowSim()">✕</span>
-      </div>
-      <div class="text-sm text-[var(--muted)] mb-3">设置一个模拟时间，预览某天某时刻的进行中高亮效果。</div>
-      <label class="block text-xs mb-1">日期</label>
-      <input type="date" id="simDate" class="w-full p-2 rounded-lg border border-[var(--border)] bg-[var(--panel)] text-sm mb-3">
-      <label class="block text-xs mb-1">时间</label>
-      <input type="time" id="simTime" class="w-full p-2 rounded-lg border border-[var(--border)] bg-[var(--panel)] text-sm mb-4">
-      <div class="flex gap-3">
-        <button onclick="applyNowSim()" class="flex-1 py-2.5 rounded-xl bg-[var(--accent)] text-white font-medium hover:opacity-90 transition">应用</button>
-        <button onclick="clearNowSim()" class="px-4 py-2.5 rounded-xl border border-[var(--border)] text-sm">清除演示</button>
-      </div>
-    </div>
-  </div>
   </div>
 </body>
 </html>
