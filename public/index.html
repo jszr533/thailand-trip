@@ -938,12 +938,11 @@
     })();
 
     const DEFAULT_CODE = (function(){
-      // Vercel 自动使用固定码，本地可切换
       try {
         const c = lsGet('sync_code') || location.search.match(/[?&]code=([^&]+)/)?.[1];
         if (c) return c;
-        // 判断是否在 Vercel 上
-        if (location.hostname.includes('vercel.app')) return 'VERCEL0';
+        // 自动启用同步：不在 localhost/file 环境时使用固定码
+        if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1' && location.hostname !== '') return 'TRIP01';
       } catch(e){}
       return null;
     })();
