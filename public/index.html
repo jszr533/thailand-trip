@@ -932,9 +932,15 @@
 
     // ===== 多人实时同步（共享行程码）=====
     const DEBUG = false;
+    // 同步服务器地址
     const SYNC_SERVER = (function(){
-      try { return location.origin; }
-      catch(e){ return 'http://localhost:3000'; }
+      try {
+        const origin = location.origin;
+        // GitHub Pages + Vercel API 组合
+        if (origin.includes('github.io')) return 'https://thailand-trip-gilt.vercel.app';
+        if (origin && origin !== 'null' && !origin.includes('localhost') && !origin.includes('127.0.0.1') && !origin.startsWith('file:')) return origin;
+      } catch(e){}
+      return 'http://localhost:3000';
     })();
 
     const DEFAULT_CODE = (function(){
