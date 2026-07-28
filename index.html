@@ -2395,7 +2395,7 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
 .hotel{background:#f5f0ff;border-left-color:#a78bfa}
 </style></head><body>
 <h1>曼谷 · 清迈 双城旅行行程</h1>
-<p style="color:#666">导出于 ' + new Date().toLocaleString('zh-CN') + ' · 已勾选行程点</p>`;
+<p style="color:#666">导出于 ' + new Date().toLocaleString() + ' · 已勾选行程点</p>`;
       
       DAYS.forEach((day, idx) => {
         const checkedSpots = day.spots.filter(s => s.checked);
@@ -2434,9 +2434,11 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
       const blob = new Blob(['\ufeff' + html], { type: 'application/msword;charset=utf-8' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = '泰国行程_' + new Date().toISOString().slice(0, 10) + '.doc';
-      a.click();
-      URL.revokeObjectURL(a.href);
+      a.download = 'thailand-trip-' + new Date().toISOString().slice(0, 10) + '.doc';
+      document.body.appendChild(a);
+      try { a.click(); } catch(e) { window.open(a.href, '_blank'); }
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
     }
 
     function initBgDeco(){
