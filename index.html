@@ -1331,14 +1331,17 @@
         add(c.name);
         if(map[c.name]){ var m=map[c.name]; if(c.country) m.country=c.country; if(c.lat!=null&&c.lat!=='') m.lat=+c.lat; if(c.lng!=null&&c.lng!=='') m.lng=+c.lng; }
       });
-      // 2) 每个行程天的 city 字段（可能是 slug 或中文名，支持逗号分隔多个城市）
+      // 2) 每个行程天的 city 字段（可能是 slug 或中文名，支持逗号分隔多个城市）；同时把 slug 归一化为中文名，便于按城市聚合
       (t.days||[]).forEach(function(d){
         var cc = d && d.city; if(!cc) return;
-        String(cc).split(',').forEach(function(s){
-          s = s.trim(); if(!s) return;
+        var parts = String(cc).split(',').map(function(s){
+          s = s.trim(); if(!s) return '';
           var nm = CITY_SLUG[s] || (CITY_DB[s] ? s : null);
-          add(nm);
+          if(nm) add(nm);
+          return nm || s;
         });
+        var joined = parts.filter(Boolean).join(',');
+        if(joined) d.city = joined;
       });
       // 3) 标题兜底（如「曼谷·清迈双城」未在以上出现时）
       if(Object.keys(map).length===0){ seedCitiesFromText(t.title||'').forEach(function(c){ add(c.name); }); }
@@ -1934,6 +1937,7 @@
       if (!TRIPS) {
         // 迁移：把当前单行程包成第一个 trip
         const first = { id: genTripId(), title: '曼谷 · 清迈 双城旅行', city: '泰国', country: '泰国', start: '7.31', end: '8.5', year: new Date().getFullYear(), status: 'active', days: DAYS, cities: seedCitiesFromText('曼谷 · 清迈 双城旅行') };
+        syncCities(first);
         TRIPS = [first];
         activeTripId = first.id;
         persistAll();
@@ -2093,9 +2097,7 @@
         const spot = { id:'poi_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), name:p.name, time:'自由安排', type:p.type||'sight', loc:null, addr:'', checked:false, recommended:false, hours:'', duration:'', notes:p.note||'', ticket:'', tips:'', boarding:'', flightNo:'', warning:null, fromLib:true };
         day.spots.push(spot);
       }
-      persistAll(); render();
-      if (document.getElementById('poiModal') && document.getElementById('poiModal').classList.contains('show')) renderPoi(document.getElementById('poiSearch').value||'');
-      if (typeof recCity !== 'undefined' && recCity && document.getElementById('recModal') && document.getElementById('recModal').classList.contains('show')) openRecs(recCity);
+      persistAll(); refreshReviewHost();
     }
     // ===== 行程点评价（旅游日志）=====
     var reviewCtx = null, reviewRating = 0;
@@ -2615,14 +2617,10 @@
     importState();
 
     // ===== 初始化：尝试从 URL / localStorage 恢复行程码 =====
-    (async function initTripCode() {
-      // 先显示本地数据（立即 render）
-      render();
-      // 再异步加载远程数据
-      if (tripCode) {
-        await autoInitSync();
-      }
-    })();
+    // ===== 当前进行中 / 下一站 定位 =====
+    // 行程基准日：Day1 = 7月31日（2026年）
+    const TRIP_BASE = new Date(2026, 6, 31);
+    let nowRef = null; // 当前时间锚点（预留，目前恒为真实时间）
 
     function getSortedChecked(day) {
       return day.spots.filter(s => s.checked && s.loc).sort((a, b) => timeToMin(a.time) - timeToMin(b.time));
@@ -2645,10 +2643,6 @@
       }
       return n;
     }
-    // ===== 当前进行中 / 下一站 定位 =====
-    // 行程基准日：Day1 = 7月31日（2026年）
-    const TRIP_BASE = new Date(2026, 6, 31);
-    let nowRef = null; // 当前时间锚点（预留，目前恒为真实时间）
     function getNowDate() { return nowRef ? new Date(nowRef) : new Date(); }
     function getNowMin() { const d = getNowDate(); return d.getHours() * 60 + d.getMinutes(); }
     function getNowDayIdx() {
@@ -4186,6 +4180,13 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
     }
     function render() { closeMoveMenu(); renderTripBar(); const _h1=document.getElementById('tripTitleH1'); if(_h1){const _t=currentTrip(); _h1.textContent=(_t&&_t.title)||'我的行程';} renderTabs(); renderNowBanner(); renderSpotList(); renderMap(); renderBacklog(); syncSave(); if(currentFlow==='trip'){ /* 编辑器可见，无需额外渲染 */ } else if(currentFlow==='home'){ renderHome(); } else if(currentFlow==='cities'){ renderCities(); } else if(currentFlow==='points'){ renderPoints(pointsCity); } }
     window.addEventListener('hashchange', () => { location.reload(); });
+    // 首屏：先渲染本地数据（此时所有 let/const 状态变量均已初始化），再异步拉取远程行程
+    (async function initTripCode() {
+      render();
+      if (typeof tripCode !== 'undefined' && tripCode) {
+        try { await autoInitSync(); } catch (e) { /* 远程失败不影响本地 */ }
+      }
+    })();
     initLayoutMode();
     registerSW();
     initBgDeco();
