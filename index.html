@@ -188,8 +188,17 @@
     .trip-chip .tc-title { font-weight:500; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:190px; }
     .trip-chip .tc-meta { font-size:11px; color:var(--muted); }
     .trip-chip .tc-actions { display:inline-flex; gap:4px; font-size:12px; }
-    .trip-chip .tc-actions span { opacity:.65; }
+    .trip-chip .tc-actions span { opacity:.65; cursor:pointer; }
     .trip-chip .tc-actions span:hover { opacity:1; }
+    .trip-chip .tc-badge { font-size:10px; padding:1px 7px; border-radius:999px; line-height:1.5; white-space:nowrap; font-weight:600; }
+    .trip-chip .tc-badge.plan { background:rgba(14,165,233,.16); color:#0ea5e9; }
+    .trip-chip .tc-badge.active { background:rgba(34,197,94,.18); color:#16a34a; }
+    .trip-chip .tc-badge.closed { background:rgba(140,140,140,.18); color:#8a8a8a; }
+    .trip-chip.active .tc-badge { background:rgba(255,255,255,.24); color:#fff; }
+    /* 行程状态下拉（弹窗内分段控件） */
+    .status-opt { flex:1; font-size:12px; padding:7px 4px; border-radius:10px; border:1.5px solid var(--border); background:var(--chip-bg); cursor:pointer; transition:all .15s; color:var(--text); white-space:nowrap; }
+    .status-opt:hover { border-color:var(--accent); }
+    .status-opt.selected { background:var(--accent); color:#fff; border-color:var(--accent); }
     .rv-stars { color:#f5a623; letter-spacing:1px; font-size:13px; }
     /* 时间小提醒卡片可点击 → 跳到对应行程点编辑 */
     .urg-jump { cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; position: relative; }
@@ -442,6 +451,7 @@
         <div id="tripChips" class="flex gap-2 flex-wrap flex-1"></div>
         <button onclick="createTrip()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap">➕ 新建行程</button>
       </div>
+      <p class="text-xs text-[var(--muted)] mt-3 w-full leading-relaxed">💡 所有行程（含「计划中 / 推荐」的）都会留在这个行程库里、都能评价——哪怕还没勾选或还没去，万一到时候去了就能直接补评价。实际出游走完后，点行程条上的 🔒 把它标记为「已结束」即可归档。</p>
     </div>
 
     <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 flight-grid">
@@ -798,6 +808,16 @@
           <div><label class="block text-xs text-[var(--muted)] mb-1">出发日期</label><input id="mtStart" class="input-field" placeholder="如 7.31"></div>
           <div><label class="block text-xs text-[var(--muted)] mb-1">返程日期</label><input id="mtEnd" class="input-field" placeholder="如 8.5"></div>
         </div>
+        <div class="mt-3">
+          <label class="block text-xs text-[var(--muted)] mb-2">行程状态</label>
+          <div class="flex gap-2">
+            <button type="button" class="status-opt" data-st="plan" onclick="setMetaStatus('plan')">💡 计划中 / 推荐</button>
+            <button type="button" class="status-opt" data-st="active" onclick="setMetaStatus('active')">🟢 进行中</button>
+            <button type="button" class="status-opt" data-st="closed" onclick="setMetaStatus('closed')">✅ 已结束</button>
+          </div>
+          <input type="hidden" id="mtStatus" value="active">
+          <p class="text-xs text-[var(--muted)] mt-2">「计划中 / 推荐」的行程也会留在库里、可提前评价；实际走完后记成「已结束」归档。</p>
+        </div>
         <div class="mt-1 pt-3 border-t border-[var(--border)]">
           <div class="flex items-center justify-between mb-2">
             <label class="text-xs text-[var(--muted)]">📍 点亮城市（用于世界地图足迹）</label>
@@ -1137,6 +1157,7 @@
           const obj = JSON.parse(raw);
           if (obj && Array.isArray(obj.trips) && obj.trips.length) {
             TRIPS = obj.trips;
+            TRIPS.forEach(function(t){ if(!t.status) t.status='active'; if(!Array.isArray(t.days)) t.days=[]; });
             activeTripId = (obj.active && TRIPS.some(t=>t.id===obj.active)) ? obj.active : TRIPS[0].id;
             DAYS = (TRIPS.find(t=>t.id===activeTripId) || TRIPS[0]).days;
           }
@@ -1144,7 +1165,7 @@
       } catch(e){}
       if (!TRIPS) {
         // 迁移：把当前单行程包成第一个 trip
-        const first = { id: genTripId(), title: '曼谷 · 清迈 双城旅行', city: '泰国', country: '泰国', start: '7.31', end: '8.5', days: DAYS, cities: seedCitiesFromText('曼谷 · 清迈 双城旅行') };
+        const first = { id: genTripId(), title: '曼谷 · 清迈 双城旅行', city: '泰国', country: '泰国', start: '7.31', end: '8.5', status: 'active', days: DAYS, cities: seedCitiesFromText('曼谷 · 清迈 双城旅行') };
         TRIPS = [first];
         activeTripId = first.id;
         persistAll();
@@ -1163,7 +1184,7 @@
       persistAll(); render();
     }
     function createTrip(){
-      const t = { id: genTripId(), title:'新行程', city:'', country:'', start:'', end:'', cities:[], days:[{ id:'d1', date:'', weekday:'', title:'第 1 天', city:'', color:'#0ea5e9', weather:null, spots:[] }] };
+      const t = { id: genTripId(), title:'新行程', city:'', country:'', start:'', end:'', status:'active', cities:[], days:[{ id:'d1', date:'', weekday:'', title:'第 1 天', city:'', color:'#0ea5e9', weather:null, spots:[] }] };
       TRIPS.push(t); activeTripId = t.id; DAYS = t.days; currentDay = 'd1';
       persistAll(); render();
     }
@@ -1174,6 +1195,15 @@
       if (activeTripId===id){ activeTripId = TRIPS[0].id; DAYS = TRIPS[0].days; }
       persistAll(); render();
     }
+    function closeTrip(id){
+      const t = TRIPS.find(x=>x.id===id); if(!t) return;
+      if (!confirm('把「'+(t.title||'该行程')+'」标记为「已结束 / 已归档」？\n\n结束后它仍会留在行程库里，可以查看、评价，也会显示在世界足迹地图上——只是表示这次实际出游已经走完了。')) return;
+      t.status = 'closed'; persistAll(); render();
+    }
+    function reopenTrip(id){
+      const t = TRIPS.find(x=>x.id===id); if(!t) return;
+      t.status = 'active'; persistAll(); render();
+    }
     function saveTripMeta(id, meta){
       const t = TRIPS.find(x=>x.id===id); if(!t) return;
       Object.assign(t, meta); persistAll(); render();
@@ -1181,13 +1211,21 @@
     function renderTripBar(){
       const wrap = document.getElementById('tripChips'); if(!wrap) return;
       if (!TRIPS) return;
+      const ST_LABEL = { plan:'计划中', active:'进行中', closed:'已结束' };
       wrap.innerHTML = TRIPS.map(t=>{
         const active = t.id===activeTripId ? ' active' : '';
+        const st = t.status || 'active';
+        const badge = `<span class="tc-badge ${st}">${ST_LABEL[st]||'进行中'}</span>`;
         const meta = [t.city, (t.start?(t.end? (t.start+'→'+t.end):t.start):'')].filter(Boolean).join(' · ');
+        const closeBtn = (st==='closed')
+          ? `<span onclick="event.stopPropagation();reopenTrip('${t.id}')" title="重新打开（视为进行中）">↩️</span>`
+          : `<span onclick="event.stopPropagation();closeTrip('${t.id}')" title="结束并归档此行程">🔒</span>`;
         return `<button class="trip-chip${active}" onclick="setActiveTrip('${t.id}')" title="点击切换到该行程">
           <span class="tc-title">${escHtml(t.title||'未命名行程')}</span>
+          ${badge}
           ${meta?`<span class="tc-meta">${escHtml(meta)}</span>`:''}
           <span class="tc-actions">
+            ${closeBtn}
             <span onclick="event.stopPropagation();editTripMeta('${t.id}')" title="编辑行程信息">✏️</span>
             <span onclick="event.stopPropagation();deleteTrip('${t.id}')" title="删除行程">🗑️</span>
           </span>
@@ -1204,7 +1242,12 @@
       document.getElementById('mtEnd').value = t.end||'';
       editingCities = (t.cities||[]).map(function(c){return {name:c.name||'', country:c.country||'', lat:(c.lat!=null?c.lat:''), lng:(c.lng!=null?c.lng:'')};});
       renderCityEditor();
+      setMetaStatus(t.status || 'active');
       document.getElementById('tripMetaModal').classList.add('show');
+    }
+    function setMetaStatus(st){
+      const inp = document.getElementById('mtStatus'); if(inp) inp.value = st;
+      document.querySelectorAll('#tripMetaModal .status-opt').forEach(function(b){ b.classList.toggle('selected', b.getAttribute('data-st')===st); });
     }
     function saveTripMetaFromForm(){
       const id = document.getElementById('mtId').value;
@@ -1214,6 +1257,7 @@
         country: document.getElementById('mtCountry').value,
         start: document.getElementById('mtStart').value,
         end: document.getElementById('mtEnd').value,
+        status: document.getElementById('mtStatus').value || 'active',
         cities: editingCities.filter(function(c){return c.name && c.lat!=='' && c.lng!=='';}).map(function(c){return {name:c.name.trim(), country:c.country||'', lat:Number(c.lat), lng:Number(c.lng)};}),
       });
       closeModal('tripMetaModal');
