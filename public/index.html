@@ -2395,7 +2395,7 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
 .hotel{background:#f5f0ff;border-left-color:#a78bfa}
 </style></head><body>
 <h1>曼谷 · 清迈 双城旅行行程</h1>
-<p style="color:#666">导出于 ' + new Date().toLocaleString('zh-CN') + ' · 已勾选行程点</p>`;
+<p style="color:#666">导出于 ' + new Date().toLocaleString() + ' · 已勾选行程点</p>`;
       
       DAYS.forEach((day, idx) => {
         const checkedSpots = day.spots.filter(s => s.checked);
@@ -2434,9 +2434,11 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
       const blob = new Blob(['\ufeff' + html], { type: 'application/msword;charset=utf-8' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = '泰国行程_' + new Date().toISOString().slice(0, 10) + '.doc';
-      a.click();
-      URL.revokeObjectURL(a.href);
+      a.download = 'thailand-trip-' + new Date().toISOString().slice(0, 10) + '.doc';
+      document.body.appendChild(a);
+      try { a.click(); } catch(e) { window.open(a.href, '_blank'); }
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
     }
 
     function initBgDeco(){
@@ -2602,14 +2604,15 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
       </div>
 
       <div id="installPaneIOS" class="install-pane mt-4">
-        <div class="text-sm font-semibold mb-2 text-[var(--accent)]">iPhone / iPad（必须用 Safari 浏览器）</div>
-        <ol class="text-sm text-[var(--muted)] list-decimal pl-5 space-y-1">
-          <li>在 iPhone 上用自带的 <b>Safari</b> 打开本页面（微信 / Chrome 内置浏览器不行）</li>
-          <li>点底部工具栏中间的 <b>分享</b> 图标 ⬆️（方框带向上箭头）</li>
-          <li>向上滑动，找到并点 <b>“添加到主屏幕”</b></li>
-          <li>可改个名字，点右上角 <b>添加</b>，桌面即出现图标 ✅</li>
+        <div class="text-sm font-semibold mb-2 text-[var(--accent)]">iPhone / iPad</div>
+        <div class="text-xs text-[var(--muted)] mb-2">⚠️ 必须用自带的 Safari 浏览器，微信/Chrome 不行</div>
+        <ol class="text-sm text-[var(--muted)] list-decimal pl-5 space-y-2">
+          <li><b>第一步：</b>复制链接，在 <b>Safari</b> 中打开本页面</li>
+          <li><b>第二步：</b>点底部工具栏中间的 <b>分享</b> 图标 ⬆️</li>
+          <li><b>第三步：</b>向下滑，找到 <b>「添加到主屏幕」</b>（图标是个➕）</li>
+          <li><b>第四步：</b>点右上角 <b>「添加」</b>，桌面出现图标 ✅</li>
         </ol>
-        <div class="install-note">⚠️ iOS 不支持“一键安装弹窗”，只能通过 Safari 的分享菜单手动添加；图标会用到页面里的 apple-touch-icon，桌面显示名为「泰旅行程」。</div>
+        <div class="install-note mt-1">如果分享菜单里找不到「添加到主屏幕」，请确认你用的是 Safari 浏览器，不是微信/Chrome。</div>
       </div>
 
       <div id="installPaneAndroid" class="install-pane mt-4">
