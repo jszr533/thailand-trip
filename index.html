@@ -429,6 +429,20 @@
     .home-search-res.visited { border-color:var(--accent-3); color:var(--accent-3); }
     .home-search-res.wish { border-style:dashed; }
     .home-empty { color:var(--muted); font-size:13px; padding:8px 2px; }
+    /* 大洲→国家→城市 钻取（手机友好） */
+    .home-drill-crumbs { display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:14px; font-size:13px; }
+    .drill-crumb { padding:4px 12px; border-radius:999px; background:var(--chip-bg); border:1.5px solid var(--border); color:var(--muted); cursor:pointer; transition:all .15s; font-family:var(--font-cute); }
+    .drill-crumb:hover { border-color:var(--accent); color:var(--accent); }
+    .drill-crumb.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .drill-sep { color:var(--muted); opacity:.6; }
+    .home-drill-body { display:flex; flex-wrap:wrap; gap:10px; }
+    .drill-chip { display:flex; align-items:center; gap:10px; min-width:130px; padding:14px 16px; border-radius:18px; background:var(--chip-bg); border:1.5px solid var(--border); cursor:pointer; transition:all .15s; text-align:left; }
+    .drill-chip:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 10px 24px -12px rgba(0,0,0,.3); }
+    .drill-chip .dc-emoji { font-size:20px; flex:none; }
+    .drill-chip .dc-name { font-weight:800; font-size:15px; flex:1; }
+    .drill-chip .dc-count, .drill-chip .dc-sub { font-size:12px; color:var(--muted); flex:none; }
+    .drill-chip.city { border-color:var(--accent-3); }
+    .drill-chip.city .dc-emoji { color:var(--accent-3); }
   </style>
 </head>
 <body class="min-h-screen view-home">
@@ -527,6 +541,13 @@
           <input id="homeSearch" class="input-field w-full" placeholder="🔍 搜索城市（去过 / 想去都行，如 曼谷 / 清迈 / 东京）" oninput="homeSearch(this.value)">
           <div id="homeSearchResults" class="mt-2 flex flex-wrap gap-2"></div>
         </div>
+      </div>
+
+      <div class="panel p-5">
+        <div class="home-h mb-1">🌏 按大洲逛 · 我去过的城市</div>
+        <div class="text-xs text-[var(--muted)] mb-3">手机上懒得戳地图小点？先选<b>大洲</b> → <b>国家</b> → <b>城市</b>，点城市直达对应行程。</div>
+        <div id="homeDrillCrumbs" class="home-drill-crumbs"></div>
+        <div id="homeDrillBody" class="home-drill-body"></div>
       </div>
 
       <div class="panel p-5">
@@ -1203,7 +1224,7 @@
       render();
     }
     function renderHome(){
-      renderHomeMap(); renderVisited(); renderWish();
+      renderHomeMap(); renderVisited(); renderWish(); renderHomeDrill();
       var v=aggregateCities(); var conts={};
       v.forEach(function(c){ var k=CONTINENT_OF[(c.country||'').trim()]||'其他'; conts[k]=(conts[k]||0)+1; });
       var contStr=Object.keys(conts).map(function(k){return k+' '+conts[k];}).join(' · ');
@@ -1264,6 +1285,49 @@
           +'<div><div class="hc-name">'+escHtml(n)+'</div><div class="hc-sub">'+(co?co+' · ':'')+(POI_DB[n]?POI_DB[n].length+' 个推荐':'')+'</div></div></div>';
       }).join('');
     }
+    var homeDrill = { cont:null, country:null };
+    function renderHomeDrill(){
+      var crumbs=document.getElementById('homeDrillCrumbs'); var body=document.getElementById('homeDrillBody');
+      if(!body) return;
+      var v=aggregateCities();
+      var byCont={};
+      v.forEach(function(c){
+        var cont=CONTINENT_OF[(c.country||'').trim()]||'其他';
+        byCont[cont]=byCont[cont]||{};
+        byCont[cont][c.country||'未知']=byCont[cont][c.country||'未知']||[];
+        byCont[cont][c.country||'未知'].push(c);
+      });
+      // 面包屑
+      var cb='<span class="drill-crumb'+(homeDrill.cont===null?' active':'')+'" onclick="homeDrillTo(null,null)">🌐 全部大洲</span>';
+      if(homeDrill.cont!==null){
+        cb+='<span class="drill-sep">›</span><span class="drill-crumb'+(homeDrill.country===null?' active':'')+'" onclick="homeDrillTo(\''+escAttr(homeDrill.cont)+'\',null)">'+escHtml(homeDrill.cont)+'</span>';
+      }
+      if(homeDrill.country!==null){
+        cb+='<span class="drill-sep">›</span><span class="drill-crumb active">'+escHtml(homeDrill.country)+'</span>';
+      }
+      crumbs.innerHTML=cb;
+      // 内容
+      if(homeDrill.cont===null){
+        var conts=Object.keys(byCont).sort();
+        if(!conts.length){ body.innerHTML='<div class="home-empty">还没有点亮任何城市。去「🗓️ 我的行程 → 编辑行程信息 → 📍 点亮城市」加一下吧。</div>'; return; }
+        body.innerHTML=conts.map(function(c){
+          var n=0; Object.keys(byCont[c]).forEach(function(co){ n+=byCont[c][co].length; });
+          return '<button class="drill-chip" onclick="homeDrillTo(\''+escAttr(c)+'\',null)"><span class="dc-emoji">🌍</span><span class="dc-name">'+escHtml(c)+'</span><span class="dc-count">'+n+' 城</span></button>';
+        }).join('');
+      } else if(homeDrill.country===null){
+        var countries=Object.keys(byCont[homeDrill.cont]).sort();
+        body.innerHTML=countries.map(function(co){
+          var list=byCont[homeDrill.cont][co];
+          return '<button class="drill-chip" onclick="homeDrillTo(\''+escAttr(homeDrill.cont)+'\',\''+escAttr(co)+'\')"><span class="dc-emoji">🏳️</span><span class="dc-name">'+escHtml(co)+'</span><span class="dc-count">'+list.length+' 城</span></button>';
+        }).join('');
+      } else {
+        var cities=byCont[homeDrill.cont][homeDrill.country]||[];
+        body.innerHTML=cities.map(function(c){
+          return '<button class="drill-chip city" onclick="jumpToCityTrip(\''+escAttr(c.name)+'\')"><span class="dc-emoji">📍</span><span class="dc-name">'+escHtml(c.name)+'</span><span class="dc-sub">'+c.trips.length+' 次</span></button>';
+        }).join('');
+      }
+    }
+    function homeDrillTo(cont,country){ homeDrill.cont=cont; homeDrill.country=country; renderHomeDrill(); }
     function homeSearch(q){
       var box=document.getElementById('homeSearchResults'); if(!box) return;
       q=(q||'').trim();
