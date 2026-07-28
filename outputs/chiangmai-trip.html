@@ -1,0 +1,2580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="泰旅行程">
+  <meta name="theme-color" content="#5b8def">
+  <title>清迈丛林飞跃行程调整方案</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #eef4ff; --bg2: #e4eefc;
+      --panel: rgba(255,255,255,0.7); --panel-solid: #ffffff;
+      --chip-bg: rgba(255,255,255,0.55); --input-bg: rgba(255,255,255,0.75);
+      --text: #38496a; --muted: #6f80a0;
+      --accent: #5b8def; --accent-2: #ffc24b; --accent-3: #4fc9c0; --accent-deep: #3f6fd0; --check: #5b8def;
+      --danger: #e5484d; --warning: #d9821a; --success: #2faf86;
+      --warn-text: #b5640f; --danger-text: #c81e4a; --info-text: #2f6fd0;
+      --border: #cfe0fb; --shadow: 0 16px 40px -18px rgba(91,141,239,0.35);
+      --map-bg: rgba(223,237,255,0.55); --map-land: rgba(190,214,250,0.7); --map-road: rgba(160,190,240,0.85);
+      --font-cute: 'ZCOOL KuaiLe', 'Noto Sans SC', sans-serif;
+    }
+    .dark {
+      --bg: #1f2740; --bg2: #232c4d;
+      --panel: rgba(38,48,78,0.62); --panel-solid: #26304e;
+      --chip-bg: rgba(255,255,255,0.06); --input-bg: rgba(255,255,255,0.08);
+      --text: #eaf1ff; --muted: #aab8d6;
+      --accent: #7fb0ff; --accent-2: #ffd06b; --accent-3: #7fddc9; --accent-deep: #4f7fe0; --check: #7fb0ff;
+      --danger: #ff8aa0; --warning: #ffbc7e; --success: #84e0bd;
+      --warn-text: #ffd089; --danger-text: #ffb0c0; --info-text: #9ec5ff;
+      --border: #34406b; --shadow: 0 16px 40px -18px rgba(0,0,0,0.5);
+      --map-bg: rgba(30,40,70,0.5); --map-land: rgba(50,65,110,0.7); --map-road: rgba(80,100,150,0.85);
+    }
+    * { font-family: 'Noto Sans SC', sans-serif; }
+    body {
+      background:
+        radial-gradient(circle at 12% 18%, rgba(91,141,239,0.10) 0 9px, transparent 10px) 0 0/140px 140px,
+        radial-gradient(circle at 70% 60%, rgba(127,200,255,0.10) 0 8px, transparent 9px) 0 0/160px 160px,
+        linear-gradient(160deg, var(--bg) 0%, var(--bg2) 100%);
+      background-attachment: fixed;
+      color: var(--text); transition: background 0.3s, color 0.3s;
+    }
+    .cute-font { font-family: var(--font-cute); }
+    .title-gradient { background: linear-gradient(90deg, #5b8def, #7ec8ff, #4fc9c0); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .panel { background: var(--panel); backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%); border: 2px solid var(--border); border-radius: 26px; box-shadow: var(--shadow); }
+    .spot-row { transition: all 0.2s; border-left: 5px solid transparent; border-radius: 18px; }
+    /* 推荐行程：按当天时间轴排序，左侧时间线 */
+    .reco-timeline { position: relative; margin: 4px 0 4px 8px; padding-left: 22px; border-left: 2px solid rgba(79,201,192,0.45); }
+    .reco-timeline .spot-row { position: relative; background: rgba(79,201,192,0.05); border: 1px solid rgba(79,201,192,0.18); }
+    .reco-timeline .spot-row::before {
+      content: ''; position: absolute; left: -28px; top: 20px;
+      width: 11px; height: 11px; border-radius: 50%;
+      background: var(--accent-3); border: 2px solid #fff;
+      box-shadow: 0 0 0 2px rgba(79,201,192,0.35);
+    }
+    /* 布局模式：手机版(单列) / 网页版(左1右2) */
+    body.mode-mobile .main-layout { grid-template-columns: 1fr !important; }
+    body.mode-web .main-layout { grid-template-columns: 1fr 2fr !important; }
+    body.mode-web .main-layout > #leftCol { grid-column: span 1 !important; }
+    body.mode-web .main-layout > .right-col { grid-column: span 2 !important; }
+    body.mode-web .flight-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    body.mode-mobile .custom-checkbox { width: 22px; height: 22px; }
+    body.mode-mobile .spot-row { padding: 14px 12px; }
+    body { overflow-x: hidden; }
+    .spot-row:hover { background: rgba(91,141,239,0.07); transform: translateY(-1px); }
+    .spot-row.checked { border-left-color: var(--accent); background: rgba(91,141,239,0.10); }
+    .spot-row.reco:not(.checked) { border-left-style: dashed; border-left-color: var(--accent-3); background: rgba(79,201,192,0.07); }
+    .spot-row.flight { border-left-color: var(--accent-2); box-shadow: inset 4px 0 0 var(--accent-2); background: rgba(239,154,58,0.07); }
+    .spot-row.flight.checked { border-left-color: var(--accent-2); background: rgba(239,154,58,0.12); }
+    .flight-badge { background: rgba(91,141,239,0.15); color: var(--accent); border: 1.5px solid rgba(91,141,239,0.35); padding: 2px 8px; border-radius: 8px; }
+    .board-badge { background: rgba(213,130,26,0.16); color: #b5640f; border: 1.5px solid rgba(213,130,26,0.42); padding: 2px 8px; border-radius: 8px; font-weight: 700; }
+    .hotel-badge { background: rgba(168,139,250,0.16); color: #7c5cd6; border: 1.5px solid rgba(168,139,250,0.4); padding: 2px 8px; border-radius: 8px; font-weight: 700; }
+    .dark .hotel-badge { color: #c4b5fd; }
+    /* 每天的酒店出发/结束锚点（退房后不算、未入住不算） */
+    .day-anchor { display:flex; align-items:center; justify-content:center; gap:6px; font-size:12px; color:var(--muted); padding:7px 10px; border-radius:12px; background:rgba(168,139,250,0.08); border:1px dashed rgba(168,139,250,0.4); cursor:pointer; margin-bottom:8px; letter-spacing:0.2px; }
+    .day-anchor.end { margin-bottom:0; margin-top:8px; }
+    .day-anchor:hover { background:rgba(168,139,250,0.16); color:var(--accent); }
+    .day-anchor .a-ico { font-size:13px; }
+    .map-container { background: var(--map-bg); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border-radius: 18px; }
+    .map-land { fill: var(--map-land); stroke: var(--map-road); }
+    .map-road { stroke: var(--map-road); fill: none; }
+    .route-line { fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.6; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.08)); }
+    .route-dot { transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); cursor: pointer; }
+    .route-dot:hover { transform: scale(1.18); }
+    .route-dot.hidden { opacity: 0; transform: scale(0); }
+    /* 选中行程点在地图上的着重高亮 */
+    .sel-ring { fill: none; stroke: var(--accent); stroke-width: 1.6; transform-box: fill-box; transform-origin: center; animation: selPulse 1.4s ease-in-out infinite; }
+    @keyframes selPulse { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.7); opacity: 0.18; } }
+    .route-dot.selected circle.main-dot { r: 7; fill-opacity: 0.88; stroke-width: 2; }
+    .selected-note { border: 2px solid var(--accent) !important; box-shadow: 0 0 0 3px rgba(91,141,239,0.22); background: rgba(91,141,239,0.07) !important; }
+    .custom-checkbox { appearance: none; width: 18px; height: 18px; border: 1.6px solid var(--border); border-radius: 6px; cursor: pointer; position: relative; transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1); flex-shrink:0; background: transparent; box-shadow: none; overflow: hidden; }
+    .custom-checkbox:hover { border-color: var(--check); transform: scale(1.06); }
+    .custom-checkbox:checked { border-color: var(--check); background: rgba(91,141,239,0.16); animation: checkPop 0.34s cubic-bezier(0.34,1.56,0.64,1); }
+    .custom-checkbox:checked::after {
+      content: ''; position: absolute; left: 6px; top: 2px;
+      width: 4.5px; height: 9px;
+      border: solid var(--check);
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+    .dark .custom-checkbox:checked { background: rgba(127,176,255,0.22); }
+    .seq-badge { display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:20px; padding:0 5px; border-radius:999px; background:var(--accent); color:#fff; font-size:11px; font-weight:700; flex-shrink:0; line-height:1; }
+    /* 行程点上的「地图路线序号」徽标 —— 与地图圆点上的数字一一对应 */
+    .map-seq { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:var(--accent); color:#fff; font-size:12px; font-weight:700; flex-shrink:0; line-height:1; box-shadow:0 2px 7px -2px rgba(91,141,239,0.65); border:1.5px solid rgba(255,255,255,0.55); }
+    .dark .map-seq { border-color: rgba(255,255,255,0.25); }
+    .map-seq-empty { width:22px; height:22px; flex-shrink:0; }
+    /* 拖动排序相关 */
+    .drag-grip { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:9px; cursor:grab; color:var(--muted); font-size:16px; line-height:1; user-select:none; touch-action:none; flex-shrink:0; transition:all 0.15s; border:1.5px solid transparent; }
+    .drag-grip:hover { background:var(--chip-bg); color:var(--accent); border-color:var(--border); }
+    .drag-grip:active { cursor:grabbing; }
+    .row-action { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:9px; cursor:pointer; color:var(--muted); font-size:15px; line-height:1; user-select:none; flex-shrink:0; transition:all 0.15s; border:1.5px solid transparent; }
+    .row-action:hover { background:var(--chip-bg); color:var(--accent); border-color:var(--border); }
+    .row-action:active { transform: scale(0.92); }
+    .row-action.danger:hover { background: rgba(229,72,77,0.12); color: var(--danger); border-color: rgba(229,72,77,0.35); }
+    .dark .row-action.danger:hover { background: rgba(255,138,160,0.16); color: var(--danger); border-color: rgba(255,138,160,0.4); }
+    .spot-row { cursor:default; }
+    .spot-row.drop-before { box-shadow: inset 0 3px 0 0 var(--accent); }
+    .spot-row.drop-after { box-shadow: inset 0 -3px 0 0 var(--accent); }
+    .spot-row.drag-source { opacity:0.35; }
+    .drag-ghost { border-radius:18px; background:var(--panel); border:2px solid var(--accent); }
+
+    @keyframes checkPop {
+      0% { transform: scale(0.78); }
+      55% { transform: scale(1.14); }
+      100% { transform: scale(1); }
+    }
+    .warning-badge { background: rgba(217,130,26,0.12); color: var(--warn-text); border: 1.5px solid rgba(217,130,26,0.3); border-radius: 8px; }
+    .danger-badge { background: rgba(229,72,77,0.11); color: var(--danger-text); border: 1.5px solid rgba(229,72,77,0.3); border-radius: 8px; }
+    .info-badge { background: rgba(91,141,239,0.13); color: var(--info-text); border: 1.5px solid rgba(91,141,239,0.32); border-radius: 8px; }
+    .conflict-badge { background: rgba(229,72,77,0.16); color: #e5484d; border: 1.5px solid rgba(229,72,77,0.5); font-weight: 700; animation: conflictPulse 1.6s ease-in-out infinite; }
+    .dark .conflict-badge { color: #ff8a8e; }
+    /* 注意事项面板内的徽标：比行内更小，框更紧凑 */
+    .note-badge { font-size: 11px; line-height: 1.45; padding: 1px 7px; border-radius: 7px; font-weight: 600; }
+    /* 总览注意事项里的「Day N」小标签（用当天主题色） */
+    .ov-day-pill { display: inline-block; font-size: 11px; font-weight: 700; color: #fff; padding: 1px 8px; border-radius: 7px; line-height: 1.5; white-space: nowrap; letter-spacing: .2px; }
+    @keyframes conflictPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(229,72,77,0); } 50% { box-shadow: 0 0 0 4px rgba(229,72,77,0.13); } }
+    @keyframes nbPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(91,141,239,0.6); } 50% { box-shadow: 0 0 0 7px rgba(91,141,239,0); } }
+    .conflict-banner { background: rgba(229,72,77,0.10); border: 1.5px solid rgba(229,72,77,0.35); border-radius: 12px; }
+    .conflict-note { color: #e5484d; font-weight: 600; }
+    .dark .conflict-note { color: #ff8a8e; }
+    .must-chip { background: rgba(91,141,239,0.10); color: var(--info-text); border: 1.5px solid rgba(91,141,239,0.3); border-radius: 999px; padding: 4px 10px; font-size: 13px; white-space: nowrap; display: inline-flex; align-items: center; }
+    .dark .must-chip { background: rgba(91,141,239,0.18); }
+    .urg-tag { display:inline-flex; align-items:center; gap:3px; font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; line-height:1.4; margin-left:6px; vertical-align:middle; white-space:nowrap; }
+    .urg-urgent { background: rgba(229,72,77,0.16); color:#e5484d; border:1.5px solid rgba(229,72,77,0.4); }
+    .urg-warn { background: rgba(217,130,26,0.16); color:#b9740f; border:1.5px solid rgba(217,130,26,0.4); }
+    .urg-normal { background: rgba(79,201,192,0.16); color:#2a9d8f; border:1.5px solid rgba(79,201,192,0.4); }
+    .dark .urg-urgent { color:#ff8a8e; } .dark .urg-warn { color:#f0b35a; } .dark .urg-normal { color:#5fd6c8; }
+    .urg-legend { display:flex; flex-wrap:wrap; gap:10px; font-size:11px; color:var(--muted); margin:-4px 0 10px; }
+    .urg-legend span { display:inline-flex; align-items:center; gap:3px; }
+    .day-tab { transition: all 0.2s; border-radius: 999px; background: var(--chip-bg); display: inline-flex; align-items: center; gap: 4px; }
+    .day-tab.active { background: linear-gradient(120deg, var(--accent), var(--accent-deep)); color: #fff; border-color: transparent; box-shadow: 0 8px 18px -8px rgba(91,141,239,0.6); transform: translateY(-1px); }
+    .dayno-badge { background: rgba(91,141,239,0.15); color: var(--accent); font-size: 10px; padding: 1px 8px; border-radius: 999px; margin-left: 3px; font-weight: 700; letter-spacing: 0.3px; }
+    .daycheck-badge { background: rgba(79,201,192,0.16); color: var(--accent-3); font-size: 10px; padding: 1px 7px; border-radius: 999px; margin-left: 4px; font-weight: 700; }
+    .day-tab.active .daycheck-badge { background: rgba(255,255,255,0.28); color: #fff; }
+    .day-tab.active .dayno-badge { background: rgba(255,255,255,0.28); color: #fff; }
+    .move-day-btn { display: block; width: 100%; text-align: left; padding: 7px 10px; border-radius: 10px; font-size: 13px; color: var(--text); background: transparent; border: none; cursor: pointer; transition: all 0.15s; font-family: var(--font-cute); }
+    .move-day-btn:hover { background: rgba(91,141,239,0.12); }
+    /* 未计入事项 卡片 */
+    .backlog-card { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 16px; background: var(--chip-bg); border: 1.5px dashed var(--border); }
+    .backlog-icon { width: 38px; height: 38px; flex: none; display: grid; place-items: center; font-size: 20px; background: var(--panel); border-radius: 12px; border: 1.5px solid var(--border); }
+    .backlog-name { font-weight: 700; font-size: 14px; }
+    .backlog-note { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 2px; }
+    .backlog-warn { margin-top: 7px; display: flex; gap: 6px; align-items: flex-start; font-size: 12px; line-height: 1.5; color: #b9650f; background: rgba(217,130,26,0.10); border: 1.5px solid rgba(217,130,26,0.32); border-radius: 10px; padding: 7px 10px; }
+    .dark .backlog-warn { color: #ffbc7e; }
+    .backlog-warn .bw-ico { flex: none; }
+    .backlog-actions { display: flex; align-items: center; gap: 8px; flex: none; margin-left: auto; }
+    .backlog-add { background: var(--accent); color: #fff; border: none; padding: 7px 14px; border-radius: 999px; font-size: 12.5px; font-family: var(--font-cute); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .backlog-add:hover { background: var(--accent-deep); transform: translateY(-1px); }
+    @media (max-width: 560px) { .backlog-card { flex-wrap: wrap; } .backlog-actions { margin-left: 0; width: 100%; justify-content: flex-end; } }
+    /* 冲突/提醒徽标 → 推荐调整弹层 */
+    #adjustPopover { position: fixed; z-index: 92; }
+    #adjustPopover .panel { min-width: 252px; max-width: 306px; box-shadow: var(--shadow); border: 1.5px solid var(--border); }
+    .adj-reason { font-size: 12px; color: var(--danger-text); background: rgba(229,72,77,0.08); border: 1px solid rgba(229,72,77,0.25); border-radius: 10px; padding: 7px 9px; margin-bottom: 8px; line-height: 1.45; }
+    .adj-suggest { font-size: 13px; color: var(--text); margin-bottom: 4px; }
+    .adj-suggest b { color: var(--accent); font-family: var(--font-mono); }
+    .adj-label { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 10px; }
+    .fix-btn { display: block; width: 100%; padding: 9px; border-radius: 12px; border: none; cursor: pointer; font-size: 13px; font-weight: 700; color: #fff; background: var(--accent); transition: all 0.15s; font-family: var(--font-cute); }
+    .fix-btn:hover { background: var(--accent-deep); }
+    .fix-opt { display: block; width: 100%; padding: 8px 12px; border-radius: 10px; border: 1.5px solid var(--border); cursor: pointer; font-size: 12px; text-align: left; margin-bottom: 6px; background: var(--chip-bg); color: var(--text); transition: all 0.12s; font-family: inherit; }
+    .fix-opt:hover { border-color: var(--accent); background: rgba(91,141,239,0.08); box-shadow: 0 2px 6px -3px rgba(91,141,239,0.2); }
+    .fix-opt.fix-none { cursor: default; opacity: 0.65; border-color: transparent; }
+    .conflict-badge, .warning-badge, .danger-badge, .info-badge { cursor: pointer; }
+    .transport-chip { display: flex; align-items: center; gap: 6px; margin: 2px 0 2px 34px; font-size: 11px; color: var(--accent); background: rgba(91,141,239,0.08); border: 1px dashed rgba(91,141,239,0.45); border-radius: 999px; padding: 3px 11px; width: fit-content; font-weight: 600; }
+    .ov-daynum { font-size: 10px; font-weight: 800; text-anchor: middle; }
+    .note-card { border-left: 5px solid var(--accent-2); background: var(--chip-bg); border-radius: 16px; }
+    .fly-line { stroke-dasharray: 7 6; }
+    .svg-label { font-size: 11px; font-weight: 500; fill: var(--muted); }
+    .svg-title { font-size: 13px; font-weight: 700; fill: var(--text); }
+    .route-number { fill: #fff; fill-opacity: 0.72; font-size: 11px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(91,84,112,0.45); backdrop-filter: blur(5px); display: none; z-index: 50; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-overlay.show { display: flex; }
+    .icon-btn { width: 30px; height: 30px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; border: 1.5px solid var(--border); font-size: 14px; background: var(--chip-bg); }
+    .icon-btn:hover { background: rgba(91,141,239,0.16); transform: scale(1.1); }
+    .input-field { width: 100%; background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 12px; padding: 9px 12px; color: var(--text); font-size: 14px; }
+    .input-field:focus { outline: none; border-color: var(--accent); }
+    .btn-cute { border-radius: 999px; font-family: var(--font-cute); box-shadow: 0 8px 18px -8px rgba(91,141,239,0.5); transition: all 0.18s; }
+    .btn-cute:hover { transform: translateY(-1px); }
+    .btn-cute.ghost { background: transparent; color: var(--muted); box-shadow: none; border: 1.5px solid var(--border); }
+    .btn-cute.ghost:hover { background: var(--chip-bg); transform: translateY(-1px); }
+    /* 行程内「温馨提示」小提示（贴近饭点的美食/外部推荐） */
+    .sug-tip { display: flex; align-items: center; gap: 8px; margin: 6px 0 6px 38px; padding: 7px 12px; border-radius: 12px; background: linear-gradient(120deg, rgba(245,158,11,0.10), rgba(91,141,239,0.08)); border: 1px dashed rgba(217,130,26,0.40); cursor: pointer; transition: all 0.18s; font-size: 12px; color: var(--muted); }
+    .sug-tip:hover { background: linear-gradient(120deg, rgba(245,158,11,0.16), rgba(91,141,239,0.13)); border-color: rgba(217,130,26,0.6); transform: translateY(-1px); }
+    .sug-ico { flex: none; font-size: 14px; }
+    .sug-text { flex: 1; min-width: 0; line-height: 1.45; }
+    .sug-link { flex: none; font-weight: 700; color: var(--accent); white-space: nowrap; }
+    .sug-rec-card { border: 1px solid var(--border); }
+    .sug-rec-card .ext-link-chip { font-size: 12px; padding: 5px 10px; }
+    .install-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .install-tab { flex: 1 1 auto; min-width: 90px; padding: 10px 8px; border-radius: 14px; border: 1.5px solid var(--border); background: var(--chip-bg); color: var(--text); font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.18s; font-family: var(--font-cute); }
+    .install-tab:hover { border-color: var(--accent); }
+    .install-tab.active { background: linear-gradient(120deg, var(--accent), var(--accent-deep)); color: #fff; border-color: transparent; box-shadow: 0 8px 18px -8px rgba(91,141,239,0.6); }
+    .install-pane { animation: fadeIn 0.25s ease; }
+    .install-pane ol { margin: 0; }
+    .install-note { font-size: 12px; color: var(--muted); margin-top: 8px; padding: 8px 10px; border-radius: 10px; background: rgba(91,141,239,0.10); border: 1px solid rgba(91,141,239,0.22); }
+    .bear-ring { background: #fff; border-radius: 50%; padding: 4px; box-shadow: 0 8px 20px -8px rgba(91,141,239,0.5); border: 2px solid var(--border); }
+    .deco { position: absolute; opacity: 0.22; pointer-events: none; user-select: none; animation: floatY 6s ease-in-out infinite; }
+    .deco-sway { animation: sway 5s ease-in-out infinite; }
+    .deco-twinkle { animation: twinkle 3.4s ease-in-out infinite; }
+    @keyframes floatY { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-18px) rotate(3deg); } }
+    @keyframes sway { 0%,100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
+    @keyframes twinkle { 0%,100% { transform: scale(1) rotate(0); opacity: 0.25; } 50% { transform: scale(1.35) rotate(12deg); opacity: 0.55; } }
+    @keyframes drift { 0%,100% { transform: translateY(0) translateX(0); } 50% { transform: translateY(-34px) translateX(22px); } }
+    @keyframes starSpin { 0%,100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg) scale(1.12); } }
+    #bgDeco { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+    .bg-dot { position: absolute; border-radius: 50%; animation: drift 16s ease-in-out infinite; }
+    .bg-star { position: absolute; animation: starFloat 12s ease-in-out infinite, starSpin 20s ease-in-out infinite; }
+    .bg-twinkle { position: absolute; border-radius: 50%; animation: twinkle 4.5s ease-in-out infinite; }
+    .bg-moon { position: absolute; animation: moonFloat 26s ease-in-out infinite; }
+    @keyframes starFloat { 0%,100% { transform: translateY(0) translateX(0) rotate(0); } 50% { transform: translateY(-26px) translateX(14px) rotate(9deg); } }
+    @keyframes moonFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
+    /* 标题小熊：会动、会做表情 */
+    .bear { animation: bearBob 4.5s ease-in-out infinite; transform-origin: 50% 50%; }
+    /* 先下后上、幅度收敛在圈内（不再高高弹起） */
+    @keyframes bearBob { 0%,100% { transform: translateY(0) rotate(-2deg); } 35% { transform: translateY(3px) rotate(2deg); } 70% { transform: translateY(-1px) rotate(-1deg); } }
+    .bear-eye { transform-box: fill-box; transform-origin: center; transition: transform .15s ease; }
+    .bear-mouth { transition: opacity .15s ease; }
+    /* 默认：正常微笑可见，O 嘴隐藏 */
+    .mouth-o { display: none; }
+    /* 闭眼（眨眼）：双眼闭合，保留干净的正常微笑 —— 不再奇怪 */
+    .bear.mood-blink .bear-eye { transform: scaleY(0.12); }
+    /* 单眼 wink（左眼）：保留正常微笑 */
+    .bear.mood-wink .eye-l { transform: scaleY(0.12); }
+    /* 惊讶：O 嘴 */
+    .bear.mood-surprised .mouth-smile { display: none; }
+    .bear.mood-surprised .mouth-o { display: block !important; }
+    @media (prefers-reduced-motion: reduce) { .deco, .bg-dot, .bg-star, .bg-twinkle, .bg-moon, .bear, .bear-eye { animation: none !important; } .bear.mood-blink .bear-eye, .bear.mood-wink .eye-l { transform: none !important; } }
+    .glass-chip { background: rgba(255,255,255,0.82); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+    .dark .glass-chip { background: rgba(40,34,60,0.82); }
+    .weather-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: var(--accent); background: rgba(91,141,239,0.10); border: 1px solid rgba(91,141,239,0.25); padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+    .weather-chip .w-desc { color: var(--muted); font-weight: 500; }
+    .weather-tip { font-size: 11px; line-height: 1.5; color: var(--muted); margin-top: -2px; margin-bottom: 10px; }
+    .weather-tip .wt-ico { margin-right: 3px; }
+    .weather-tip b { color: var(--text); font-weight: 600; }
+    .ext-link-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; text-decoration: none; color: var(--text); background: rgba(91,141,239,0.10); border: 1.5px solid rgba(91,141,239,0.32); border-radius: 999px; padding: 7px 13px; transition: all 0.18s; }
+    .ext-link-chip:hover { background: linear-gradient(120deg, var(--accent), var(--accent-deep)); color: #fff; border-color: transparent; transform: translateY(-1px); box-shadow: 0 8px 18px -8px rgba(91,141,239,0.6); }
+    .ext-link-chip .ext-ico { font-size: 15px; }
+    .dark .ext-link-chip { background: rgba(91,141,239,0.18); }
+    .ext-link-chip.src { background: rgba(79,201,192,0.12); border-color: rgba(79,201,192,0.45); color: var(--text); }
+    .ext-link-chip.src:hover { background: linear-gradient(120deg, var(--accent-3), #3fb8ac); color: #fff; border-color: transparent; box-shadow: 0 8px 18px -8px rgba(79,201,192,0.6); }
+    .dark .ext-link-chip.src { background: rgba(79,201,192,0.20); }
+    .src-tag { font-size: 10px; font-weight: 700; background: var(--accent-3); color: #063; border-radius: 999px; padding: 1px 6px; margin-left: 2px; line-height: 1.4; }
+    .dark .src-tag { color: #043; }
+
+    /* ===== 当前进行中 / 下一站 高亮 + 演示 ===== */
+    .now-banner { display:none; align-items:center; gap:8px; padding:8px 14px; margin-bottom:12px; border-radius:14px; background:linear-gradient(120deg, rgba(91,141,239,0.14), rgba(79,201,192,0.14)); border:1.5px solid var(--accent); font-size:13px; }
+    .now-banner.show { display:flex; }
+    .now-banner.demo { background:rgba(245,158,11,0.12); border-color:#f59e0b; }
+    .now-banner .nb-dot { width:9px; height:9px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 0 rgba(91,141,239,0.6); animation:nbPulse 1.8s infinite; flex-shrink:0; }
+    .spot-row.now-highlight { position:relative; border-color:var(--accent) !important; background:linear-gradient(135deg, rgba(91,141,239,0.08), rgba(79,201,192,0.08)) !important; box-shadow:0 0 0 2px rgba(91,141,239,0.15), 0 8px 20px -12px rgba(91,141,239,0.25); }
+    .spot-row.now-highlight .now-arrow { position:absolute; left:-10px; top:50%; transform:translateY(-50%); font-size:16px; color:var(--accent); text-shadow:0 0 6px rgba(91,141,239,0.4); animation:nbPulse 1.8s infinite; }
+    .spot-row.now-next-highlight { border-color:rgba(79,201,192,0.5) !important; background:rgba(79,201,192,0.04) !important; }
+    .now-banner.demo .nb-dot { background:#f59e0b; animation:nbPulseA 1.8s infinite; }
+    @keyframes nbPulse { 0%{box-shadow:0 0 0 0 rgba(91,141,239,0.55);} 70%{box-shadow:0 0 0 9px rgba(91,141,239,0);} 100%{box-shadow:0 0 0 0 rgba(91,141,239,0);} }
+    @keyframes nbPulseA { 0%{box-shadow:0 0 0 0 rgba(245,158,11,0.55);} 70%{box-shadow:0 0 0 9px rgba(245,158,11,0);} 100%{box-shadow:0 0 0 0 rgba(245,158,11,0);} }
+    .now-banner .nb-close { margin-left:auto; cursor:pointer; opacity:.6; font-size:15px; line-height:1; padding-left:8px; }
+    .now-banner .nb-close:hover { opacity:1; }
+    .spot-row.now-active { position:relative; border-color:var(--accent) !important; box-shadow:0 0 0 2px var(--accent), 0 0 24px -6px var(--accent); }
+    .spot-row.now-active .map-seq { background:var(--accent); color:#fff; }
+    .spot-row.now-next { border-color:var(--accent-3) !important; box-shadow:0 0 0 2px var(--accent-3); }
+    .now-pill { font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; margin-left:2px; white-space:nowrap; }
+    .now-pill.now { background:var(--accent); color:#fff; }
+    .now-pill.next { background:rgba(79,201,192,0.18); color:var(--accent-3); border:1.5px solid var(--accent-3); }
+    .now-pop { position:fixed; z-index:96; display:none; }
+    .now-pop .panel { box-shadow:var(--shadow); border:1.5px solid var(--border); }
+    .now-pop label { font-size:12px; color:var(--muted); display:block; margin-bottom:4px; }
+    .now-pop input[type=datetime-local] { width:100%; border-radius:10px; border:1.5px solid var(--border); background:var(--panel); color:var(--text); padding:6px 8px; font-size:13px; }
+    .now-preset-row { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .now-preset { font-size:11px; padding:3px 8px; border-radius:999px; border:1.5px solid var(--border); background:var(--chip-bg); cursor:pointer; transition:all .15s; }
+    .now-preset:hover { border-color:var(--accent); color:var(--accent); }
+    /* ===== 行程码同步栏 ===== */
+    .trip-code-bar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:8px 0 4px; font-size:13px; }
+    .trip-code-bar .tc-label { font-weight:700; color:var(--accent); white-space:nowrap; }
+    .trip-code-bar .tc-code { font-family:var(--font-mono); font-size:15px; font-weight:800; letter-spacing:2px; background:var(--chip-bg); padding:2px 10px; border-radius:8px; border:1.5px solid var(--accent); }
+    .trip-code-bar .tc-btn { font-size:12px; padding:4px 12px; border-radius:999px; border:1.5px solid var(--border); background:var(--chip-bg); cursor:pointer; font-family:var(--font-cute); transition:all .15s; white-space:nowrap; }
+    .trip-code-bar .tc-btn:hover { border-color:var(--accent); color:var(--accent); }
+    .trip-code-bar .tc-btn.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .trip-code-bar .tc-btn.primary:hover { background:var(--accent-deep); }
+    .trip-code-bar .tc-status { font-size:11px; color:var(--muted); }
+    .trip-code-bar .tc-status.ok { color:var(--accent-3); }
+    .trip-code-input { padding:5px 10px; border-radius:8px; border:1.5px solid var(--border); background:var(--panel); color:var(--text); font-size:14px; font-family:var(--font-mono); letter-spacing:3px; text-transform:uppercase; width:120px; outline:none; }
+    .trip-code-input:focus { border-color:var(--accent); }
+  </style>
+</head>
+<body class="min-h-screen">
+  <div id="bgDeco"></div>
+  <div class="max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
+
+    <div class="panel p-6 mb-6 relative overflow-hidden">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 relative z-10">
+        <div class="flex items-center gap-4">
+          <div class="bear-ring">
+            <svg viewBox="0 0 100 100" class="w-14 h-14 bear mood-happy" id="bearSvg">
+              <circle cx="26" cy="25" r="13" fill="#b9794e"/>
+              <circle cx="74" cy="25" r="13" fill="#b9794e"/>
+              <circle cx="26" cy="25" r="6.5" fill="#e7bd96"/>
+              <circle cx="74" cy="25" r="6.5" fill="#e7bd96"/>
+              <circle cx="50" cy="52" r="31" fill="#c98a5c"/>
+              <ellipse cx="50" cy="63" rx="17" ry="13" fill="#f3dcc0"/>
+              <circle class="bear-eye eye-l" cx="39" cy="48" r="4.2" fill="#3a2a1a"/>
+              <circle class="bear-eye eye-r" cx="61" cy="48" r="4.2" fill="#3a2a1a"/>
+              <ellipse class="bear-nose" cx="50" cy="59" rx="4.6" ry="3.3" fill="#3a2a1a"/>
+              <!-- 默认正常微笑（闭眼也好看） -->
+              <path class="bear-mouth mouth-smile" d="M41 63 Q50 71 59 63" stroke="#3a2a1a" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+              <!-- 惊讶 O 嘴 -->
+              <ellipse class="bear-mouth mouth-o" cx="50" cy="66" rx="3.4" ry="4.2" fill="#3a2a1a"/>
+              <circle cx="34" cy="57" r="3.6" fill="#ff9eb5" opacity="0.55"/>
+              <circle cx="66" cy="57" r="3.6" fill="#ff9eb5" opacity="0.55"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-2xl md:text-3xl cute-font mb-1 title-gradient">曼谷 · 清迈 双城旅行行程</h1>
+            <p class="text-sm text-[var(--muted)]">可勾选生成路线 · 可编辑 · 总览图 · 点地图小点看攻略</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap justify-end">
+          <button onclick="copyShareLink()" class="btn-cute px-4 py-2.5 bg-[var(--accent)] text-white text-sm cute-font">🔗 复制分享</button>
+          <button id="installBtn" onclick="installApp()" class="btn-cute px-4 py-2.5 bg-[var(--accent-deep)] text-white text-sm cute-font">📲 加桌面</button>
+          <button onclick="toggleLayoutMode()" id="modeBtn" class="btn-cute px-4 py-2.5 border-2 border-[var(--border)] bg-[var(--panel)] text-sm cute-font text-[var(--text)]">📱 手机版</button>
+          <button onclick="toggleTheme()" class="btn-cute px-4 py-2.5 border-2 border-[var(--border)] bg-[var(--panel)] text-sm cute-font text-[var(--text)]">🌓 主题</button>
+          <button onclick="nowRef=null; nowSimActive=false; document.getElementById('nowSimBtn').textContent='🕐 演示'; jumpToNow();" class="btn-cute px-4 py-2.5 border-2 border-[var(--border)] bg-[var(--panel)] text-sm cute-font text-[var(--text)]">📍 定位当前</button>
+          <button onclick="toggleNowSim()" id="nowSimBtn" class="btn-cute px-4 py-2.5 border-2 border-[var(--border)] bg-[var(--panel)] text-sm cute-font text-[var(--text)]">🕐 演示</button>
+        </div>
+      </div>
+      <span class="deco deco-sway text-4xl" style="top:6px; right:34%; animation-delay:-0.5s;">🌸</span>
+      <span class="deco deco-twinkle text-3xl" style="bottom:4px; left:10%; animation-delay:-1.2s;">✨</span>
+      <span class="deco text-2xl" style="top:10px; right:8%; animation-delay:-2.4s;">🍑</span>
+    </div>
+
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 flight-grid">
+        <div class="rounded-xl p-3 border border-[var(--border)] bg-[var(--chip-bg)]">
+          <div class="text-xs text-[var(--muted)] mb-1">7月31日 周五</div>
+          <div class="font-bold text-sm">MU2803</div>
+          <div class="text-xs mt-1">22:10 南京禄口 T2</div>
+          <div class="text-xs text-[var(--muted)]">↓</div>
+          <div class="text-xs">01:10+1 曼谷素万那普</div>
+        </div>
+        <div class="rounded-xl p-3 border border-[var(--border)] bg-[var(--chip-bg)]">
+          <div class="text-xs text-[var(--muted)] mb-1">8月2日 周日</div>
+          <div class="font-bold text-sm">VZ106</div>
+          <div class="text-xs mt-1">13:50 曼谷素万那普 MAIN</div>
+          <div class="text-xs text-[var(--muted)]">↓</div>
+          <div class="text-xs">15:15 清迈国际 D</div>
+        </div>
+        <div class="rounded-xl p-3 border border-[var(--border)] bg-[var(--chip-bg)]">
+          <div class="text-xs text-[var(--muted)] mb-1">8月4日 周二</div>
+          <div class="font-bold text-sm">VZ2107</div>
+          <div class="text-xs mt-1">21:05 清迈国际 D</div>
+          <div class="text-xs text-[var(--muted)]">↓</div>
+          <div class="text-xs">22:25 曼谷素万那普 MAIN</div>
+        </div>
+        <div class="rounded-xl p-3 border border-[var(--border)] bg-[var(--chip-bg)]">
+          <div class="text-xs text-[var(--muted)] mb-1">8月5日 周三</div>
+          <div class="font-bold text-sm">MU2804</div>
+          <div class="text-xs mt-1">02:10 曼谷素万那普</div>
+          <div class="text-xs text-[var(--muted)]">↓</div>
+          <div class="text-xs">07:10 南京禄口 T2</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel p-5 mb-6 relative overflow-hidden border-l-4 border-l-[var(--accent)]">
+      <h2 class="cute-font font-semibold text-base mb-3 flex items-center gap-2 text-[var(--accent)]">📋 入境须知 · 必带清单</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div>
+          <div class="font-bold mb-2 flex items-center gap-1">🛂 入境要求</div>
+          <ul class="space-y-1.5 text-[var(--muted)] list-disc list-inside">
+            <li>中泰<b>永久互免签证</b>，单次可停留 ≤30 天</li>
+            <li>护照有效期须 <b>≥6 个月</b>，至少 1 页空白页</li>
+            <li>须持<b>返程/续程机票</b>备查（离境凭证）</li>
+            <li>建议备<b>酒店预订单</b>；可能抽查现金（个人≥2万 / 家庭≥4万泰铢，或等值外币；部分使馆提示个人≥1万亦可作为参考，建议就高携带）</li>
+          </ul>
+        </div>
+        <div>
+          <div class="font-bold mb-2 flex items-center gap-1">🎒 必带物品</div>
+          <div class="flex flex-wrap gap-2">
+            <span class="must-chip">🛂 护照（≥6个月）</span>
+            <span class="must-chip">💵 现金（个人≥2万铢）</span>
+            <span class="must-chip">✈️ 往返机票单</span>
+            <span class="must-chip">🏨 酒店预订单</span>
+            <span class="must-chip">🔌 转换插头</span>
+            <span class="must-chip">☂️ 折叠伞</span>
+            <span class="must-chip">🧴 防晒/驱蚊</span>
+            <span class="must-chip">💊 常用药</span>
+            <span class="must-chip">🩴 拖鞋（涉水/酒店）</span>
+            <span class="must-chip">🧥 一次性雨衣</span>
+            <span class="must-chip">🎒 防水袋（护手机）</span>
+            <span class="must-chip">👕 换洗衣物</span>
+            <span class="must-chip">📱 流量卡（泰国 eSIM/本地 SIM）</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel p-5 mb-6 relative overflow-hidden border-l-4 border-l-[var(--accent-3)]">
+      <h2 class="cute-font font-semibold text-base mb-3 flex items-center gap-2 text-[var(--accent-3)]">🚇 曼谷/清迈 公共交通指南</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+        <div>
+          <div class="font-bold mb-2 flex items-center gap-1">🟩 BTS 轻轨（天铁）</div>
+          <ul class="space-y-1 text-[var(--muted)] list-disc list-inside">
+            <li>两条线：<b>素坤逸线</b>（Mo Chit ↔ Samrong）与<b>是隆线</b>（National Stadium ↔ Bang Wa），覆盖暹罗/素坤逸/是隆等主要商圈</li>
+            <li>自助售票机<b>收纸币+硬币</b>（部分机型可能只收硬币，但多数新机型已支持纸币）；也有人工售票窗口</li>
+            <li>推荐办 <b>Rabbit Card</b>（兔子卡）— 储值卡，刷卡进站免排队，余额可退；也有<b> BTS 一日通票</b>（One Day Pass），当日无限次乘坐，约 150 泰铢</li>
+            <li>BTS 与 MRT <b>不同公司运营</b>，票不互通，换乘需出站再进站另买票</li>
+            <li>车厢内<b>禁止饮食</b>（含喝水、吃口香糖），违者罚款</li>
+          </ul>
+        </div>
+        <div>
+          <div class="font-bold mb-2 flex items-center gap-1">🟦 MRT 地铁</div>
+          <ul class="space-y-1 text-[var(--muted)] list-disc list-inside">
+            <li>蓝线主线：Hua Lamphong（华南蓬·唐人街/大皇宫） ↔ 乍都乍周末市集 ↔ Bang Sue</li>
+            <li>单程票为<b>圆形塑料代币</b>，进站刷卡、出站投币回收</li>
+            <li>可直接刷 <b>Visa/Mastercard 信用卡</b>（contactless）进站，免购票</li>
+            <li>黄线 &amp; 粉线新线到东/北郊区，日常游客用得少</li>
+            <li>车厢内也<b>禁止饮食</b>，空调很足建议带薄外套</li>
+          </ul>
+        </div>
+        <div>
+          <div class="font-bold mb-2 flex items-center gap-1">🚄 Airport Rail Link 机场快线</div>
+          <ul class="space-y-1 text-[var(--muted)] list-disc list-inside">
+            <li><b>素万那普机场 → 市区</b>（Makkasan / Phaya Thai），约 25-30 分钟，45 泰铢起</li>
+            <li>到 Phaya Thai 可换乘 BTS 素坤逸线，到 Makkasan 可换乘 MRT 蓝线</li>
+            <li>运营时间 <b>约 06:00–24:00</b>，红眼航班落地只能打车</li>
+            <li><b>廊曼机场没有机场快线</b>，到市区可坐 SRTC 红线火车（约 1 小时）或 Grab 打车</li>
+            <li>夜间落地推荐 Grab：清迈机场到古城约 <b>40-60 泰铢</b>，曼谷素万那普到市区约 <b>300-380 泰铢</b></li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-2 text-xs text-[var(--muted)] pt-2 border-t border-[var(--border)]">
+        💡 <b>通用提醒：</b>所有泰国公共交通<b>禁止携带榴莲</b>（气味重）；高峰时段（7:00-9:00 / 17:00-19:00）BTS/MRT 极挤；Grab 打车注意堵车，加价（surge pricing）时段可达 2-3 倍；清迈市内无 BTS/MRT，主要靠 Grab / 双条车（红顶，古城内约 30 泰铢/人） / 租摩托车。
+      </div>
+    </div>
+      <h2 class="cute-font font-semibold text-base mb-2 flex items-center gap-2 text-[var(--danger)]">🐻 时间小提醒 · 营业异常提示</h2>
+      <div class="urg-legend">
+        <span><span class="urg-tag urg-urgent">🔴 紧急</span> 误了会直接影响行程/赶不上</span>
+        <span><span class="urg-tag urg-warn">🟠 注意</span> 时间点敏感，需提前安排</span>
+        <span><span class="urg-tag urg-normal">🟢 没那么紧急</span> 行前确认即可</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+        <div class="danger-badge rounded-lg p-3">
+          <div class="font-bold mb-1">8.4 当天行程偏紧<span class="urg-tag urg-urgent">🔴 紧急</span></div>
+          <div>丛林飞跃约 11:30 结束 → 12:00 退房寄存 → 13:00 瓦洛洛采购。建议行李随车或先寄存前台，别卡点；若加射击场需顺延瓦洛洛。</div>
+        </div>
+        <div class="warning-badge rounded-lg p-3">
+          <div class="font-bold mb-1">8.3 椰林/JJ 市集（周一不开）<span class="urg-tag urg-warn">🟠 注意</span></div>
+          <div>8.3 实际是周一，椰林市集、JJ 市集仅周末开放，当日不开。已在本点标注⚠️；建议改到 8.2（周日）或用 🔀 移动，否则放弃这两项。</div>
+        </div>
+        <div class="warning-badge rounded-lg p-3">
+          <div class="font-bold mb-1">8.3 女子监狱按摩需早到排队<span class="urg-tag urg-warn">🟠 注意</span></div>
+          <div>周末 9:00-16:30 营业，不接受预约，仅现场取号。9:00 到可能仍要排队，建议 8:30 前到店取号。</div>
+        </div>
+        <div class="warning-badge rounded-lg p-3">
+          <div class="font-bold mb-1">8.4 丛林飞跃场次接人时间<span class="urg-tag urg-normal">🟢 没那么紧急</span></div>
+          <div>官网早鸟场为 7:00-7:30 接人、8:30 开始；8:00-8:30 接人对应 8:30 后场次。需与供应商确认准确接人时间。</div>
+        </div>
+      </div>
+      <span class="deco text-2xl" style="top:8px; right:6%; animation-delay:-3.1s;">🐻</span>
+    </div>
+
+    <!-- 行程码同步栏 -->
+    <div class="trip-code-bar" id="tripCodeBar">
+      <span id="tcLabel" class="tc-label">🔗 多人同步：</span>
+      <span id="tcCodeDisplay" style="display:none;">
+        <span class="tc-code" id="tcCode">------</span>
+        <span class="tc-status" id="tcStatus">未同步</span>
+        <button class="tc-btn" onclick="copyTripCode()">📋 复制链接</button>
+        <button class="tc-btn" onclick="leaveTrip()">✕ 离开</button>
+      </span>
+      <span id="tcJoinDisplay">
+        <input type="text" class="trip-code-input" id="tcInput" placeholder="行程码" maxlength="6" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')joinTrip()">
+        <button class="tc-btn primary" onclick="joinTrip()">加入</button>
+        <button class="tc-btn" onclick="createTrip()">➕ 创建行程</button>
+      </span>
+    </div>
+
+    <div class="flex flex-wrap gap-2 mb-4" id="dayTabs"></div>
+
+    <div id="nowBanner" class="now-banner" onclick="jumpToNow()" title="点击跳转到当前行程点">
+      <span class="nb-dot"></span>
+      <span id="nowBannerText">定位中…</span>
+      <span id="nowBannerTime" style="margin-left:auto;font-size:11px;opacity:0.6;"></span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 main-layout">
+      <div class="lg:col-span-1" id="leftCol">
+        <div class="panel rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2 min-w-0 flex-wrap">
+              <h2 class="cute-font font-bold text-lg" id="dayTitle">行程点</h2>
+              <span id="dayWeather" class="weather-chip"></span>
+            </div>
+            <button id="sortToggle" onclick="toggleSortMode()" class="text-xs px-3 py-1.5 rounded-full border border-[var(--border)] text-[var(--accent)] hover:bg-[var(--accent)]/10 transition cute-font whitespace-nowrap">⏱ 按时间排序</button>
+          </div>
+          <div id="dayWeatherTip" class="weather-tip"></div>
+          <div class="text-xs text-[var(--muted)] mb-2 flex items-center gap-1.5"><span class="drag-grip" style="width:20px;height:20px;font-size:13px;border:1px solid var(--border);background:var(--chip-bg);">⠿</span> 按住 ⠿ 上下拖动即可调整行程顺序 · 切到「手动排序」后拖动最直观</div>
+          <div id="spotList" class="space-y-2"></div>
+          <button onclick="newSpot()" class="btn-cute mt-3 w-full py-2.5 border-2 border-dashed border-[var(--border)] text-sm text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition cute-font">➕ 新建行程点</button>
+          <div class="mt-4 pt-4 border-t border-[var(--border)] text-xs text-[var(--muted)]">
+            <div class="flex justify-between mb-1"><span>已选景点</span><span id="selectedCount">0</span></div>
+            <div class="flex justify-between"><span>预计耗时</span><span id="durationEst">—</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-2 space-y-6 right-col">
+        <div id="singleMapWrap" class="panel rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="cute-font font-bold text-lg" id="mapTitle">当日路线轨迹</h2>
+            <div class="flex items-center gap-2 text-xs text-[var(--muted)] flex-wrap">
+              <span class="inline-block w-3 h-3 rounded-full bg-[var(--accent)]"></span> 已勾选
+              <span class="inline-block w-3 h-3 rounded-full" style="background:rgba(79,201,192,0.18);border:1.5px dashed var(--accent-3)"></span> 已推荐（可选）
+              <span class="inline-block w-3 h-3 rounded-full bg-[var(--muted)] opacity-40"></span> 未勾选
+              <span class="ml-1">· 点击圆点看详情</span>
+            </div>
+          </div>
+          <div id="singleMapBox" class="map-container rounded-xl overflow-hidden relative aspect-[4/3] md:aspect-[16/9]">
+            <svg id="mapSvg" viewBox="-55 -45 110 90" class="w-full h-full"></svg>
+            <div class="absolute bottom-3 right-3 glass-chip rounded-lg px-3 py-2 text-xs border border-[var(--border)] shadow">
+              <div id="routeInfo">请选择行程点</div>
+            </div>
+          </div>
+          <div id="transitMapPanel" class="grid grid-cols-1 md:grid-cols-2 gap-4" style="display:none;">
+            <div>
+              <div class="text-sm font-medium mb-2 text-[var(--muted)]">曼谷</div>
+              <div class="map-container rounded-xl overflow-hidden aspect-square"><svg id="transitBkk" viewBox="-55 -40 110 80" class="w-full h-full"></svg></div>
+            </div>
+            <div>
+              <div class="text-sm font-medium mb-2 text-[var(--muted)]">清迈</div>
+              <div class="map-container rounded-xl overflow-hidden aspect-square"><svg id="transitCnx" viewBox="-50 -42 100 84" class="w-full h-full"></svg></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="overviewWrap" class="panel rounded-2xl p-5" style="display:none;">
+          <h2 class="cute-font font-bold text-lg mb-3">🗺️ 总览路线图（按勾选生成）</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <div class="text-sm font-medium mb-2 text-[var(--muted)]">曼谷</div>
+              <div class="map-container rounded-xl overflow-hidden aspect-square">
+                <svg id="mapSvgBkk" viewBox="-55 -40 110 80" class="w-full h-full"></svg>
+              </div>
+            </div>
+            <div>
+              <div class="text-sm font-medium mb-2 text-[var(--muted)]">清迈</div>
+              <div class="map-container rounded-xl overflow-hidden aspect-square">
+                <svg id="mapSvgCnx" viewBox="-50 -42 100 84" class="w-full h-full"></svg>
+              </div>
+            </div>
+          </div>
+          <div class="mt-5">
+            <h2 class="cute-font font-bold text-lg mb-3">📌 总览注意事项（全部已勾选行程点）</h2>
+            <div id="overviewNotes" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+          </div>
+        </div>
+
+        <div class="panel rounded-2xl p-5" id="notesPanelWrap" style="display:none">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="cute-font font-bold text-lg">📌 注意事项</h2>
+            <span class="text-xs text-[var(--muted)]">勾选点自动同步</span>
+          </div>
+          <div id="notesPanel" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel p-5 mb-6 relative overflow-hidden border-l-4 border-l-[var(--accent-3)]">
+      <div class="flex items-center justify-between mb-3 gap-2 flex-wrap">
+        <h2 class="cute-font font-semibold text-base flex items-center gap-2 text-[var(--accent-3)]">🗂️ 未计入事项 · 备选清单</h2>
+        <span class="text-xs text-[var(--muted)]">删掉的行程、或想加的备选都收在这里 · 「添加行程」一键并入当天</span>
+      </div>
+      <div id="backlogList" class="space-y-2"></div>
+    </div>
+
+    <div class="mt-8 text-center text-xs text-[var(--muted)]">
+      圆圈大小不代表实际距离，仅为示意性路线规划。实际导航请用 Google Maps / Grab。
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div class="modal-overlay" id="detailModal" onclick="if(event.target===this)closeModal('detailModal')">
+    <div class="panel rounded-2xl p-6 max-w-lg w-full max-h-[85vh] overflow-y-auto">
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <div class="text-xs font-mono text-[var(--accent)]" id="dTime"></div>
+          <h3 class="text-xl font-bold cute-font" id="dName"></h3>
+        </div>
+        <button class="icon-btn" onclick="closeModal('detailModal')">✕</button>
+      </div>
+      <div id="dBadges" class="flex flex-wrap gap-2 mb-4"></div>
+      <div id="dInfo" class="text-sm grid grid-cols-1 gap-1 bg-[var(--chip-bg)] rounded-xl p-3"></div>
+      <div class="space-y-3 text-sm">
+        <div id="dNotes"></div>
+        <div id="dTicket" class="hidden">
+          <div class="font-semibold text-[var(--accent)] mb-1">🎫 门票 / 费用</div>
+          <div class="text-[var(--muted)]" id="dTicketText"></div>
+        </div>
+        <div id="dTips" class="hidden">
+          <div class="font-semibold text-[var(--success)] mb-1">💡 攻略 / 好玩的点</div>
+          <div class="text-[var(--muted)]" id="dTipsText"></div>
+        </div>
+        <div id="dLinks" class="hidden">
+          <div class="font-semibold text-[var(--accent)] mb-2">🔗 来源 / 攻略 / 导航</div>
+          <div id="dLinksList" class="flex flex-wrap gap-2"></div>
+          <div class="text-xs text-[var(--muted)] mt-2">带 <span class="src-tag inline">来源</span> 标记的是我为你核实过的官网 / 攻略页；其余为按行程点名称自动生成的平台搜索（小红书 / 微博 / 大众点评 / 地图）。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal-overlay" id="editModal" onclick="if(event.target===this)closeModal('editModal')">
+    <div class="panel rounded-2xl p-6 max-w-lg w-full max-h-[85vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-bold cute-font" id="editTitle">编辑行程点</h3>
+        <button class="icon-btn" onclick="closeModal('editModal')">✕</button>
+      </div>
+      <input type="hidden" id="editId">
+      <div class="space-y-3 text-sm">
+        <div><label class="block text-xs text-[var(--muted)] mb-1">名称</label><input id="f_name" class="input-field"></div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-xs text-[var(--muted)] mb-1">时间</label><input id="f_time" class="input-field" placeholder="如 09:00-11:00"></div>
+          <div><label class="block text-xs text-[var(--muted)] mb-1">类型</label>
+            <select id="f_type" class="input-field">
+              <option value="flight">航班</option><option value="hotel">住宿</option>
+              <option value="sight">景点</option><option value="food">美食</option>
+              <option value="market">市集</option><option value="shop">购物</option>
+              <option value="relax">休闲</option><option value="activity">活动</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-xs text-[var(--muted)] mb-1">地址</label><input id="f_addr" class="input-field" placeholder="具体地址"></div>
+          <div><label class="block text-xs text-[var(--muted)] mb-1">营业时间</label><input id="f_hours" class="input-field" placeholder="如 10:00-22:00"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-xs text-[var(--muted)] mb-1">预计耗时</label><input id="f_duration" class="input-field" placeholder="如 约 2 小时"></div>
+          <div><label class="block text-xs text-[var(--muted)] mb-1">登机预留（机场点）</label><input id="f_boarding" class="input-field" placeholder="如 提前 2 小时"></div>
+        </div>
+        <div><label class="block text-xs text-[var(--muted)] mb-1">注意事项</label><textarea id="f_notes" class="input-field" rows="2"></textarea></div>
+        <div><label class="block text-xs text-[var(--muted)] mb-1">门票 / 费用</label><input id="f_ticket" class="input-field" placeholder="如 免费 / 250泰铢 / 含接送"></div>
+        <div><label class="block text-xs text-[var(--muted)] mb-1">攻略 / 好玩的点</label><textarea id="f_tips" class="input-field" rows="2" placeholder="拍照机位、必吃、陷阱提醒…"></textarea></div>
+        <div>
+          <label class="block text-xs text-[var(--muted)] mb-1">状态标记</label>
+          <select id="f_warning" class="input-field">
+            <option value="">无</option><option value="warning">注意（营业/时间）</option>
+            <option value="danger">冲突</option><option value="info">提示</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs text-[var(--muted)] mb-1">🌟 设为推荐行程</label>
+          <label class="flex items-center gap-2 cursor-pointer select-none"><input type="checkbox" id="f_recommended" class="custom-checkbox"> <span class="text-sm text-[var(--muted)]">在「推荐行程」区展示</span></label>
+        </div>
+      </div>
+      <div class="flex gap-3 mt-5">
+        <button onclick="saveSpot()" class="flex-1 py-2.5 rounded-xl bg-[var(--accent)] text-white font-medium hover:opacity-90 transition">保存</button>
+        <button onclick="closeModal('editModal')" class="px-4 py-2.5 rounded-xl border border-[var(--border)] text-sm">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function lsGet(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+    function lsSet(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      lsSet('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+      render();
+    }
+    if (lsGet('theme') === 'dark' || (!lsGet('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+
+    const LOCATIONS = {
+      bkk_airport_suvarnabhumi: [38, 28], bkk_airport_donmueang: [-38, -22],
+      bkk_hotel: [-18, 0], bkk_siam: [0, -8], bkk_streetfood: [-18, 3], bkk_massage: [2, -12], bkk_cafe: [-14, -2],
+      bkk_watarun: [-18, -18], bkk_khaosan: [-30, -10], bkk_chatuchak: [-40, -6],
+      bkk_chinatown: [-30, 14], bkk_asiatique: [-20, 30], bkk_jodd: [22, -2],
+      cnx_hotel: [0, 0], cnx_tapae: [6, 0], cnx_massage: [-4, -4],
+      cnx_jjmarket: [28, -22], cnx_coconut: [34, -28], cnx_nimman: [-18, -22],
+      cnx_sundaymarket: [2, -2], cnx_chiangmaigate: [0, 14], cnx_warorot: [14, -6],
+      cnx_airport: [-32, 28], cnx_jungle: [36, -28],
+      cnx_doisuthep: [-34, -28], cnx_phrasing: [10, -10], cnx_chiangman: [-10, -10],
+      cnx_threekings: [-2, -10], cnx_maya: [-24, -26], cnx_shooting: [28, -34], cnx_akha: [-20, -18], cnx_khaosoi: [4, -6], cnx_lila: [-8, -2],
+    };
+
+    const DAYS = [
+      { id: 'd1', date: '7.31', weekday: '周五', title: '南京出发 · 红眼航班飞曼谷', city: 'bangkok', color: '#ff8fb1',
+        weather: { icon: '☀️🌧️', high: 36, low: 28, desc: '闷热·午后有雨', tip: '南京暑热，机舱冷气足备薄外套' },
+        spots: [
+          { id: 'd1_1', name: '南京禄口机场 T2 出发', time: '22:10 起飞', type: 'flight', loc: null, checked: true, addr: '南京市江宁区禄口街道（南京禄口国际机场 T2）', hours: '24h 值机', duration: '飞行约 5 小时', notes: '夜间红眼航班 MU2803，次日凌晨 01:10 落地曼谷素万那普。备好落地签材料、现金、往返行程单。', ticket: '', tips: '飞机上好好补眠，落地就是第二天啦～ 🛫', boarding: '提前 3 小时', warning: null },
+          { id: 'd1_r1', name: '禄口 T2 餐饮·免税', time: '出发前', type: 'food', loc: null, checked: false, addr: '南京禄口国际机场 T2 出发层', hours: '按航班', duration: '约 1 小时', notes: '红眼航班前在机场吃碗面、逛免税店垫肚子，省得机上饿。', ticket: '', tips: '国际出发区餐饮选择多；可先买好零食带上飞机', warning: null },
+          { id: 'd1_r2', name: '候机充电·休息区', time: '值机后', type: 'relax', loc: null, checked: false, addr: '禄口 T2 候机厅', hours: '24h', duration: '约 1 小时', notes: 'T2 有免费充电座与休息座椅，提前到可从容候机、给设备充满电。', ticket: '', tips: '带好充电宝；登机口可能较远，留意广播', warning: null },
+          { id: 'd1_r3', name: '机上补水·助眠', time: '飞行中', type: 'relax', loc: null, checked: false, addr: 'MU2803 客舱', hours: '约 5 小时', duration: '全程', notes: '红眼航班睡不好，带颈枕、眼罩、保湿喷雾，落地精神些。', ticket: '', tips: '多喝水少咖啡；落地前洗把脸', warning: null },
+        ] },
+      { id: 'd2', date: '8.1', weekday: '周六', title: '曼谷落地 · 全天休整', city: 'bangkok', color: '#a78bfa',
+        weather: { icon: '⛈️', high: 34, low: 27, desc: '湿热·午后雷阵雨', tip: '随身折叠伞+防水袋；室内冷气强带薄衫' },
+        spots: [
+          { id: 'd2_0', name: '曼谷素万那普机场 落地', time: '01:10', type: 'flight', loc: 'bkk_airport_suvarnabhumi', checked: true, addr: '999 Nong Prue, Bang Phli, Samut Prakan（素万那普国际机场）', hours: '24h', duration: '入境+打车约 1 小时', notes: '落地签/入境后 Grab 打车至酒店，约 40 分钟，300-380 泰铢。', ticket: '', tips: '打车认准机场 1 层 4 号门外 Grab 等候区', warning: null },
+          { id: 'd2_1', name: '曼谷亚洲酒店 入住休息', time: '02:30 抵达 · 15:00 入住', type: 'hotel', loc: 'bkk_hotel', checked: true, addr: '296 Phaya Thai Rd, Ratchathewi, Bangkok（拉差贴威区，近 Ratchathewi BTS）', hours: '入住 15:00 后 / 退房 11:00 前', duration: '白天休整', notes: '正式入住 15:00 后；凌晨抵达先寄存行李，附近 7-11 / 通宵店歇脚补眠。确认号 321-10916245。', ticket: '', tips: 'BTS Ratchathewi 步行 3 分钟；酒店电话 0066-2-2170808', warning: 'info' },
+          { id: 'd2_2', name: '暹罗三大商场', time: '14:00-18:00', type: 'shop', loc: 'bkk_siam', checked: true, addr: '991/1 Rama I Rd, Pathum Wan, Bangkok（BTS Siam）', hours: '10:00-22:00', duration: '约 4 小时', notes: '百丽宫 / Discovery / Center，BTS Ratchathewi 1 站到 Siam。', ticket: '', tips: '空中连廊互通，不用出室外；自助购票机只收硬币', warning: null },
+          { id: 'd2_3', name: '酒店楼下街边小吃', time: '18:00-20:30', type: 'food', loc: 'bkk_streetfood', checked: true, addr: '酒店周边 Phaya Thai / Ratchathewi 路', hours: '傍晚-深夜', duration: '约 2 小时', notes: '泰式炒河粉、烤猪肉串、芒果糯米饭、冰泰奶、香蕉煎饼。', ticket: '', tips: '必吃：芒果糯米饭、香蕉煎饼', warning: null },
+          { id: 'd2_4', name: '便利店采购', time: '20:30 后', type: 'shop', loc: 'bkk_hotel', checked: false, addr: '酒店旁 7-11', hours: '24h', duration: '约 30 分钟', notes: '零食、饮料、日用品。', ticket: '', tips: '', warning: null },
+          { id: 'd2_r1', name: '郑王庙 Wat Arun', time: '10:00-12:00', type: 'sight', loc: 'bkk_watarun', checked: false, recommended: true, addr: '158 Thanon Wang Doem, Bangkok Yai（昭披耶河西岸，Tha Tien 码头对面）', hours: '8:00-18:00', duration: '约 1.5 小时', notes: '白瓷马赛克地标寺庙，清晨光线最佳、游客少。', ticket: '门票 100 泰铢', tips: '从 Tha Tien 码头坐渡轮过河；入内需穿长裤/过膝裙；💧 渡轮码头/船面易溅水，建议穿易干鞋或备一双拖鞋', warning: null },
+          { id: 'd2_r2', name: '考山路夜市 Khao San', time: '21:00-23:00', type: 'market', loc: 'bkk_khaosan', checked: false, recommended: true, addr: 'Khao San Rd, Banglamphu, Bangkok', hours: '傍晚-凌晨', duration: '约 2 小时', notes: '背包客一条街，酒吧、街头小吃、路边按摩。', ticket: '免费', tips: '人均消费低；人多拥挤，注意随身财物', warning: null },
+          { id: 'd2_r3', name: '河滨码头夜市 Asiatique', time: '20:00-22:30', type: 'market', loc: 'bkk_asiatique', checked: false, recommended: true, addr: '2194 Charoen Krung Rd, Bang Kho Laem, Bangkok（昭披耶河西岸）', hours: '约 16:00-24:00（傍晚后最热闹）', duration: '约 2 小时', notes: '河边摩天轮 + 仓库风市集，餐厅/酒吧/手作店，落地首晚最省心的轻松夜场。', ticket: '免费（摩天轮另购票）', tips: 'BTS Saphan Taksin 站下转免费摆渡船直达；适合散步看河景；💧 免费摆渡船+河边步道，江风大、地面可能湿，带薄衫/拖鞋更舒服', warning: null },
+          { id: 'd2_r4', name: '乔德夜市 Jodd Fairs（拉差达）', time: '20:30-23:30', type: 'market', loc: 'bkk_jodd', checked: false, recommended: true, addr: 'Ratchadaphisek Rd, Huai Khwang, Bangkok（MRT Thailand Cultural Centre 4 号口）', hours: '每日 17:00-01:00', duration: '约 2.5 小时', notes: '曼谷最火现代夜市，霓虹帐篷、火山排骨、海鲜、甜品、小酒馆，网红感十足。', ticket: '免费', tips: 'MRT Thailand Cultural Centre 4 号口步行约 3 分钟；20:00 后到氛围最佳', warning: null },
+          { id: 'd2_r5', name: '唐人街夜市（耀华力）Yaowarat', time: '20:30-23:30', type: 'market', loc: 'bkk_chinatown', checked: false, recommended: true, addr: 'Yaowarat Rd, Samphanthawong, Bangkok（耀华力路）', hours: '约 16:00-02:00', duration: '约 2 小时', notes: '全泰国最赞街头美食街，海鲜、粿条、榴莲、烧腊、中式甜品，霓虹食街氛围。', ticket: '免费', tips: '整条街变食街；备现金；深夜回酒店用 Grab 方便', warning: null },
+          { id: 'd2_r6', name: '曼谷泰式按摩（落地首晚放松）', time: '21:30 后', type: 'relax', loc: 'bkk_massage', checked: false, recommended: true, addr: 'Siam / Asoke 一带（Health Land、Let\'s Relax 等多家连锁）', hours: '约 10:00-24:00', duration: '约 2 小时', notes: '奔波一天后做个泰式按摩解乏，连锁店明码标价、环境干净。', ticket: '2h 泰式约 450-550 泰铢', tips: '落地首晚别太晚，22:00 前到店较稳；认准正规连锁', warning: null },
+        ] },
+      { id: 'd3', date: '8.2', weekday: '周日', title: '曼谷 → 清迈 轻松休闲日', city: 'bangkok,chiangmai', color: '#f59e0b',
+        weather: { icon: '🌦️', high: 33, low: 24, desc: '午后阵雨', tip: '上午曼谷下午清迈；落地带伞，早晚凉' },
+        spots: [
+          { id: 'd3_1', name: '亚洲酒店退房 + 寄存行李', time: '11:00 前', type: 'hotel', loc: 'bkk_hotel', checked: true, addr: '296 Phaya Thai Rd, Ratchathewi, Bangkok', hours: '退房 11:00 前（行李可寄存）', duration: '约 30 分钟', notes: '按酒店规定 11:00 前退房；行李寄存前台，楼下小摊吃早餐。', ticket: '', tips: '确认号 321-10916245', warning: 'info' },
+          { id: 'd3_2', name: '素万那普机场 出发', time: '11:00 出发', type: 'flight', loc: 'bkk_airport_suvarnabhumi', checked: true, addr: '999 Nong Prue, Bang Phli, Samut Prakan（素万那普国际机场）', hours: '24h', duration: '候机', notes: 'Grab 从市区打车约 40 分钟；航班 VZ106 13:50 从素万那普机场起飞，国内航站楼。', ticket: '', tips: '建议 11:30 前到机场办值机；VZ 国内航班在素万那普 T 值机', boarding: '提前 2 小时', warning: null },
+          { id: 'd3_3', name: '清迈机场', time: '15:15', type: 'flight', loc: 'cnx_airport', checked: true, addr: '60 Mahidol Rd, Suthep, Chiang Mai（清迈国际机场）', hours: '24h', duration: '落地', notes: '落地清迈，转 Grab 去酒店。', ticket: '', tips: '', warning: null },
+          { id: 'd3_4', name: '塔佩幸福旅舍 办理入住', time: '16:00', type: 'hotel', loc: 'cnx_hotel', checked: true, addr: '11/1 Chang Moi Kao Rd, Si Phum, Chiang Mai 50300（塔佩幸福旅舍）', hours: '入住 14:00 后 / 退房 8.4 12:00 前', duration: '入住+放行李', notes: 'Grab 打车约 15 分钟，40-60 泰铢。确认号 1128149412246066。', ticket: '', tips: '酒店电话 0066-919642446；家庭房可住 3 人', warning: 'info' },
+          { id: 'd3_5', name: '塔佩门沿街小店', time: '17:00-18:30', type: 'sight', loc: 'cnx_tapae', checked: true, addr: 'Tha Phae Gate, Tha Phae Rd（古城东门）', hours: '沿街商铺约 10:00-21:00', duration: '约 1.5 小时', notes: '踩点次日拍照机位。', ticket: '', tips: '塔佩门红墙、护城河夜景', warning: null },
+          { id: 'd3_6', name: '长康路夜市', time: '19:00-21:30', type: 'market', loc: 'cnx_tapae', checked: true, addr: 'Chang Khlan Rd, Chiang Mai（Night Bazaar）', hours: '约 17:00-24:00（每日）', duration: '约 2.5 小时', notes: '泰北小吃，慢悠悠逛。', ticket: '', tips: '天天有，观光化价格偏高；可看街头艺人表演', warning: null },
+          { id: 'd3_r1', name: '恰图恰周末市集 Chatuchak', time: '09:00-11:00', type: 'market', loc: 'bkk_chatuchak', checked: false, recommended: true, addr: 'Kamphaeng Phet 2 Rd, Chatuchak, Bangkok（MRT Kamphaeng Phet）', hours: '周六日 9:00-18:00（8.2 正好周日，周六日都开）', duration: '约 2 小时', notes: '全球最大周末市集，1.5 万摊位：手作、服饰、植物、小吃。', ticket: '免费', tips: '早去避暑避人；以现金为主；可先寄包再逛', warning: null },
+          { id: 'd3_r2', name: '宁曼路白色市集', time: '19:30-21:30', type: 'market', loc: 'cnx_nimman', checked: false, recommended: true, addr: 'Nimmanhaemin Rd, Suthep, Chiang Mai', hours: '周五六日 15:00-22:00（8.2 周日开放，周五六日皆开）', duration: '约 1.5 小时', notes: '纯白主题夜市，网红咖啡、创意小食、现场音乐。落地清迈当晚正好赶上。', ticket: '免费', tips: '与长康路夜市二选一或都去；拍照超出片', warning: null },
+          { id: 'd3_r3', name: '曼谷咖啡轻食（出发前一杯）', time: '09:00 前', type: 'food', loc: 'bkk_cafe', checked: false, recommended: true, addr: 'Siam / Phaya Thai 一带咖啡馆', hours: '约 7:00-20:00', duration: '约 1 小时', notes: '退房前悠闲喝杯咖啡、吃个早午餐，曼谷咖啡文化很赞。', ticket: '人均约 150-250 泰铢', tips: '机场前最后的城市慢时光；连锁或独立咖啡都行', warning: null },
+          { id: 'd3_r4', name: '清迈宁曼咖啡 Akha Ama', time: '17:00-18:30', type: 'relax', loc: 'cnx_akha', checked: false, recommended: true, addr: '9/1 Ratchaphakhinai Rd（古城）及宁曼分店', hours: '约 8:00-18:00', duration: '约 1 小时', notes: '清迈最有名的本土咖啡品牌，豆子自烘，落地后歇脚一杯。', ticket: '咖啡约 80-150 泰铢', tips: '古城店离塔佩门近，顺路；浅烘果香明显', warning: null },
+          { id: 'd3_r5', name: '清迈 Lila 按摩（女子监狱毕业生）', time: '18:30-20:00', type: 'relax', loc: 'cnx_lila', checked: false, recommended: true, addr: 'Loi Kroh Rd 近塔佩门 / 宁曼分店', hours: '约 11:00-23:00', duration: '约 2 小时', notes: '由女子监狱按摩学校毕业生经营，口碑好、价格实在，落地放松首选。', ticket: '2h 泰式约 400-500 泰铢', tips: '塔佩门店离酒店近；可现场取号不用预约', warning: null },
+          { id: 'd3_r6', name: '清迈 Khao Soi 咖喱面（Khao Soi Khun Yai）', time: '11:00-13:30', type: 'food', loc: 'cnx_khaosoi', checked: false, recommended: true, addr: '古城内 Khao Soi Khun Yai（Ratchaphakhinai 一带）', hours: '10:00-14:00（周一至周六，周日休）', duration: '约 1 小时', notes: '清迈灵魂美食——椰香咖喱面，来清迈必吃一碗。名店 Khao Soi Khun Yai 只做午市、14:00 收、周日休，请赶早。', ticket: '一碗约 50-80 泰铢', tips: 'Khao Soi Khun Yai 名气大但排队；古城内同类店很多', warning: null },
+        ] },
+      { id: 'd4', date: '8.3', weekday: '周一', title: '塔佩门 · 女子监狱按摩 · 宁曼路 · 自由调整日', city: 'chiangmai', color: '#10b981',
+        weather: { icon: '🌦️', high: 33, low: 24, desc: '午后短暂雷阵雨', tip: '寺庙需过膝着装；备伞防晒' },
+        spots: [
+          { id: 'd4_1', name: '塔佩门红墙喂鸽子', time: '07:00', type: 'sight', loc: 'cnx_tapae', checked: true, addr: 'Tha Phae Gate, Tha Phae Rd（古城东门）', hours: '全天（清晨最佳）', duration: '约 45 分钟', notes: '清晨无旅行团，光线柔和好拍照。', ticket: '免费', tips: '喂鸽子约 100 泰铢有人帮忙赶鸽子拍照；步行 2 分钟即到', warning: null },
+          { id: 'd4_2', name: '古城早餐摊', time: '08:15', type: 'food', loc: 'cnx_tapae', checked: true, addr: '塔佩门周边', hours: '早 6:00-10:00', duration: '约 45 分钟', notes: '粉汤、椰子糕。', ticket: '', tips: '', warning: null },
+          { id: 'd4_3', name: '女子监狱按摩总店', time: '09:00-11:00', type: 'relax', loc: 'cnx_massage', checked: true, addr: '114/1 Ratchadamnoen Rd, Chiang Mai（古城内，近塔佩门）', hours: '9:00-16:30（周末；部分分店更晚）', duration: '2 小时', notes: '2 小时泰式按摩。只收现金，不能预约，现场取号。', ticket: '1h泰式 250 / 2h泰式 450 / 2h精油 500泰铢', tips: '认准唯一真店（Ratchadamnoen Rd）；建议 8:30 前到取号；全程不能拍照', warning: 'warning' },
+          { id: 'd4_4', name: 'JJ 真心市集', time: '12:30-14:00', type: 'market', loc: 'cnx_jjmarket', checked: true, addr: 'Nimmanhaemin 路与 Srimankalajarn 路口附近（One Nimman 旁）', hours: '周六日 6:30-15:00', duration: '约 1.5 小时', notes: '文创、编织包、有机咖啡、伴手礼。⚠️ 8.3 实际是周一，JJ 仅周六日开放，当日不开；本周末你 8.2 下午才落地清迈已收摊，建议改期或放弃。', ticket: '免费', tips: 'Central Group 营运，质感最高；建议 9 点前到摊位最齐；自带环保袋' },
+          { id: 'd4_5', name: '椰林 Coconut 市集', time: '11:00-12:30', type: 'market', loc: 'cnx_coconut', checked: true, addr: 'San Sai / Mae Hia 区域（网红椰林市集）', hours: '周末 8:00-15:00', duration: '约 1 小时', notes: '椰树林拍照、椰子冰淇淋。周末约 15:00 收摊，中午前到最热闹。⚠️ 8.3 周一，椰林市集仅周末开，当日不开。', ticket: '免费', tips: '椰子树下野餐氛围，网红椰子冰淇淋排队久；注意脚下泥地湿滑' },
+          { id: 'd4_6', name: '酒店休整', time: '14:00-14:30', type: 'hotel', loc: 'cnx_hotel', checked: true, addr: '11/1 Chang Moi Kao Rd, Si Phum, Chiang Mai 50300（塔佩幸福旅舍）', hours: '入住 14:00 后 / 退房 8.4 12:00 前', duration: '约 30 分钟', notes: '🏨 酒店注意事项：塔佩幸福旅舍（确认号 1128149412246066，电话 0066-919642446，家庭房可住 3 人）；午后回店冲凉、补水、给设备充电再出发。', ticket: '', tips: '退房 12:00 前；前台可寄存行李；雨季午后易阵雨，回店休整正合适', warning: 'info' },
+          { id: 'd4_7', name: '宁曼路', time: '14:30-17:15', type: 'sight', loc: 'cnx_nimman', checked: true, addr: 'Nimmanhaemin Rd, Suthep, Chiang Mai', hours: '店铺约 10:00-22:00', duration: '约 2.5 小时', notes: '网红咖啡馆、文创小店、周末白色市集。', ticket: '', tips: '白色市集 15:00-22:00（周五六七）；MAYA / One Nimman 可顺路', warning: null },
+          { id: 'd4_8', name: '周日夜市', time: '20:00-21:30', type: 'market', loc: 'cnx_sundaymarket', checked: true, addr: 'Ratchadamnoen Rd（塔佩门→帕辛寺），Chiang Mai', hours: '周日 16:00/17:00-22:00/23:00', duration: '约 1.5 小时', notes: '小吃、银饰、果干。⚠️ 8.3 实际是周一，周日夜市仅周日开放，当日不开！可改到 8.2（周日）晚——用 🔀 把本点移到 Day3 即可。', ticket: '免费', tips: '塔佩门到帕辛寺全长 1 公里；建议 17 点先到帕辛寺端，19 点后人挤人；部分小吃早收摊' },
+          { id: 'd4_r1', name: '双龙寺（素贴山）Doi Suthep', time: '17:30-19:30', type: 'sight', loc: 'cnx_doisuthep', checked: false, recommended: true, addr: 'Doi Suthep, Suthep, Chiang Mai（城西山上）', hours: '6:00-18:00', duration: '约 2 小时（含往返车程）', notes: '清迈标志性地标，金顶舍利塔，俯瞰全城与日落。', ticket: '门票 30 泰铢', tips: '古城乘红顶双条车往返约 60-100 泰铢/人；日落前到可看夜景；衣着保守', warning: null },
+          { id: 'd4_r2', name: '帕辛寺 Wat Phra Singh', time: '随行程', type: 'sight', loc: 'cnx_phrasing', checked: false, recommended: true, addr: 'Ratchadamnoen Rd, Phra Sing, Chiang Mai（古城内）', hours: '6:00-18:00', duration: '约 1 小时', notes: '古城内规模最大、最华丽的兰纳风格寺庙。', ticket: '免费（随喜）', tips: '正对周日夜市主街，顺路打卡', warning: null },
+          { id: 'd4_r3', name: '清迈古城咖啡 Akha Ama', time: '15:00-16:30', type: 'relax', loc: 'cnx_akha', checked: false, recommended: true, addr: '9/1 Ratchaphakhinai Rd（古城）', hours: '约 8:00-18:00', duration: '约 1 小时', notes: '逛宁曼前先来古城店喝杯自烘咖啡，避开周日夜市人流高峰。', ticket: '咖啡约 80-150 泰铢', tips: '下午人少；可外带边走边喝', warning: null },
+          { id: 'd4_r4', name: '清迈 Lila 按摩（二刷也值得）', time: '15:30-17:00', type: 'relax', loc: 'cnx_lila', checked: false, recommended: true, addr: 'Loi Kroh Rd 近塔佩门 / 宁曼分店', hours: '约 11:00-23:00', duration: '约 2 小时', notes: '白天逛累了再按一轮，女子监狱毕业生手法稳、性价比高。', ticket: '2h 泰式约 400-500 泰铢', tips: '周末人较多，建议 15:00 前到取号', warning: null },
+          { id: 'd4_r5', name: '古城 Khao Soi 咖喱面（周日名店多休）', time: '13:00-14:00', type: 'food', loc: 'cnx_khaosoi', checked: false, recommended: true, addr: '古城内 Khao Soi 面馆（部分周日休）', hours: '约 10:00-14:00（多数名店周一至周六，周日部分休）', duration: '约 1 小时', notes: '周日夜市当晚，Khao Soi Khun Yai / Maesai 等名店均周日休；想吃请找周日营业的店，或改在周六/周一。', ticket: '一碗约 50-80 泰铢', tips: '可与市集错峰；周日请现场确认是否营业', warning: 'info' },
+          { id: 'd4_r6', name: '宁曼下午茶·甜品', time: '15:00-17:00', type: 'relax', loc: 'cnx_nimman', checked: false, recommended: true, addr: 'Nimmanhaemin Rd 一带', hours: '约 10:00-22:00', duration: '约 1.5 小时', notes: '宁曼路甜品店、蛋糕店密集，逛街途中歇脚吃个下午茶。', ticket: '人均约 150-300 泰铢', tips: '网红店排队常见，错峰去；可打包带去夜市', warning: null },
+          { id: 'd4_r7', name: 'MAYA 宁曼生活购物中心（☔雨天备选）', time: '15:00-17:30', type: 'shop', loc: 'cnx_maya', checked: false, recommended: true, addr: '55 Moo 5, Huay Kaew Rd, Suthep, Chiang Mai（宁曼路与 Huey Kaew 路口）', hours: '10:00-22:00', duration: '约 2 小时', notes: '☔ 清迈午后常雷阵雨，这是最稳的室内备选：空调商场、美食广场、影院、 supermarkets 一应俱全，下雨直接躲进来逛吃。', ticket: '免费进（消费自理）', tips: '顶层美食广场划算；B2 超市可囤零食；离古城打车约 10 分钟', warning: null },
+          { id: 'd4_r8', name: 'Art in Paradise 3D 艺术馆（☔雨天备选）', time: '15:30-17:00', type: 'sight', loc: 'cnx_maya', checked: false, recommended: true, addr: '198/9 Huay Kaew Rd, Suthep, Chiang Mai（MAYA 旁）', hours: '10:00-21:00（最晚入场 20:00）', duration: '约 1.5 小时', notes: '☔ 全室内 3D 错觉艺术馆，空调凉爽，拍照互动好玩，雨天亲子/家庭首选。', ticket: '成人约 400 泰铢', tips: '与 MAYA 同侧，可一并安排；带手机满电多拍照', warning: null },
+        ] },
+      { id: 'd5', date: '8.4', weekday: '周二', title: '丛林飞跃 · 瓦洛洛采购 · 返程曼谷', city: 'chiangmai,bangkok', color: '#0ea5e9',
+        weather: { icon: '🌦️', high: 33, low: 24, desc: '午后阵雨', tip: '丛林飞跃遇雨照常，备防水袋护手机' },
+        spots: [
+          { id: 'd5_1', name: '清迈门本地早市', time: '07:30', type: 'market', loc: 'cnx_chiangmaigate', checked: true, addr: 'Chiang Mai Gate, Bamrung Buri Rd（古城南门）', hours: '早市 约 5:00-12:00（夜市 17:00-01:00）', duration: '约 45 分钟', notes: '本地早餐。7:30 后部分摊位可能已收摊。', ticket: '免费', tips: '本地人市场，小吃便宜', warning: 'warning' },
+          { id: 'd5_2', name: '丛林飞跃 Jungle Flight', time: '08:00-11:30', type: 'activity', loc: 'cnx_jungle', checked: true, addr: 'Mae Taeng 山区（市区约 1.5h 车程，酒店接送）', hours: '接人 7:00-8:30 / 场地 9:00-17:00', duration: '约 3 小时（含接送）', notes: '8:00 酒店接人，含简餐、全套滑索、原子飞车。', ticket: '约 2100-2800 泰铢（含接送+餐）', tips: '穿运动鞋、防晒；雨天可能暂停；需与供应商确认准确接人时间；💧 雨季户外易淋雨，备一次性雨衣 + 防水袋护手机', warning: 'warning' },
+          { id: 'd5_3', name: '酒店退房 + 寄存行李', time: '12:00', type: 'hotel', loc: 'cnx_hotel', checked: true, addr: '11/1 Chang Moi Kao Rd, Si Phum, Chiang Mai 50300（塔佩幸福旅舍）', hours: '退房 12:00 前', duration: '约 30 分钟', notes: '丛林飞跃后回酒店退房，寄存行李。', ticket: '', tips: '确认号 1128149412246066；行李可先寄存酒店再出发去机场', warning: 'info' },
+          { id: 'd5_4', name: '瓦洛洛干货大市场', time: '13:00-14:30', type: 'market', loc: 'cnx_warorot', checked: true, addr: 'Chang Khlan Rd 临萍河, Chiang Mai（Warorot / Kad Luang）', hours: '约 6:00-17:00', duration: '约 1.5 小时', notes: '果干、榴莲糖、香料，批发价。', ticket: '免费', tips: '17:00 前陆续关门，早去；部分店支持手机支付但备现金；💧 临萍河（Kad Luang）近水地面可能湿滑，穿防滑鞋、备拖鞋', warning: null },
+          { id: 'd5_5', name: '古城咖啡/小店', time: '14:30-18:00', type: 'relax', loc: 'cnx_tapae', checked: true, addr: '塔佩门/古城内', hours: '约 9:00-21:00', duration: '约 3 小时', notes: '自由放空，咖啡歇脚。', ticket: '', tips: '', warning: null },
+          { id: 'd5_6', name: '清迈机场 出发', time: '19:00 到机场（21:05 起飞）', type: 'flight', loc: 'cnx_airport', checked: true, addr: '60 Mahidol Rd, Suthep, Chiang Mai', hours: '24h', duration: '候机', notes: '清迈→曼谷航班 VZ2107 21:05 起飞，Grab 从古城打车约 15 分钟。', ticket: '', tips: '国内航班，19:00 到机场即可（提前 2 小时）；行李可先寄存酒店', boarding: '提前 2 小时', warning: null },
+          { id: 'd5_7', name: '曼谷素万那普机场', time: '22:25', type: 'flight', loc: 'bkk_airport_suvarnabhumi', checked: true, addr: '999 Nong Prue, Bang Phli, Samut Prakan', hours: '24h', duration: '候机至 02:10', notes: '免税店逛逛，候机至 02:10 回国航班。', ticket: '', tips: '', warning: null },
+          { id: 'd5_r1', name: '双龙寺（素贴山）· 返程前', time: '14:30-17:00', type: 'sight', loc: 'cnx_doisuthep', checked: false, recommended: true, addr: 'Doi Suthep, Suthep, Chiang Mai', hours: '6:00-18:00（18:00 关庙门）', duration: '约 2 小时（含往返）', notes: '返程前最后俯瞰一次清迈全景。若 8.3 已去可跳过。', ticket: '门票 30 泰铢', tips: '红顶双条车往返；务必 18:00 前下山，别误机', warning: 'info' },
+          { id: 'd5_r2', name: '三王纪念碑', time: '随行程', type: 'sight', loc: 'cnx_threekings', checked: false, recommended: true, addr: 'Inthakhin, Mueang, Chiang Mai（古城中心）', hours: '全天', duration: '约 30 分钟', notes: '古城中心地标，兰纳三王立像，拍照打卡点。', ticket: '免费', tips: '邻近帕辛寺、周日夜市，顺路', warning: null },
+          { id: 'd5_r3', name: '333 实弹射击场（湄林）333 Shooting Range', time: '约 12:00-13:00（丛林飞跃后顺路）', type: 'activity', loc: 'cnx_shooting', checked: false, recommended: true, addr: '1096 Tambon Rim Tai, Mae Rim, Chiang Mai 50180（湄林县，距 MAYA 商场约 20 分钟车程）', hours: '9:00-18:00（最晚入场 17:30）', duration: '约 1 小时', notes: '真枪实弹体验，室内空调靶场，中/英教练 1 对 1。与丛林飞跃同在北郊（湄林县），返程顺路。注意：选此项需把 12:00 退房改为行李随车或先寄存，瓦洛洛顺延至 14:00 后。', ticket: '套餐约 1700 泰铢起', tips: '需提前 1 天预约；20-65 岁；孕妇禁入；若时间紧可改 8.3 自由日', warning: null },
+          { id: 'd5_r4', name: '古城 Khao Soi 咖喱面（返程前最后一碗）', time: '11:30-13:30', type: 'food', loc: 'cnx_khaosoi', checked: false, recommended: true, addr: '古城内 Khao Soi Khun Yai 等', hours: '10:00-14:00（周一至周六，周日休）', duration: '约 1 小时', notes: '瓦洛洛采购后，返程前再嗦一碗清迈招牌咖喱面（周一营业）。', ticket: '一碗约 50-80 泰铢', tips: '当天行程紧，建议瓦洛洛后顺路吃；别耽误 19:00 到机场', warning: null },
+          { id: 'd5_r5', name: '清迈 Lila 按摩（视时间）', time: '14:30-17:00', type: 'relax', loc: 'cnx_lila', checked: false, recommended: true, addr: 'Loi Kroh Rd 近塔佩门 / 宁曼分店', hours: '约 11:00-23:00', duration: '约 1.5 小时', notes: '自由时段若还有体力，来一轮按摩收尾。当天偏紧，建议选 1 小时款。', ticket: '1h 泰式约 300-350 泰铢', tips: '时间紧可跳过；优先保机票与瓦洛洛', warning: 'info' },
+          { id: 'd5_r6', name: '宁曼晚餐·夜市小吃（出发前最后一顿）', time: '17:30-18:30', type: 'food', loc: 'cnx_nimman', checked: false, recommended: true, addr: 'Nimmanhaemin Rd / One Nimman', hours: '约 10:00-22:00', duration: '约 1 小时', notes: '去机场前在宁曼吃顿好的，或 One Nimman 美食广场解决。', ticket: '人均约 200-400 泰铢', tips: '吃完预留打车去机场 15-20 分钟；19:00 前出发', warning: null },
+        ] },
+      { id: 'd6', date: '8.5', weekday: '周三', title: '曼谷 → 南京 返程', city: 'bangkok', color: '#6366f1',
+        weather: { icon: '🌦️', high: 34, low: 27, desc: '曼谷转机·留意降雨', tip: '清迈→曼谷→南京，温差大注意补水' },
+        spots: [
+          { id: 'd6_1', name: '曼谷素万那普机场 起飞', time: '02:10 起飞', type: 'flight', loc: 'bkk_airport_suvarnabhumi', checked: true, addr: '999 Nong Prue, Bang Phli, Samut Prakan', hours: '02:10 起飞', duration: '飞行约 5 小时', notes: 'MU2804 国际航班回国。⚠️ 注意：清迈 22:25 落地曼谷，转国际航班 02:10 仅约 3.75 小时，需预留出关+国内转国际航站楼转运时间，建议走快速通道。', ticket: '', tips: '国际航班务必带好护照、登机牌、泰国入境卡（离境联）', boarding: '提前 3 小时', warning: 'warning' },
+          { id: 'd6_2', name: '南京禄口机场 抵达', time: '07:10', type: 'flight', loc: null, checked: true, addr: '南京市江宁区禄口街道（南京禄口国际机场 T2）', hours: '07:10 抵达', duration: '—', notes: '抵达南京，行程结束。', ticket: '', tips: '', warning: null },
+        ] },
+    ];
+
+    // ===== 未计入事项（备选用法）=====
+    // 这里放「上述行程都没列、但值得考虑」的推荐备选，例如榴莲哪里好吃、泰式按摩、大象营等。
+    // 每项的「添加行程」会把它作为【未勾选推荐行程点】并入所选那天的统一时间轴；
+    // 行程里被删除的点也会自动移进这里，避免后期重复添加。
+    const SEED_BACKLOG = [
+      { id: 'bk_durian', icon: '🍈', name: '榴莲哪里好吃', type: 'food', time: '15:00-16:30', suggestedDay: 'd2', loc: null,
+        notes: '曼谷 Or Tor Kor 市场（品质最好、可试吃）或清迈 JJ 市集 / 夜市；雨季金枕更甜，挑刺软、气味浓、按得动的。', ticket: '', tips: '别在密闭车厢/商场里开，遵守当地规定', warn: '多数酒店禁止带榴莲上楼（气味重），开了尽快在室外吃完', addr: '' },
+      { id: 'bk_massage', icon: '💆', name: '泰式古法按摩（备选）', type: 'relax', time: '20:00-21:30', suggestedDay: 'd4', loc: null,
+        notes: '平价可选 Health Land，连锁可选 Let’s Relax；想体验「女子监狱按摩」需早到现场取号（周末 9:00 开、不预约）。雨季走了一天按一个很解乏。', ticket: '约 1 小时泰式 300-600 泰铢', tips: '别按过头误了后续安排', warn: '周末「女子监狱按摩」需现场取号、不预约，建议早点去', addr: '' },
+      { id: 'bk_elephant', icon: '🐘', name: '大象保护营（Elephant Nature Park）', type: 'sight', time: '09:00-16:00', suggestedDay: 'd4', loc: 'cnx_eles',
+        notes: '清迈近郊大象救助营，一日游含接送，可喂食、泥浴、散步，不骑乘；雨季也开放。需提前官网预约名额，旺季很快满。', ticket: '一日游约 2500+ 泰铢', tips: '提前 1-2 周预约；穿可弄脏的衣鞋', warn: '需提前官网预约名额、旺季很快满；不骑乘、雨季也开放', addr: '清迈湄林县近郊' },
+      { id: 'bk_cook', icon: '🍳', name: '泰式家常菜烹饪课', type: 'sight', time: '09:30-13:00', suggestedDay: 'd4', loc: null,
+        notes: '清迈多家泰厨学校（Thai Cookery School 等），半日体验：先去本地市场买菜，再学做冬阴功、绿咖喱、芒果糯米饭，适合亲子。', ticket: '约 1000-1500 泰铢/人', tips: '含接送的多，确认是否接酒店', warn: '确认是否含酒店接送，避免点到点自行往返奔波', addr: '' },
+    ];
+    let BACKLOG = SEED_BACKLOG.map(b => Object.assign({}, b));
+    let deletedIds = [];
+    const TYPE_ICON = { flight: '✈️', hotel: '🏨', sight: '📍', food: '🍜', shop: '🛍️', relax: '💆', transit: '🚌' };
+    function typeIcon(t) { return TYPE_ICON[t] || '📍'; }
+    function persistBacklog() { lsSet('backlog', JSON.stringify(BACKLOG)); lsSet('deleted_spots', JSON.stringify(deletedIds)); }
+
+    // ===== 行程内「温馨提示」推荐（按饭点等空白自动出现）=====
+    // 在每日时间轴贴近饭点的空白处，以小字提示推荐小吃/美食或外部链接；
+    // 点击提示 → 二次确认是否添加 → 再选「按推荐时间插入」或「自己安排时间」。
+    const SUGGESTIONS = [
+      { id: 'sg_d2_lunch', day: 'd2', anchorTime: '12:00', text: '午饭点附近还空着～要不要加个 Siam 商圈美食广场午餐？',
+        spot: { name: 'Siam 商圈美食广场午餐', time: '12:30', type: 'food', loc: 'bkk_siam', addr: '991/1 Rama I Rd, Pathum Wan, Bangkok（BTS Siam）', hours: '约 10:00-22:00', duration: '约 1.5 小时', notes: '暹罗商圈里 MK 火锅、福 T 社、Food Republic 美食广场一站式解决午饭，空调舒服、选择多。', ticket: '', tips: '美食广场可用硬币/刷卡；先逛商场再吃饭避开烈日', warn: '', links: [ {label:'Google Maps · Siam 美食', url:'https://www.google.com/maps/search/?api=1&query=Siam+Paragon+food+court+Bangkok', icon:'🍜'} ] } },
+      { id: 'sg_d4_lunch', day: 'd4', anchorTime: '12:30', text: '周一大市集多半不开，午饭点可以加一碗古城 Khao Soi 咖喱面～',
+        spot: { name: '古城 Khao Soi 咖喱面午餐', time: '12:30', type: 'food', loc: 'cnx_khaosoi', addr: '古城内 Khao Soi 面馆（周一营业店）', hours: '约 10:00-14:00', duration: '约 1 小时', notes: '清迈灵魂美食——椰香咖喱面。周一多数名店（Khun Yai 等）休，找周一照常营业的店嗦一碗。', ticket: '一碗约 50-80 泰铢', tips: '点「เนื้อ」（牛肉）或「ไก่」（鸡肉）；配酸菜更解腻', warn: '', links: [ {label:'Google Maps · Khao Soi 古城', url:'https://www.google.com/maps/search/?api=1&query=Khao+Soi+Chiang+Mai+Old+Town', icon:'🍜'} ] } },
+      { id: 'sg_d4_dinner', day: 'd4', anchorTime: '19:00', text: '周日夜市当天（周一）实际不开，晚间晚餐要不要换宁曼 One Nimman 美食广场？',
+        spot: { name: '周一晚间晚餐 · One Nimman 美食广场', time: '19:00', type: 'food', loc: 'cnx_nimman', addr: 'Nimmanhaemin Rd, Suthep, Chiang Mai（One Nimman）', hours: '约 10:00-22:00', duration: '约 1.5 小时', notes: '原定周日夜市当天（8.3 周一）不开，改到宁曼 One Nimman 空调美食广场，餐厅/小吃/甜品齐全，雨天也舒服。', ticket: '人均约 200-400 泰铢', tips: '顶层美食广场划算；从古城打车约 10 分钟', warn: '', links: [ {label:'Google Maps · One Nimman', url:'https://www.google.com/maps/search/?api=1&query=One+Nimman+Chiang+Mai', icon:'🍜'} ] } },
+      { id: 'sg_d5_lunch', day: 'd5', anchorTime: '12:30', text: '退房后到瓦洛洛之间午饭点空着，要不要加瓦洛洛市场内小吃午餐？',
+        spot: { name: '瓦洛洛市场内小吃午餐', time: '12:30', type: 'food', loc: 'cnx_warorot', addr: 'Chang Khlan Rd 临萍河, Chiang Mai（Warorot / Kad Luang）', hours: '约 6:00-17:00', duration: '约 1 小时', notes: '瓦洛洛干货市场内也有熟食档，米粉、烤肉、泰北香肠配糯米饭，边逛边吃最在地。', ticket: '', tips: '先寄存行李再慢慢吃；💧 临萍河地面可能湿滑，穿防滑鞋', warn: '', links: [ {label:'Google Maps · Warorot Market', url:'https://www.google.com/maps/search/?api=1&query=Warorot+Market+Chiang+Mai', icon:'🍜'} ] } },
+    ];
+    let addedSugSpots = [];
+    let dismissedSugs = [];
+    function persistSuggestMeta() { lsSet('added_sug_spots', JSON.stringify(addedSugSpots)); lsSet('dismissed_sugs', JSON.stringify(dismissedSugs)); }
+
+    // 每个行程点的"来源"链接（已核实的官网 / 攻略页）；自动搜索链接仍会补在后面
+    const SOURCES = {
+      'd1_1': [ {label:'南京禄口机场官网', url:'https://www.njiairport.com/', icon:'✈️'}, {label:'东方航空官网', url:'https://www.ceair.com/', icon:'🛫'} ],
+      'd1_r1': [ {label:'南京禄口机场官网', url:'https://www.njiairport.com/', icon:'✈️'} ],
+      'd1_r2': [ {label:'南京禄口机场官网', url:'https://www.njiairport.com/', icon:'✈️'} ],
+      'd1_r3': [ {label:'东方航空官网', url:'https://www.ceair.com/', icon:'🛫'} ],
+      'd2_0': [ {label:'素万那普机场官网', url:'https://suvarnabhumi.airportthai.co.th', icon:'✈️'}, {label:'机场交通指南', url:'https://suvarnabhumi.airportthai.co.th/service/airport-guide/detail/Transportation_BKK', icon:'🚌'} ],
+      'd2_1': [ {label:'Asia Hotel 官网', url:'https://www.asiahotel.co.th/asia_bangkok/contact', icon:'🏨'}, {label:'泰国旅游局住宿页', url:'https://www.thailandtourismdirectory.go.th/en/info/accommodation/detail/itemid/6195', icon:'📖'} ],
+      'd2_2': [ {label:'Siam Paragon 官网', url:'https://www.siamparagon.co.th/', icon:'🛍️'} ],
+      'd2_3': [ {label:'泰国旅游局·曼谷', url:'https://www.tourismthailand.org/', icon:'🍜'} ],
+      'd2_4': [ {label:'泰国 7-11 资讯', url:'https://www.cpall.co.th/', icon:'🏪'} ],
+      'd2_r1': [ {label:'郑王庙官网', url:'https://www.wat-arun.com/', icon:'🛕'}, {label:'泰国旅游年官网', url:'https://www.am2026thailand.go.th/explore-bangkok/wat-arun', icon:'📖'} ],
+      'd2_r2': [ {label:'泰国旅游年·考山路', url:'https://www.am2026thailand.go.th/press-releases/khao-san-road', icon:'📖'}, {label:'考山路游玩指南', url:'https://khaosanroad.com/guides', icon:'🗺️'} ],
+      'd2_r3': [ {label:'Asiatique 官网', url:'https://www.asiatiquethailand.com', icon:'🎡'} ],
+      'd2_r4': [ {label:'Jodd Fairs 攻略', url:'https://travelthai.cc/jodd-fairs-ratchada', icon:'🛍️'}, {label:'DiscoveryThailand', url:'https://www.discoverythailand.com/jodd-fairs', icon:'📖'} ],
+      'd2_r5': [ {label:'Yaowarat 美食指南', url:'https://bangkok-travel-guide.com/attractions/yaowarat', icon:'🍜'}, {label:'Chinatown 完整攻略', url:'https://goasia.cc/en/article/chinatown-bangkok', icon:'📖'} ],
+      'd2_r6': [ {label:'Let\'s Relax 官网', url:'https://www.letsrelaxspa.com/', icon:'💆'} ],
+      'd3_1': [ {label:'Asia Hotel 官网', url:'https://www.asiahotel.co.th/asia_bangkok/contact', icon:'🏨'} ],
+      'd3_2': [ {label:'素万那普机场官网', url:'https://suvarnabhumi.airportthai.co.th', icon:'✈️'} ],
+      'd3_3': [ {label:'清迈机场官网', url:'https://chiangmai.airportthai.co.th', icon:'✈️'}, {label:'清迈机场中文', url:'https://chiangmaiinternationalairport.com/zh-hans/', icon:'📖'} ],
+      'd3_4': [ {label:'Agoda 预订页', url:'https://www.agoda.com/zh-tw/thapae-happy-house/hotel/chiang-mai-th.html', icon:'🏨'} ],
+      'd3_5': [ {label:'塔佩门攻略', url:'https://chiangmaihub.com/tha-phae-gate', icon:'🛕'} ],
+      'd3_6': [ {label:'长康路夜市攻略', url:'https://www.thaiholidayguide.com/attraction/chiang-mai-night-bazaar', icon:'🛍️'}, {label:'Night Bazaar 指南', url:'https://the20lodge.com/chiang-mai-night-bazaar-complete-guide-to-shopping-food-and-culture/', icon:'📖'} ],
+      'd3_r1': [ {label:'恰图恰官网', url:'https://www.chatuchakmarket.org/', icon:'🛍️'}, {label:'泰国旅游年·恰图恰', url:'https://www.am2026thailand.go.th/explore-bangkok/chatuchak-weekend-market', icon:'📖'} ],
+      'd3_r2': [ {label:'白色市集攻略', url:'https://wanderlog.com/zh/place/details/4135609/white-market', icon:'🛍️'}, {label:'White Market 介绍', url:'https://travelthai.cc?p=2803/', icon:'📖'} ],
+      'd3_r3': [ {label:'泰国旅游局·曼谷', url:'https://www.tourismthailand.org/', icon:'☕'} ],
+      'd3_r4': [ {label:'Akha Ama 官网', url:'https://www.akhaamacoffee.com/', icon:'☕'} ],
+      'd3_r5': [ {label:'Lila 按摩官网', url:'https://www.lilathaimassage.com/about', icon:'💆'} ],
+      'd3_r6': [ {label:'清迈咖喱面攻略', url:'https://www.thethailandguides.com/food-guide/chiang-mai-food-guide/', icon:'🍜'}, {label:'最佳 Khao Soi 推荐', url:'https://eathealthy365.com/where-to-find-the-absolute-best-khao-soi-in-chiang-mai', icon:'📖'} ],
+      'd4_1': [ {label:'塔佩门攻略', url:'https://chiangmaihub.com/tha-phae-gate', icon:'🛕'} ],
+      'd4_2': [ {label:'清迈美食指南', url:'https://www.thethailandguides.com/food-guide/chiang-mai-food-guide/', icon:'🍜'} ],
+      'd4_3': [ {label:'女子监狱按摩官网', url:'https://www.lilathaimassage.com/about', icon:'💆'} ],
+      'd4_4': [ {label:'JJ Market 攻略', url:'https://heidihihi.com/jingjai-market/', icon:'🛍️'}, {label:'Jing Jai 指南', url:'https://www.mytravelbuzzg.com/jing-jai-jj-market-chiang-mai/', icon:'📖'} ],
+      'd4_5': [ {label:'椰林市集攻略', url:'https://jietravelblog.com/chiang-mai-coconut-market/', icon:'🥥'}, {label:'Coconut Market 指南', url:'https://rosaroundtheworld.com/chiangmai-coconut-market/', icon:'📖'} ],
+      'd4_6': [ {label:'塔佩幸福旅舍 Agoda', url:'https://www.agoda.com/zh-tw/thapae-happy-house/hotel/chiang-mai-th.html', icon:'🏨'} ],
+      'd4_7': [ {label:'宁曼路攻略', url:'https://www.lifewithvetta.com/posts/nimman-chiang-mai-guide', icon:'🛍️'}, {label:'Nimman Road 指南', url:'https://www.nomadotravel.app/en/attractions/nimman-road', icon:'📖'} ],
+      'd4_8': [ {label:'周日夜市攻略', url:'https://www.sawadeechiangmai.com/blog/walking-streets-chiang-mai-2026', icon:'🛍️'}, {label:'Sunday Walking Street', url:'https://www.thaiholidayguide.com/attraction/chiang-mai-sunday-walking-street/', icon:'📖'} ],
+      'd4_r1': [ {label:'双龙寺攻略', url:'https://au.tourismthailand.org/Attraction/Wat-Phra-That-Doi-Suthep--145', icon:'🛕'}, {label:'素贴山指南', url:'https://www.sawadeechiangmai.com/blog/doi-suthep-guide-chiang-mai-2026', icon:'📖'} ],
+      'd4_r2': [ {label:'帕辛寺攻略', url:'https://www.thaiholidayguide.com/attraction/wat-phra-singh-woramahawihan/', icon:'🛕'} ],
+      'd4_r3': [ {label:'Akha Ama 官网', url:'https://www.akhaamacoffee.com/', icon:'☕'} ],
+      'd4_r4': [ {label:'Lila 按摩官网', url:'https://www.lilathaimassage.com/about', icon:'💆'} ],
+      'd4_r5': [ {label:'清迈咖喱面攻略', url:'https://www.thethailandguides.com/food-guide/chiang-mai-food-guide/', icon:'🍜'}, {label:'最佳 Khao Soi 推荐', url:'https://eathealthy365.com/where-to-find-the-absolute-best-khao-soi-in-chiang-mai', icon:'📖'} ],
+      'd4_r6': [ {label:'宁曼路攻略', url:'https://www.lifewithvetta.com/posts/nimman-chiang-mai-guide', icon:'🛍️'}, {label:'Nimman Road 指南', url:'https://www.nomadotravel.app/en/attractions/nimman-road', icon:'📖'} ],
+      'd4_r7': [ {label:'MAYA 官网', url:'https://mayachiangmai.com/', icon:'🛍️'}, {label:'宁曼购物攻略', url:'https://www.lifewithvetta.com/posts/nimman-chiang-mai-guide', icon:'📖'} ],
+      'd4_r8': [ {label:'Art in Paradise 官网', url:'https://www.artinparadise.co.th/', icon:'🎨'}, {label:'清迈 3D 馆攻略', url:'https://www.tripadvisor.com/Attraction_Review-g293917-d6810835-Reviews-Art_in_Paradise_Chiang_Mai-Chiang_Mai.html', icon:'📖'} ],
+      'd5_1': [ {label:'清迈门早市攻略', url:'https://www.bikago.com/blog/a-complete-guide-to-chiang-mai-gate-market-what-to-eat-see-and-do', icon:'🥬'}, {label:'Chiang Mai Gate Market', url:'https://abackpackersworld.com/chiang-mai-gate-market/', icon:'📖'} ],
+      'd5_2': [ {label:'Jungle Flight 官网', url:'https://jungleflightchiangmai.com/', icon:'🦅'}, {label:'安全说明', url:'https://jungleflightchiangmai.com/safety', icon:'🛡️'} ],
+      'd5_3': [ {label:'塔佩幸福旅舍 Agoda', url:'https://www.agoda.com/zh-tw/thapae-happy-house/hotel/chiang-mai-th.html', icon:'🏨'} ],
+      'd5_4': [ {label:'瓦洛洛市场攻略', url:'https://www.thailandtourismdirectory.go.th/en/attraction/4884', icon:'🛍️'}, {label:'Warorot 深度指南', url:'https://lorenzigo.com/warorot-market-chiang-mai/', icon:'📖'} ],
+      'd5_5': [ {label:'清迈咖啡指南', url:'https://www.thethailandguides.com/food-guide/chiang-mai-food-guide/', icon:'☕'} ],
+      'd5_6': [ {label:'清迈机场官网', url:'https://chiangmai.airportthai.co.th', icon:'✈️'} ],
+      'd5_7': [ {label:'素万那普机场官网', url:'https://suvarnabhumi.airportthai.co.th', icon:'✈️'} ],
+      'd5_r1': [ {label:'双龙寺攻略', url:'https://au.tourismthailand.org/Attraction/Wat-Phra-That-Doi-Suthep--145', icon:'🛕'}, {label:'素贴山指南', url:'https://www.sawadeechiangmai.com/blog/doi-suthep-guide-chiang-mai-2026', icon:'📖'} ],
+      'd5_r2': [ {label:'三王纪念碑攻略', url:'https://thailandtourismdirectory.go.th/en/attraction/331', icon:'🗿'}, {label:'Three Kings Guide', url:'https://chiangmaihub.com/three-kings-monument/', icon:'📖'} ],
+      'd5_r3': [ {label:'333 Shooting Range', url:'https://clayarena.com/en/stands/28-333-shooting-range', icon:'🔫'}, {label:'Trip.com 预订', url:'https://us.trip.com/things-to-do/detail/66156282/', icon:'🎟️'} ],
+      'd5_r4': [ {label:'清迈咖喱面攻略', url:'https://www.thethailandguides.com/food-guide/chiang-mai-food-guide/', icon:'🍜'}, {label:'最佳 Khao Soi 推荐', url:'https://eathealthy365.com/where-to-find-the-absolute-best-khao-soi-in-chiang-mai', icon:'📖'} ],
+      'd5_r5': [ {label:'Lila 按摩官网', url:'https://www.lilathaimassage.com/about', icon:'💆'} ],
+      'd5_r6': [ {label:'宁曼路攻略', url:'https://www.lifewithvetta.com/posts/nimman-chiang-mai-guide', icon:'🛍️'}, {label:'Nimman Road 指南', url:'https://www.nomadotravel.app/en/attractions/nimman-road', icon:'📖'} ],
+      'd6_1': [ {label:'素万那普机场官网', url:'https://suvarnabhumi.airportthai.co.th', icon:'✈️'}, {label:'东方航空官网', url:'https://www.ceair.com/', icon:'🛫'} ],
+      'd6_2': [ {label:'南京禄口机场官网', url:'https://www.njiairport.com/', icon:'✈️'} ],
+    };
+
+    let currentDay = 'd4';
+
+    // Load from URL hash (share) or localStorage
+    function restoreBacklogMeta() {
+      const del = lsGet('deleted_spots');
+      if (del) { try { JSON.parse(del).forEach(id => DAYS.forEach(day => { const i = day.spots.findIndex(s => s.id === id); if (i >= 0) day.spots.splice(i, 1); })); } catch(e){} }
+      const bl = lsGet('backlog');
+      if (bl) { try { BACKLOG = JSON.parse(bl); } catch(e){} }
+      const as = lsGet('added_sug_spots');
+      if (as) { try { addedSugSpots = JSON.parse(as); addedSugSpots.forEach(a => { const day = DAYS.find(d => d.id === a.dayId); if (day && !day.spots.find(s => s.id === a.spot.id)) day.spots.push(a.spot); }); } catch(e){} }
+      const ds = lsGet('dismissed_sugs');
+      if (ds) { try { dismissedSugs = JSON.parse(ds); } catch(e){} }
+    }
+
+    // ===== 多人实时同步（共享行程码）=====
+    const SYNC_SERVER = (function(){
+      try {
+        const fromUrl = new URLSearchParams(location.search).get('server');
+        if (fromUrl) { localStorage.setItem('sync_server', fromUrl); return fromUrl; }
+        const fromLs = localStorage.getItem('sync_server');
+        if (fromLs) return fromLs;
+        const origin = location.origin;
+        if (origin && origin !== 'null' && !origin.includes('localhost') && !origin.includes('127.0.0.1')) return origin;
+      } catch(e){}
+      return 'http://localhost:3000';
+    })();
+    let tripCode = null;
+    let localVersion = 0;
+    let syncPollTimer = null;
+    let syncSaveTimer = null;
+    let syncSaving = false;
+    let syncLoading = false;
+
+    function setTripCodeUI() {
+      const hasCode = tripCode && tripCode.length === 6;
+      document.getElementById('tcJoinDisplay').style.display = hasCode ? 'none' : '';
+      document.getElementById('tcCodeDisplay').style.display = hasCode ? '' : 'none';
+      if (hasCode) {
+        document.getElementById('tcCode').textContent = tripCode;
+        document.getElementById('tcStatus').textContent = syncSaving ? '保存中…' : (syncLoading ? '加载中…' : '✓ 已同步');
+        document.getElementById('tcStatus').className = 'tc-status' + (syncLoading || syncSaving ? '' : ' ok');
+      }
+    }
+    function saveTripCodeMeta(code) {
+      tripCode = code;
+      if (code) { lsSet('trip_code', code); }
+      else { try { localStorage.removeItem('trip_code'); } catch(e){} }
+      // 更新 URL
+      const u = new URL(window.location.href);
+      if (code) u.searchParams.set('code', code);
+      else u.searchParams.delete('code');
+      window.history.replaceState({}, '', u);
+      setTripCodeUI();
+    }
+    async function apiFetch(method, path, body) {
+      const url = SYNC_SERVER + path;
+      try {
+        const opts = { method, headers: {} };
+        if (body) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
+        const res = await fetch(url, opts);
+        if (!res.ok) return null;
+        return await res.json();
+      } catch (e) { console.warn('Sync API error:', e.message); return null; }
+    }
+    // 导出/导入 DAYS 状态为可传输 JSON
+    function exportTripState() {
+      return {
+        days: DAYS.map(d => ({ id: d.id, spots: d.spots.map(s => ({ id: s.id, checked: s.checked, time: s.time })) })),
+        backlog: BACKLOG,
+        deletedIds: deletedIds,
+        addedSugSpots: addedSugSpots,
+        dismissedSugs: dismissedSugs,
+      };
+    }
+    function importTripState(st) {
+      if (!st || !st.days || !st.days.length) return;
+      st.days.forEach(nd => {
+        const day = DAYS.find(d => d.id === nd.id);
+        if (!day) return;
+        nd.spots.forEach(ns => {
+          const spot = day.spots.find(s => s.id === ns.id);
+          if (spot) { spot.checked = ns.checked; spot.time = ns.time; }
+        });
+      });
+      if (st.backlog) BACKLOG = st.backlog;
+      if (st.deletedIds) deletedIds = st.deletedIds;
+      if (st.addedSugSpots) addedSugSpots = st.addedSugSpots;
+      if (st.dismissedSugs) dismissedSugs = st.dismissedSugs;
+    }
+    async function createTrip() {
+      const res = await apiFetch('POST', '/api/create', { state: exportTripState() });
+      if (res && res.ok) {
+        saveTripCodeMeta(res.code);
+        localVersion = res.version || 1;
+        startSyncPoll();
+        render();
+      } else { alert('创建行程失败，请确认同步服务器已启动（node server/server.js）'); }
+    }
+    async function joinTrip(code) {
+      const c = (code || document.getElementById('tcInput').value || '').toUpperCase().trim();
+      if (c.length !== 6) { alert('请输入 6 位行程码'); return; }
+      const res = await apiFetch('GET', '/api/' + c);
+      if (res && res.ok && res.state) {
+        saveTripCodeMeta(c);
+        importTripState(res.state);
+        localVersion = res.version || 1;
+        // 保存到 localStorage 作为本地回退
+        try { localStorage.setItem('days', JSON.stringify(DAYS)); } catch(e){}
+        startSyncPoll();
+        render();
+      } else { alert('未找到行程码 ' + c + '，请确认码正确且服务器已启动'); }
+    }
+    function leaveTrip() {
+      stopSyncPoll();
+      saveTripCodeMeta(null);
+      localVersion = 0;
+      render();
+    }
+    function copyTripCode() {
+      if (!tripCode) return;
+      const url = window.location.origin + window.location.pathname + '?code=' + tripCode;
+      navigator.clipboard.writeText(url).then(() => {
+        document.getElementById('tcStatus').textContent = '✓ 已复制';
+        setTimeout(() => setTripCodeUI(), 1500);
+      }).catch(() => { prompt('复制分享链接：', url); });
+    }
+    function syncSave() {
+      if (!tripCode || syncLoading) return;
+      if (syncSaveTimer) clearTimeout(syncSaveTimer);
+      syncSaveTimer = setTimeout(async () => {
+        syncSaving = true; setTripCodeUI();
+        const res = await apiFetch('PUT', '/api/' + tripCode, { state: exportTripState() });
+        syncSaving = false;
+        if (res && res.ok) { localVersion = res.version || localVersion; }
+        setTripCodeUI();
+      }, 800);
+    }
+    async function syncLoad() {
+      if (!tripCode || syncSaving) return;
+      syncLoading = true; setTripCodeUI();
+      const res = await apiFetch('GET', '/api/' + tripCode);
+      syncLoading = false;
+      if (res && res.ok && res.state && res.version !== localVersion) {
+        const oldCode = tripCode;
+        importTripState(res.state);
+        localVersion = res.version;
+        render();
+      }
+      setTripCodeUI();
+    }
+    async function syncPoll() {
+      if (!tripCode) return;
+      try {
+        const res = await apiFetch('GET', '/api/' + tripCode + '/version');
+        if (res && res.ok && res.version !== localVersion) {
+          await syncLoad();
+          setTripCodeUI();
+        }
+      } catch(e) {}
+    }
+    function startSyncPoll() {
+      stopSyncPoll();
+      syncPollTimer = setInterval(syncPoll, 4000);
+    }
+    function stopSyncPoll() {
+      if (syncPollTimer) { clearInterval(syncPollTimer); syncPollTimer = null; }
+    }
+
+    function importState() {
+      const hash = location.hash;
+      if (hash.startsWith('#data=')) {
+        try {
+          const obj = JSON.parse(decodeURIComponent(hash.slice(6)));
+          if (obj.days) {
+            obj.days.forEach(nd => {
+              const day = DAYS.find(d => d.id === nd.id);
+              if (day) day.spots = nd.spots;
+            });
+            if (obj.currentDay) currentDay = obj.currentDay;
+            restoreBacklogMeta();
+            return;
+          }
+        } catch(e) { console.warn('解析分享链接失败', e); }
+      }
+      DAYS.forEach(day => day.spots.forEach(spot => {
+        const saved = lsGet('spot_' + spot.id);
+        if (saved !== null) spot.checked = saved === 'true';
+      }));
+      restoreBacklogMeta();
+    }
+    importState();
+
+    // ===== 初始化：尝试从 URL / localStorage 恢复行程码 =====
+    (async function initTripCode() {
+      const urlCode = new URLSearchParams(location.search).get('code');
+      const savedCode = lsGet('trip_code');
+      const code = urlCode || savedCode;
+      if (code && code.length === 6) {
+        // 先恢复 UI 显示
+        tripCode = code;
+        setTripCodeUI();
+        // 尝试从服务器加载（异步）
+        const res = await apiFetch('GET', '/api/' + code);
+        if (res && res.ok && res.state) {
+          importTripState(res.state);
+          localVersion = res.version || 1;
+          startSyncPoll();
+        } else if (savedCode) {
+          // 服务器不可达，回退本地
+          localVersion = 0;
+          startSyncPoll(); // 继续轮询，等服务器起来后自动同步
+        }
+        render();
+      } else if (savedCode && savedCode.length === 6) {
+        tripCode = savedCode;
+        setTripCodeUI();
+        render();
+        startSyncPoll();
+      }
+    })();
+
+    function getSortedChecked(day) {
+      return day.spots.filter(s => s.checked && s.loc).sort((a, b) => timeToMin(a.time) - timeToMin(b.time));
+    }
+    function timeToMin(t) {
+      if (!t) return 0;
+      if (t.includes('出发前') || t.includes('值机前')) return 1;
+      if (t.includes('值机后')) return 60;
+      if (t.includes('飞行中')) return 600;
+      if (t.includes('随行程')) return 1439;
+      const m = t.match(/(\d{1,2}):(\d{2})/);
+      return m ? parseInt(m[1]) * 60 + parseInt(m[2]) : 500;
+    }
+    // 从酒店行程点提取简短酒店名（去掉「入住休息/办理入住/休整/退房…」等后缀）
+    function hotelShort(s) {
+      let n = (s.name || '').replace(/\s*(入住休息|办理入住|休整|退房[^\s]*|\+ 寄存行李| \+ 寄存行李).*$/g, '').trim();
+      if (n === '酒店' || !n) {
+        const m = (s.addr || '').match(/（([^）]+)）/);
+        n = (m ? m[1] : (s.addr || '').split(/[,，]/)[0]) || '酒店';
+      }
+      return n;
+    }
+    // ===== 当前进行中 / 下一站 定位 =====
+    // 行程基准日：Day1 = 7月31日（2026年）
+    const TRIP_BASE = new Date(2026, 6, 31);
+    let nowRef = null; // 模拟时间字符串（ISO），null = 使用真实时间
+    let nowSimActive = false;
+    function getNowDate() { return nowRef ? new Date(nowRef) : new Date(); }
+    function getNowMin() { const d = getNowDate(); return d.getHours() * 60 + d.getMinutes(); }
+    function getNowDayIdx() {
+      const d = getNowDate();
+      const diff = Math.round((d - TRIP_BASE) / 86400000);
+      if (diff < 0) return -1;
+      if (diff >= DAYS.length) return -2;
+      return diff;
+    }
+    function computeNowSpot() {
+      const idx = getNowDayIdx();
+      if (idx < 0 || idx >= DAYS.length) return { dayIdx: idx, spot: null, state: 'none' };
+      const day = DAYS[idx];
+      const nowMin = getNowMin();
+      let current = null, next = null;
+      const sorted = day.spots.filter(s => s.checked && /\d:\d{2}/.test(s.time)).sort((a, b) => timeToMin(a.time) - timeToMin(b.time));
+      for (const s of sorted) {
+        if (timeToMin(s.time) <= nowMin) current = s;
+        if (timeToMin(s.time) > nowMin && !next) next = s;
+      }
+      if (current) return { dayIdx: idx, spot: current, state: 'current' };
+      if (next) return { dayIdx: idx, spot: next, state: 'next' };
+      return { dayIdx: idx, spot: null, state: 'done' };
+    }
+    function renderNowBanner() {
+      const bn = document.getElementById('nowBanner');
+      if (!bn) return;
+      const ns = computeNowSpot();
+      const nowMin = getNowMin();
+      const nowStr = minToTime(Math.round(nowMin));
+      const bt = document.getElementById('nowBannerText');
+      const bt2 = document.getElementById('nowBannerTime');
+      if (ns.dayIdx === -1) { bn.classList.remove('show','demo'); bt.textContent = '📅 旅行尚未开始（7月31日出发）'; bt2.textContent = ''; return; }
+      if (ns.dayIdx === -2) { bn.classList.add('show'); bn.classList.remove('demo'); bt.textContent = '🎉 旅行已结束！'; bt2.textContent = nowStr; return; }
+      const day = DAYS[ns.dayIdx];
+      const demo = nowSimActive ? ' demo' : '';
+      const label = `Day${ns.dayIdx + 1}·${day.date} ${day.weekday}`;
+      if (ns.spot) {
+        bn.className = 'now-banner show' + demo;
+        bt.textContent = (ns.state === 'current' ? `🟢 ${label} · 进行中：` : `⏩ ${label} · 下一站：`) + escHtml(ns.spot.name);
+        bt2.textContent = '🕐 ' + nowStr;
+      } else if (ns.state === 'done' && day.spots.some(s => s.checked)) {
+        bn.className = 'now-banner show' + demo;
+        bt.textContent = `✅ ${label} · 今日行程已完成`;
+        bt2.textContent = '🕐 ' + nowStr;
+      } else {
+        bn.classList.remove('show','demo');
+      }
+    }
+    function jumpToNow() {
+      const ns = computeNowSpot();
+      if (ns.dayIdx < 0 || ns.dayIdx >= DAYS.length) return;
+      if (currentDay !== DAYS[ns.dayIdx].id) switchDay(DAYS[ns.dayIdx].id);
+      setTimeout(() => {
+        if (ns.spot) {
+          const el = document.querySelector(`.spot-row[data-id="${ns.spot.id}"]`);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          selectAndShow(ns.spot.id);
+        }
+      }, 150);
+    }
+    function closeNowSim() {
+      const m = document.getElementById('nowSimModal');
+      if (m) m.classList.remove('show');
+    }
+    function openNowSim() {
+      const m = document.getElementById('nowSimModal');
+      if (!m) return;
+      const d = getNowDate();
+      document.getElementById('simDate').value = d.toISOString().slice(0, 10);
+      document.getElementById('simTime').value = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+      m.classList.add('show');
+    }
+    function applyNowSim() {
+      const date = document.getElementById('simDate').value;
+      const time = document.getElementById('simTime').value;
+      if (date && time) { nowRef = date + 'T' + time + ':00+08:00'; nowSimActive = true; }
+      else { nowRef = null; nowSimActive = false; }
+      closeNowSim();
+      render();
+      setTimeout(jumpToNow, 200);
+    }
+    function clearNowSim() {
+      nowRef = null; nowSimActive = false; closeNowSim();
+      render();
+    }
+    function toggleNowSim() {
+      if (nowSimActive) { clearNowSim(); document.getElementById('nowSimBtn').textContent = '🕐 演示'; }
+      else { openNowSim(); }
+    }
+
+    // ===== 实时冲突检测：只针对「已勾选」的行程点 =====
+    // 三类冲突：① 当日不营业（开放星期不符）② 两个计划时间窗口重叠 ③ 计划时间超出商家当天开门/关门时间
+    const WD = { '周一':1,'周二':2,'周三':3,'周四':4,'周五':5,'周六':6,'周日':7 };
+    function weekdayNum(w) { return WD[w] || 0; }
+    function numToWeekday(n) { return Object.keys(WD).find(k => WD[k] === n) || ''; }
+    function parseOpenDays(hours) {
+      if (!hours) return null;
+      if (/每日|每天|全天|24h|24小时|24 小时/.test(hours)) return { always: true };
+      const set = new Set();
+      if (/周末/.test(hours)) { set.add(6); set.add(7); }
+      if (/周六日/.test(hours)) { set.add(6); set.add(7); }
+      if (/周五六日/.test(hours)) { set.add(5); set.add(6); set.add(7); }
+      const re = /周[一二三四五六日]/g; let m;
+      while ((m = re.exec(hours))) set.add(WD[m[0]]);
+      if (set.size) return { days: set };
+      return null; // 无星期约束（如「约 17:00-24:00」）
+    }
+    function parseWindow(s) {
+      const t = s.time || '';
+      const rng = t.match(/(\d{1,2}):(\d{2})\s*[-–]\s*(\d{1,2}):(\d{2})/);
+      if (rng) { const a = +rng[1]*60 + +rng[2], b = +rng[3]*60 + +rng[4]; if (b > a) return [a, b]; }
+      if (s.type === 'flight') { const p = t.match(/(\d{1,2}):(\d{2})/); if (p) { const a = +p[1]*60 + +p[2]; return [a, a + 45]; } }
+      return null;
+    }
+    function minToTime(m) { m = ((m % 1440) + 1440) % 1440; const h = Math.floor(m / 60), mm = m % 60; return String(h).padStart(2, '0') + ':' + String(mm).padStart(2, '0'); }
+
+    // ===== 实时冲突检测：只针对「已勾选」的行程点 =====
+    // 解析商家营业时间窗口（HH:MM-HH:MM，支持「约/店铺/夜市」等前缀与跨午夜，如 17:00-01:00）
+    function parseHoursWindows(hours) {
+      if (!hours) return null;
+      if (/每日|每天|全天|24h|24小时|24 小时/.test(hours)) return null; // 永远营业，不检查
+      const re = /(\d{1,2}):(\d{2})\s*[-–]\s*(\d{1,2}):(\d{2})/g;
+      const out = []; let m;
+      while ((m = re.exec(hours))) { let a = +m[1] * 60 + +m[2], b = +m[3] * 60 + +m[4]; if (b <= a) b += 1440; out.push([a, b]); }
+      return out.length ? out : null;
+    }
+    // 解析计划时间：优先「窗口」，其次「单点」；航班不按营业时间判断
+    function parsePlanned(s) {
+      const t = s.time || '';
+      const rng = t.match(/(\d{1,2}):(\d{2})\s*[-–]\s*(\d{1,2}):(\d{2})/);
+      if (rng) { const a = +rng[1] * 60 + +rng[2], b = +rng[3] * 60 + +rng[4]; if (b > a) return { type: 'window', w: [a, b] }; }
+      if (s.type === 'flight') return null;
+      const p = t.match(/(\d{1,2}):(\d{2})/);
+      if (p) return { type: 'point', t: +p[1] * 60 + +p[2] };
+      return null;
+    }
+    function plannedOutsideHours(planned, windows) {
+      // 判定计划时间是否落在商家「整体营业区间」（最早开门 ~ 最晚关门）之外。
+      // 跨午夜的营业窗口（如 17:00-01:00）单独按前后两段判断，避免把深夜时段误判为关门。
+      let openMin = Infinity, closeMax = -Infinity, hasMidnight = false;
+      for (const [o, c] of windows) { openMin = Math.min(openMin, o); closeMax = Math.max(closeMax, c); if (c > 1440) hasMidnight = true; }
+      if (planned.type === 'window') {
+        const ps = planned.w[0], pe = planned.w[1];
+        if (hasMidnight) {
+          for (const [o, c] of windows) {
+            if (c <= 1440) { if (ps >= o && pe <= c) return false; }
+            else { if (ps >= o && pe <= 1440) return false; if (ps >= 0 && pe <= c - 1440) return false; }
+          }
+          return true;
+        }
+        return ps < openMin || pe > closeMax;
+      } else {
+        const t = planned.t;
+        if (hasMidnight) {
+          for (const [o, c] of windows) {
+            if (c <= 1440) { if (t >= o && t <= c) return false; }
+            else { if (t >= o && t <= 1440) return false; if (t >= 0 && t <= c - 1440) return false; }
+          }
+          return true;
+        }
+        return t < openMin || t > closeMax;
+      }
+    }
+    function computeConflicts(day) {
+      const res = new Map(); // id -> reason
+      const checked = day.spots.filter(s => s.checked);
+      // ① 营业时间冲突：当日不在开放星期
+      const wd = weekdayNum(day.weekday);
+      checked.forEach(s => {
+        const od = parseOpenDays(s.hours);
+        if (od && !od.always && od.days && !od.days.has(wd)) {
+          const openDays = [...od.days].sort((a,b)=>a-b).map(numToWeekday).join('/');
+          res.set(s.id, `当日（${day.weekday}）不营业：该地点仅【${openDays}】开放`);
+        }
+      });
+      // ② 时间窗口重叠（仅基于已勾选且有时间窗口的点）
+      const win = checked.map(s => ({ s, w: parseWindow(s) })).filter(x => x.w);
+      for (let i = 0; i < win.length; i++) {
+        for (let j = i + 1; j < win.length; j++) {
+          const A = win[i], B = win[j];
+          if (A.w[0] < B.w[1] && B.w[0] < A.w[1]) {
+            const rA = res.get(A.s.id), rB = res.get(B.s.id);
+            res.set(A.s.id, (rA ? rA + '；' : '') + `与「${B.s.name}」时间重叠（${A.s.time} × ${B.s.time}）`);
+            res.set(B.s.id, (rB ? rB + '；' : '') + `与「${A.s.name}」时间重叠（${B.s.time} × ${A.s.time}）`);
+          }
+        }
+      }
+      // ③ 计划时间落在商家当天开门/关门时间之外（如约 20:00 但商家 18:00 关门）
+      checked.forEach(s => {
+        const windows = parseHoursWindows(s.hours);
+        const planned = parsePlanned(s);
+        if (windows && planned && plannedOutsideHours(planned, windows)) {
+          const openStr = windows.map(([o, c]) => minToTime(o) + '-' + minToTime(c)).join(' / ');
+          const planStr = planned.type === 'window' ? minToTime(planned.w[0]) + '-' + minToTime(planned.w[1]) : minToTime(planned.t);
+          const [o, c] = windows[0];
+          let detail = '';
+          if (planned.type === 'window') {
+            if (planned.w[0] < o) detail = `，${minToTime(planned.w[0])} 开始但 ${minToTime(o)} 才开门`;
+            else if (planned.w[1] > c) detail = `，${minToTime(planned.w[1])} 结束但 ${minToTime(c)} 已关门`;
+          } else detail = `，${minToTime(planned.t)} 不在营业时段内`;
+          const msg = `计划时间（${planStr}）超出商家营业时间（${openStr}）${detail}`;
+          res.set(s.id, (res.get(s.id) ? res.get(s.id) + '；' : '') + msg);
+        }
+      });
+      return res;
+    }
+
+    // ===== 依据冲突类型，计算「推荐调整时间 / 推荐改天」建议 =====
+    function warningText(w) { return ({ warning: '⚠️ 留意事项', danger: '🚨 冲突提醒', info: '💡 提示' })[w] || ''; }
+    function suggestFix(spot, day) {
+      const wd = weekdayNum(day.weekday);
+      // ① 当天不营业 → 推荐改到相邻营业日
+      const od = parseOpenDays(spot.hours);
+      if (od && !od.always && od.days && !od.days.has(wd)) {
+        const openDays = [...od.days].sort((a, b) => a - b);
+        const openStr = openDays.map(numToWeekday).join('/');
+        let best = null, bestDelta = 99;
+        const curIdx = DAYS.findIndex(x => x.id === day.id);
+        DAYS.forEach((d, i) => {
+          if (d.id === day.id) return;
+          if (od.days.has(weekdayNum(d.weekday))) { const delta = Math.abs(i - curIdx); if (delta < bestDelta) { bestDelta = delta; best = d; } }
+        });
+        if (best) return { kind: 'day', targetDayId: best.id, label: `当天（${day.weekday}）不营业，建议改到 Day ${DAYS.indexOf(best) + 1} · ${best.date} ${best.weekday}（该地点仅【${openStr}】开放）` };
+        return { kind: 'none', label: `当天（${day.weekday}）不营业，无法用时间调整，建议改到【${openStr}】再安排` };
+      }
+      // ③ 计划超出营业时间 → 把窗口塞进营业时段内
+      const windows = parseHoursWindows(spot.hours);
+      const planned = parsePlanned(spot);
+      if (windows && planned) {
+        let openMin = Infinity, closeMax = -Infinity;
+        for (const [o, c] of windows) { openMin = Math.min(openMin, o); closeMax = Math.max(closeMax, c > 1440 ? c - 1440 : c); }
+        if (planned.type === 'window') {
+          const dur = planned.w[1] - planned.w[0];
+          if (planned.w[1] > closeMax) {
+            const ns = Math.max(openMin, closeMax - dur), nEnd = Math.min(ns + dur, closeMax);
+            return { kind: 'time', newTime: minToTime(ns) + '-' + minToTime(nEnd), label: `计划结束（${minToTime(planned.w[1])}）晚于关门（${minToTime(closeMax)}），建议调整到 ${minToTime(ns)}-${minToTime(nEnd)}` };
+          }
+          if (planned.w[0] < openMin) {
+            const ns = openMin, nEnd = Math.min(openMin + dur, closeMax);
+            return { kind: 'time', newTime: minToTime(ns) + '-' + minToTime(nEnd), label: `计划开始（${minToTime(planned.w[0])}）早于开门（${minToTime(openMin)}），建议调整到 ${minToTime(ns)}-${minToTime(nEnd)}` };
+          }
+        } else {
+          const t = planned.t;
+          if (t > closeMax) return { kind: 'time', newTime: minToTime(closeMax), label: `计划（${minToTime(t)}）晚于关门（${minToTime(closeMax)}），建议调整到 ${minToTime(closeMax)}` };
+          if (t < openMin) return { kind: 'time', newTime: minToTime(openMin), label: `计划（${minToTime(t)}）早于开门（${minToTime(openMin)}），建议调整到 ${minToTime(openMin)}` };
+        }
+      }
+      // ② 与其他已勾选点时间重叠 → 错开到前后
+      const win = parseWindow(spot);
+      if (win) {
+        const dur = win[1] - win[0];
+        const checked = day.spots.filter(s => s.checked && s.id !== spot.id);
+        for (const o of checked) {
+          const ow = parseWindow(o);
+          if (!ow) continue;
+          if (win[0] < ow[1] && ow[0] < win[1]) {
+            let ns = ow[1];
+            if (ns + dur <= 1440) return { kind: 'time', newTime: minToTime(ns) + '-' + minToTime(ns + dur), label: `与「${o.name}」(${o.time}) 重叠，建议挪到 ${minToTime(ns)}-${minToTime(ns + dur)}（其后）` };
+            ns = ow[0] - dur;
+            if (ns >= 0) return { kind: 'time', newTime: minToTime(ns) + '-' + minToTime(ns + dur), label: `与「${o.name}」(${o.time}) 重叠，建议挪到 ${minToTime(ns)}-${minToTime(ns + dur)}（其前）` };
+          }
+        }
+      }
+      return null;
+    }
+    // ===== 多方案推荐（2-3 个备选）=====
+    function suggestFixes(spot, day) {
+      const wd = weekdayNum(day.weekday);
+      const fixes = [];
+      const od = parseOpenDays(spot.hours);
+      if (od && !od.always && od.days && !od.days.has(wd)) {
+        const openDays = [...od.days].sort((a, b) => a - b);
+        const openStr = openDays.map(numToWeekday).join('/');
+        DAYS.forEach((d, i) => {
+          if (d.id === day.id) return;
+          if (od.days.has(weekdayNum(d.weekday))) fixes.push({ kind: 'day', targetDayId: d.id, label: '改到 Day ' + (i + 1) + ' · ' + d.date + ' ' + d.weekday + '（仅【' + openStr + '】开放）' });
+        });
+        if (!fixes.length) fixes.push({ kind: 'none', label: '当天（' + day.weekday + '）不营业，建议改到【' + openStr + '】再安排' });
+        return fixes;
+      }
+      const windows = parseHoursWindows(spot.hours);
+      const planned = parsePlanned(spot);
+      if (windows && planned) {
+        let openMin = Infinity, closeMax = -Infinity;
+        for (const [o, c] of windows) { openMin = Math.min(openMin, o); closeMax = Math.max(closeMax, c > 1440 ? c - 1440 : c); }
+        if (planned.type === 'window') {
+          const dur = planned.w[1] - planned.w[0];
+          const optA = { kind: 'time', newTime: minToTime(openMin) + '-' + minToTime(openMin + dur), label: '塞到刚开门 ' + minToTime(openMin) + '-' + minToTime(openMin + dur) + '（最早去、人少）' };
+          const optB = { kind: 'time', newTime: minToTime(closeMax - dur) + '-' + minToTime(closeMax), label: '挪到晚些去 ' + minToTime(closeMax - dur) + '-' + minToTime(closeMax) + '（快关门、人少）' };
+          const mid = openMin + Math.max(0, Math.round((closeMax - openMin - dur) / 2));
+          const optC = { kind: 'time', newTime: minToTime(mid) + '-' + minToTime(mid + dur), label: '中午时段去 ' + minToTime(mid) + '-' + minToTime(mid + dur) + '（均衡安排）' };
+          if (planned.w[1] > closeMax) fixes.push(optA, optC, optB);
+          else if (planned.w[0] < openMin) fixes.push(optB, optC, optA);
+          else fixes.push(optA, optB);
+        } else {
+          const t = planned.t;
+          if (t > closeMax) fixes.push({ kind: 'time', newTime: minToTime(closeMax), label: '赶在关门前 ' + minToTime(closeMax) + ' 到' }, { kind: 'time', newTime: minToTime(openMin), label: '一开门 ' + minToTime(openMin) + ' 就去' });
+          else if (t < openMin) fixes.push({ kind: 'time', newTime: minToTime(openMin), label: '改到 ' + minToTime(openMin) + ' 开门去' }, { kind: 'time', newTime: minToTime(closeMax), label: '改到 ' + minToTime(closeMax) + ' 关门前去' });
+          else fixes.push({ kind: 'time', newTime: minToTime(openMin), label: '最早可到 ' + minToTime(openMin) });
+        }
+        if (fixes.length) return fixes;
+      }
+      const win = parseWindow(spot);
+      if (win) {
+        const dur = win[1] - win[0];
+        const checked = day.spots.filter(s => s.checked && s.id !== spot.id);
+        for (const o of checked) {
+          const ow = parseWindow(o);
+          if (!ow) continue;
+          if (win[0] < ow[1] && ow[0] < win[1]) {
+            let ns = ow[1];
+            if (ns + dur <= 1440) fixes.push({ kind: 'time', newTime: minToTime(ns) + '-' + minToTime(ns + dur), label: '挪到「' + o.name + '」之后 ' + minToTime(ns) + '-' + minToTime(ns + dur) });
+            ns = ow[0] - dur;
+            if (ns >= 0) fixes.push({ kind: 'time', newTime: minToTime(ns) + '-' + minToTime(ns + dur), label: '挪到「' + o.name + '」之前 ' + minToTime(ns) + '-' + minToTime(ns + dur) });
+            break;
+          }
+        }
+        if (!fixes.length) fixes.push({ kind: 'none', label: '与「' + o.name + '」(' + o.time + ') 重叠，暂无可行的自动调整方案' });
+        return fixes;
+      }
+      if (!fixes.length) fixes.push(suggestFix(spot, day) || { kind: 'none', label: '无自动调整建议' });
+      return fixes;
+    }
+    // ===== 多方案弹窗 =====
+    function openConflictModal(evt, id) {
+      evt.stopPropagation();
+      const day = DAYS.find(d => d.id === currentDay) || DAYS.find(d => d.spots.some(s => s.id === id));
+      let spot, sday = day;
+      DAYS.forEach(d => { const s = d.spots.find(x => x.id === id); if (s) { spot = s; sday = d; } });
+      if (!spot) return;
+      const fixes = suggestFixes(spot, sday);
+      const reason = computeConflicts(sday).get(id) || (spot.warning ? warningText(spot.warning) : '冲突');
+      const body = document.getElementById('conflictFixBody');
+      if (!body) return;
+      body.innerHTML = '<div class="text-xs text-[var(--muted)] mb-2 font-medium">📌 ' + escHtml(spot.name) + '</div>' + (reason ? '<div class="adj-reason mb-2">' + escHtml(reason) + '</div>' : '') +
+        fixes.map((f, i) => {
+          if (f.kind === 'time') return '<button class="fix-opt" onclick="applyFixById(\'' + id + "','" + f.newTime.replace(/'/g, "\\'") + '\'); event.stopPropagation();">方案 ' + (i + 1) + '：' + escHtml(f.label) + '</button>';
+          if (f.kind === 'day') return '<button class="fix-opt" onclick="applyFixDay(\'' + id + "','" + f.targetDayId + '\'); event.stopPropagation();">方案 ' + (i + 1) + '：' + escHtml(f.label) + '</button>';
+          return '<div class="fix-opt fix-none">' + escHtml(f.label) + '</div>';
+        }).join('');
+      document.getElementById('conflictFixModal').classList.add('show');
+    }
+    function closeConflictModal() { const m = document.getElementById('conflictFixModal'); if (m) m.classList.remove('show'); }
+    function applyFixById(id, newTime) {
+      DAYS.forEach(d => { const s = d.spots.find(x => x.id === id); if (s) s.time = newTime; });
+      closeConflictModal(); render();
+    }
+    function applyFixDay(id, targetDayId) { closeConflictModal(); moveSpot(id, targetDayId); }
+
+    // ===== 点击徽标 → 弹出推荐调整弹层 =====
+    function openAdjust(evt, id) {
+      evt.stopPropagation();
+      const day = DAYS.find(d => d.id === currentDay) || DAYS.find(d => d.spots.some(s => s.id === id));
+      let spot, sday = day;
+      DAYS.forEach(d => { const s = d.spots.find(x => x.id === id); if (s) { spot = s; sday = d; } });
+      if (!spot) return;
+      const reason = computeConflicts(sday).get(id) || (spot.warning ? warningText(spot.warning) : '');
+      const fix = suggestFix(spot, sday);
+      const body = document.getElementById('adjustBody');
+      let html = reason ? `<div class="adj-reason">${escHtml(reason)}</div>` : '';
+      if (fix && fix.kind === 'time') {
+        html += `<div class="adj-suggest">💡 建议调整时间至 <b>${escHtml(fix.newTime)}</b></div><div class="adj-label">${escHtml(fix.label)}</div><button class="fix-btn" onclick="applyFix('${id}'); event.stopPropagation();">✓ 一键调整</button>`;
+      } else if (fix && fix.kind === 'day') {
+        html += `<div class="adj-suggest">💡 建议改到 <b>Day ${DAYS.findIndex(d => d.id === fix.targetDayId) + 1}</b></div><div class="adj-label">${escHtml(fix.label)}</div><button class="fix-btn" onclick="applyFix('${id}'); event.stopPropagation();">✓ 一键移动到该天</button>`;
+      } else if (fix) {
+        html += `<div class="adj-label">${escHtml(fix.label)}</div>`;
+      } else {
+        const tip = spot.tips ? '💡 ' + escHtml(spot.tips) : (spot.notes ? escHtml(spot.notes) : '该提醒无需调整时间，按提示注意即可。');
+        html += `<div class="adj-label">${tip}</div>`;
+      }
+      body.innerHTML = html;
+      const pop = document.getElementById('adjustPopover');
+      pop.style.display = 'block';
+      const r = evt.currentTarget.getBoundingClientRect();
+      pop.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 320)) + 'px';
+      pop.style.top = (r.bottom + 8) + 'px';
+    }
+    function closeAdjust() { const p = document.getElementById('adjustPopover'); if (p) p.style.display = 'none'; }
+    function applyFix(id) {
+      let spot, sday;
+      DAYS.forEach(d => { const s = d.spots.find(x => x.id === id); if (s) { spot = s; sday = d; } });
+      if (!spot) { closeAdjust(); return; }
+      const fix = suggestFix(spot, sday);
+      if (!fix) { closeAdjust(); return; }
+      if (fix.kind === 'time') { spot.time = fix.newTime; closeAdjust(); render(); }
+      else if (fix.kind === 'day') { closeAdjust(); moveSpot(id, fix.targetDayId); }
+      else { closeAdjust(); }
+    }
+    function getMapCoord(day, locKey) {
+      if (!locKey) return null;
+      return LOCATIONS[locKey] || null;
+    }
+
+    function renderTabs() {
+      const el = document.getElementById('dayTabs');
+      let html = `<button class="day-tab px-4 py-2 rounded-xl text-sm font-medium border border-[var(--border)] ${currentDay === 'overview' ? 'active' : ''}" onclick="switchDay('overview')">
+        <span class="font-bold">🗺️</span> <span class="opacity-80">总览</span>
+      </button>`;
+      html += DAYS.map((d, i) => `
+        <button class="day-tab px-4 py-2 rounded-xl text-sm font-medium border border-[var(--border)] ${d.id === currentDay ? 'active' : ''}" onclick="switchDay('${d.id}')">
+          <span class="font-bold">${d.date}</span> <span class="opacity-80">${d.weekday}</span>
+          <span class="dayno-badge">Day ${i + 1}</span>
+          <span class="daycheck-badge">✓ ${d.spots.filter(s => s.checked).length}/${d.spots.length}</span>
+        </button>`).join('');
+      el.innerHTML = html;
+    }
+    function switchDay(id) { currentDay = id; selectedSpotId = null; render(); }
+
+    const dayView = {}; // dayId -> 'time'(默认) | 'manual'
+    function toggleSortMode() {
+      const id = currentDay; if (id === 'overview') return;
+      dayView[id] = dayView[id] === 'manual' ? 'time' : 'manual';
+      renderSpotList();
+    }
+    function suggestTransport(a, b) {
+      if (a.type === 'flight' && b.type === 'flight') return null;
+      const ca = LOCATIONS[a.loc], cb = LOCATIONS[b.loc];
+      if (!ca || !cb) return null;
+      const d = Math.hypot(ca[0] - cb[0], ca[1] - cb[1]);
+      const km = d * 0.12;
+      const walkMin = Math.max(1, Math.round(km / 0.083));
+      const driveMin = Math.max(2, Math.round(km / 0.3) + 3);
+      const fromName = encodeURIComponent(a.name + ' ' + (a.addr || ''));
+      const toName = encodeURIComponent(b.name + ' ' + (b.addr || ''));
+      const navUrl = 'https://www.google.com/maps/dir/' + fromName + '/' + toName;
+      if (km < 0.45) return { text: '🚶 步行可达 · 约 ' + walkMin + ' 分钟', url: navUrl };
+      if (km < 1.6) return { text: '🚐 双条车/突突车 · 约 ' + driveMin + ' 分钟', url: navUrl };
+      return { text: '🚕 Grab 打车 · 约 ' + driveMin + ' 分钟', url: navUrl };
+    }
+
+    function renderSpotList() {
+      const isOverview = currentDay === 'overview';
+      document.getElementById('leftCol').style.display = isOverview ? 'none' : 'block';
+      if (isOverview) return;
+      const day = DAYS.find(d => d.id === currentDay);
+      document.getElementById('dayTitle').textContent = `${day.date} ${day.weekday} · 行程点`;
+      const wEl = document.getElementById('dayWeather');
+      if (day.weather) {
+        wEl.innerHTML = day.weather.icon + ' ' + day.weather.low + '–' + day.weather.high + '°C<span class="w-desc"> · ' + day.weather.desc + '</span>';
+        wEl.title = '出行提示：' + day.weather.tip;
+        wEl.style.display = '';
+        const wt = document.getElementById('dayWeatherTip');
+        wt.innerHTML = '<span class="wt-ico">💡</span><b>出行提示：</b>' + escHtml(day.weather.tip);
+        wt.style.display = '';
+      } else { wEl.style.display = 'none'; document.getElementById('dayWeatherTip').style.display = 'none'; }
+      const isTransit = day.city.includes('bangkok') && day.city.includes('chiangmai');
+      const mode = dayView[day.id] === 'manual' ? 'manual' : 'time';
+      const conflicts = computeConflicts(day);
+      const toggleBtn = document.getElementById('sortToggle');
+      if (toggleBtn) toggleBtn.textContent = mode === 'time' ? '⏱ 按时间排序' : '✋ 手动排序';
+
+      // 交通建议：基于「勾选且有坐标」的点，按时序相邻两点
+      const transportAfter = {};
+      if (!isTransit) {
+        const seq = day.spots.filter(s => s.checked && s.loc).sort((a, b) => timeToMin(a.time) - timeToMin(b.time));
+        for (let i = 0; i < seq.length - 1; i++) {
+          const t = suggestTransport(seq[i], seq[i + 1]);
+          if (t) transportAfter[seq[i].id] = t;
+        }
+      }
+
+      // 与地图路线一致：按「已勾选且有坐标」的点按时序排出序号，映射回每个行程点
+      const mapSeq = getSortedChecked(day).filter(s => getMapCoord(day, s.loc));
+      const seqNum = {};
+      mapSeq.forEach((s, i) => { seqNum[s.id] = i + 1; });
+
+      // 当前进行中 / 下一站 高亮
+      let nowSpotId = null, nowState = '';
+      const ns = computeNowSpot();
+      if (ns.dayIdx >= 0 && ns.dayIdx < DAYS.length && DAYS[ns.dayIdx].id === day.id && ns.spot) {
+        nowSpotId = ns.spot.id;
+        nowState = ns.state;
+      }
+
+      const rowHtml = s => {
+        const tChip = transportAfter[s.id] ? '<div class="transport-chip"><a class="nav-link" href="' + escAttr(transportAfter[s.id].url) + '" target="_blank" rel="noopener noreferrer" onclick="openExt(this, event)" title="Google Maps 导航到下一站">➜ ' + escHtml(transportAfter[s.id].text) + ' ›</a></div>' : '';
+        const nowClass = s.id === nowSpotId ? (nowState === 'current' ? ' now-highlight' : ' now-next-highlight') : '';
+        return `
+        <div class="spot-row ${s.checked ? 'checked' : ''}${s.recommended ? ' reco' : ''}${s.type === 'flight' ? ' flight' : ''}${nowClass} rounded-xl p-3 flex items-start gap-3" data-id="${s.id}">
+          ${s.id === nowSpotId ? '<span class="now-arrow">▶</span>' : ''}
+          ${seqNum[s.id] ? `<span class="map-seq" title="地图路线第 ${seqNum[s.id]} 站">${seqNum[s.id]}</span>` : `<span class="map-seq-empty"></span>`}
+          <input type="checkbox" class="custom-checkbox mt-1" ${s.checked ? 'checked' : ''} onchange="toggleSpot('${s.id}', this.checked)">
+          <div class="flex-1 min-w-0 cursor-pointer" title="点击查看行程点详情（与地图一致）" onclick="selectAndShow('${s.id}')">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-xs font-mono text-[var(--accent)] bg-[var(--accent)]/10 px-2 py-0.5 rounded">${s.time}</span>
+              <span class="font-medium text-sm">${s.name}</span>
+              ${s.type === 'flight' ? '<span class="text-xs flight-badge">✈️ 机场</span>' : ''}
+              ${s.type === 'hotel' ? '<span class="text-xs hotel-badge">🏨 住宿</span>' : ''}
+              ${s.boarding ? `<span class="text-xs board-badge">🛫 ${s.boarding}到机场</span>` : ''}
+              ${s.recommended ? '<span class="text-xs" style="background:rgba(79,201,192,0.16);color:var(--accent-3);border:1.5px solid rgba(79,201,192,0.35);padding:2px 8px;border-radius:8px;">🌟 推荐</span>' : ''}
+              ${s.warning === 'warning' ? `<span class="text-xs warning-badge px-2 py-0.5 rounded" onclick="openAdjust(event,'${s.id}')">注意</span>` : ''}
+              ${s.warning === 'danger' ? `<span class="text-xs danger-badge px-2 py-0.5 rounded" onclick="openAdjust(event,'${s.id}')">冲突</span>` : ''}
+              ${s.warning === 'info' ? `<span class="text-xs info-badge px-2 py-0.5 rounded" onclick="openAdjust(event,'${s.id}')">提示</span>` : ''}
+              ${conflicts.has(s.id) ? `<span class="text-xs conflict-badge px-2 py-0.5 rounded" title="${escAttr(conflicts.get(s.id))}" onclick="openAdjust(event,'${s.id}')">🚨 时间冲突</span>` : ''}
+            </div>
+            <div class="text-xs text-[var(--muted)] mt-1">${s.notes}</div>
+            ${s.tips ? `<div class="text-xs text-[var(--muted)] mt-1">💡 ${escHtml(s.tips)}</div>` : ''}
+            ${s.warn ? `<div class="backlog-warn mt-1" style="margin-top:4px"><span class="bw-ico">⚠️</span>${escHtml(s.warn)}</div>` : ''}
+            <div class="text-xs text-[var(--muted)] mt-1 space-y-0.5">
+              ${s.addr ? `<div>📍 ${s.addr}</div>` : ''}
+              <div class="flex gap-3 flex-wrap">
+                ${s.hours ? `<span>🕒 ${s.hours}</span>` : ''}
+                ${s.duration ? `<span>⏱ ${s.duration}</span>` : ''}
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col gap-1 flex-shrink-0 content-start">
+            <span class="drag-grip" data-id="${s.id}" title="按住拖动排序（先切到「手动排序」再拖）">⠿</span>
+            <span class="row-action" title="移动到其他天" onclick="openMoveMenu(event, '${s.id}')">🔀</span>
+            <span class="row-action" title="编辑" onclick="editSpot('${s.id}')">✏️</span>
+            <span class="row-action danger" title="删除" onclick="deleteSpot('${s.id}')">🗑️</span>
+          </div>
+        </div>${tChip}`;
+      };
+
+      const sugTipHtml = sg => `
+        <div class="sug-tip" onclick="openSuggest('${sg.id}')">
+          <span class="sug-ico">💡</span>
+          <span class="sug-text">${escHtml(sg.text)}</span>
+          <span class="sug-link">查看推荐 ›</span>
+        </div>`;
+
+      // 整个当天形成一条统一的时间轴：航班 / 普通 / 推荐 全部按时间排序混排，
+      // 推荐项仍带 🌟 标记；手动排序下保持拖拽顺序
+      let allList = day.spots.slice();
+      if (mode === 'time') allList.sort((a, b) => timeToMin(a.time) - timeToMin(b.time));
+
+      // 在时间轴里贴近饭点等空白插入「温馨提示」小提示（仅时间排序模式）
+      let nodes = allList.map(s => ({ kind: 'spot', s }));
+      if (mode === 'time') {
+        SUGGESTIONS.filter(sg => sg.day === day.id && !dismissedSugs.includes(sg.id) && !addedSugSpots.some(a => a.sugId === sg.id))
+          .forEach(sg => {
+            const at = timeToMin(sg.anchorTime);
+            let idx = nodes.findIndex(n => n.kind === 'spot' && timeToMin(n.s.time) > at);
+            if (idx < 0) idx = nodes.length;
+            nodes.splice(idx, 0, { kind: 'sug', sg });
+          });
+      }
+
+      let listHtml = nodes.map(n => n.kind === 'spot' ? rowHtml(n.s) : sugTipHtml(n.sg)).join('');
+
+      // 酒店作为当天出发/结束锚点：退房当天退房后不算、当天无入住(或仅退房)不算结束点
+      let anchorTop = '', anchorBottom = '';
+      const hotelSpots = day.spots.filter(s => s.checked && s.type === 'hotel' && s.loc)
+        .sort((a, b) => timeToMin(a.time) - timeToMin(b.time));
+      if (hotelSpots.length) {
+        const sh = hotelSpots[0];
+        const stayHotels = hotelSpots.filter(s => !/退房/.test(s.name));
+        const eh = stayHotels.length ? stayHotels[stayHotels.length - 1] : null;
+        anchorTop = `<div class="day-anchor" onclick="selectAndShow('${sh.id}')"><span class="a-ico">🏨</span> 从「${escHtml(hotelShort(sh))}」出发</div>`;
+        if (eh) anchorBottom = `<div class="day-anchor end" onclick="selectAndShow('${eh.id}')"><span class="a-ico">🏁</span> 回到「${escHtml(hotelShort(eh))}」</div>`;
+      }
+
+      let html = anchorTop + listHtml + anchorBottom;
+      let banner = '';
+      if (conflicts.size) {
+        const ids = [...conflicts.keys()];
+        banner = `<div class="conflict-banner rounded-lg p-3 mb-3">
+          <div class="font-bold mb-1">⚠️ 发现 ${ids.length} 处时间/营业冲突（仅统计已勾选项）</div>
+          <div class="text-xs space-y-1">${ids.map(id => { const s = day.spots.find(x => x.id === id); return `<div>🔴 <b>${escHtml(s.name)}</b>：${escHtml(conflicts.get(id))}</div>`; }).join('')}</div>
+        </div>`;
+      }
+      document.getElementById('spotList').innerHTML = banner + html;
+
+      const checked = day.spots.filter(s => s.checked);
+      document.getElementById('selectedCount').textContent = checked.length + '/' + day.spots.length;
+      const times = checked.map(s => timeToMin(s.time)).filter(t => t);
+      if (checked.length > 1 && times.length > 1) {
+        const hrs = Math.round((Math.max(...times) - Math.min(...times)) / 60 * 10) / 10;
+        document.getElementById('durationEst').textContent = `约 ${hrs} 小时`;
+      } else document.getElementById('durationEst').textContent = '—';
+    }
+
+    function toggleSpot(id, checked) {
+      DAYS.forEach(day => { const s = day.spots.find(x => x.id === id); if (s) { s.checked = checked; lsSet('spot_'+id, checked); } });
+      render();
+    }
+    function deleteSpot(id) {
+      let spot, fromDay;
+      DAYS.forEach(day => { const i = day.spots.findIndex(x => x.id === id); if (i >= 0) { spot = day.spots[i]; fromDay = day; day.spots.splice(i, 1); } });
+      if (spot) {
+        // 删除 ≠ 彻底消失：转入「未计入事项」，避免后期重复添加
+        BACKLOG.unshift({
+          id: 'del_' + id + '_' + Date.now(),
+          icon: typeIcon(spot.type),
+          name: spot.name,
+          type: spot.type || 'sight',
+          time: spot.time || '',
+          suggestedDay: fromDay ? fromDay.id : null,
+          loc: spot.loc || null,
+          addr: spot.addr || '',
+          hours: spot.hours || '',
+          duration: spot.duration || '',
+          notes: (spot.notes || '') + (spot.tips ? '（提示：' + spot.tips + '）' : ''),
+          ticket: spot.ticket || '',
+          tips: '从「' + (fromDay ? fromDay.city : '行程') + '」移除的行程点',
+        });
+        if (!deletedIds.includes(id)) deletedIds.push(id);
+        persistBacklog();
+      }
+      render();
+    }
+
+    // ===== 行程内「温馨提示」推荐流程 =====
+    let sugState = null; // 当前操作的 suggestion 对象
+    function openSuggest(id) {
+      const sg = SUGGESTIONS.find(s => s.id === id);
+      if (!sg) return;
+      sugState = sg;
+      const spot = sg.spot;
+      document.getElementById('sugTitle').textContent = '💡 温馨提示 · 美食推荐';
+      document.getElementById('sugBody').innerHTML = `
+        <div class="text-sm text-[var(--muted)] mb-2">${escHtml(sg.text)}</div>
+        <div class="sug-rec-card rounded-lg p-3 bg-[var(--chip-bg)]">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">🍜</span>
+            <span class="font-bold">${escHtml(spot.name)}</span>
+          </div>
+          <div class="text-xs text-[var(--muted)] mt-1">🕒 推荐时间 ${escHtml(spot.time)}　·　📍 ${escHtml(spot.addr || '视地点')}</div>
+          <div class="text-xs text-[var(--muted)] mt-1">${escHtml(spot.notes)}</div>
+          <div class="mt-2 flex flex-wrap gap-2">
+            ${(spot.links && spot.links.length) ? spot.links.map(l => `<a class="ext-link-chip" href="${escAttr(l.url)}" target="_blank" rel="noopener noreferrer" onclick="openExt(this, event)"><span class="ext-ico">${l.icon || '🔗'}</span>${escHtml(l.label)}</a>`).join('') : ''}
+          </div>
+        </div>`;
+      document.getElementById('sugStep1').style.display = '';
+      document.getElementById('sugStep2').style.display = 'none';
+      document.getElementById('suggestModal').classList.add('show');
+    }
+    function closeSuggest() {
+      const m = document.getElementById('suggestModal');
+      if (m) m.classList.remove('show');
+      sugState = null;
+    }
+    function confirmSuggestAdd() {
+      if (!sugState) return;
+      document.getElementById('sugStep1').style.display = 'none';
+      document.getElementById('sugStep2').style.display = '';
+      document.getElementById('sugTimeText').textContent = sugState.spot.time;
+    }
+    function chooseSugTime(useRecommended) {
+      if (!sugState) return;
+      addSuggestion(sugState, useRecommended);
+      closeSuggest();
+    }
+    function dismissSuggest() {
+      if (!sugState) return;
+      if (!dismissedSugs.includes(sugState.id)) { dismissedSugs.push(sugState.id); persistSuggestMeta(); }
+      closeSuggest();
+    }
+    function addSuggestion(sg, useRecommended) {
+      const day = DAYS.find(d => d.id === sg.day);
+      if (!day) return;
+      const sp = sg.spot;
+      const spot = {
+        id: 'sg_' + sg.id + '_' + Date.now(),
+        name: sp.name,
+        time: sp.time,
+        type: sp.type || 'food',
+        loc: sp.loc || null,
+        addr: sp.addr || '',
+        checked: !!useRecommended,
+        recommended: !useRecommended,
+        hours: sp.hours || '',
+        duration: sp.duration || '',
+        notes: sp.notes || '',
+        ticket: sp.ticket || '',
+        tips: sp.tips || '',
+        links: sp.links || [],
+        warning: null,
+        warn: sp.warn || '',
+        boarding: null,
+        fromSug: sg.id,
+      };
+      day.spots.push(spot);
+      addedSugSpots.push({ dayId: day.id, sugId: sg.id, spot });
+      persistSuggestMeta();
+      render();
+    }
+    function addBacklogItem(evt, id) {
+      const b = BACKLOG.find(x => x.id === id);
+      if (!b) return;
+      const menu = document.getElementById('backlogMenu');
+      const list = document.getElementById('backlogMenuList');
+      list.innerHTML = DAYS.map((d, i) => `<button class="move-day-btn" onclick="commitBacklog('${id}','${d.id}'); event.stopPropagation();">Day ${i + 1} · ${d.date} ${d.weekday}</button>`).join('');
+      menu.style.display = 'block';
+      const r = evt.currentTarget.getBoundingClientRect();
+      menu.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 220)) + 'px';
+      menu.style.top = (r.bottom + 6) + 'px';
+      evt.stopPropagation();
+    }
+    function closeBacklogMenu() { const m = document.getElementById('backlogMenu'); if (m) m.style.display = 'none'; }
+    function commitBacklog(id, dayId) {
+      const idx = BACKLOG.findIndex(b => b.id === id);
+      if (idx < 0) { closeBacklogMenu(); return; }
+      const b = BACKLOG[idx];
+      const day = DAYS.find(d => d.id === dayId);
+      if (!day) { closeBacklogMenu(); return; }
+      const spot = {
+        id: 'bk_' + b.id + '_' + Date.now(),
+        name: b.name,
+        time: b.time || '自由安排',
+        type: b.type || 'sight',
+        loc: b.loc || null,
+        checked: false,
+        recommended: true,
+        addr: b.addr || '',
+        hours: b.hours || '',
+        duration: b.duration || '',
+        notes: b.notes || '',
+        warn: b.warn || '',
+        ticket: b.ticket || '',
+        tips: b.tips || '',
+        warning: b.warn ? 'warning' : null,
+        fromBacklog: true,
+      };
+      day.spots.push(spot);
+      BACKLOG.splice(idx, 1);
+      persistBacklog();
+      currentDay = dayId;
+      closeBacklogMenu();
+      render();
+    }
+    function deleteBacklog(id) {
+      const i = BACKLOG.findIndex(b => b.id === id);
+      if (i >= 0) { BACKLOG.splice(i, 1); persistBacklog(); render(); }
+    }
+    function reorderSpotTo(id, targetId, after) {
+      const day = DAYS.find(d => d.id === currentDay);
+      if (!day) return;
+      const arr = day.spots;
+      const from = arr.findIndex(x => x.id === id);
+      if (from < 0) return;
+      const [spot] = arr.splice(from, 1);
+      let ti = arr.findIndex(x => x.id === targetId);
+      if (ti < 0) arr.push(spot);
+      else arr.splice(after ? ti + 1 : ti, 0, spot);
+      // 拖动后自动切到「手动排序」，让新顺序立即可见
+      dayView[day.id] = 'manual';
+      render();
+    }
+
+    /* ===== 拖动排序（指针事件，鼠标 / 触屏通用） ===== */
+    let dnd = null;
+    function onGripDown(e) {
+      const grip = e.target.closest && e.target.closest('.drag-grip');
+      if (!grip) return;
+      const row = grip.closest('.spot-row');
+      if (!row) return;
+      e.preventDefault();
+      const id = grip.dataset.id;
+      const rect = row.getBoundingClientRect();
+      dnd = { id, row, startX: e.clientX, startY: e.clientY, offX: e.clientX - rect.left, offY: e.clientY - rect.top, w: rect.width, h: rect.height, moved: false, ghost: null, targetId: null, after: false };
+      window.addEventListener('pointermove', onGripMove, { passive: false });
+      window.addEventListener('pointerup', onGripUp);
+    }
+    function clearDropMarks() {
+      document.querySelectorAll('.spot-row.drop-before, .spot-row.drop-after').forEach(r => r.classList.remove('drop-before', 'drop-after'));
+    }
+    function onGripMove(e) {
+      if (!dnd) return;
+      const dx = e.clientX - dnd.startX, dy = e.clientY - dnd.startY;
+      if (!dnd.moved && Math.hypot(dx, dy) < 5) return;
+      if (!dnd.moved) {
+        dnd.moved = true;
+        document.body.style.userSelect = 'none';
+        document.body.style.webkitUserSelect = 'none';
+        const ghost = dnd.row.cloneNode(true);
+        ghost.classList.add('drag-ghost');
+        ghost.classList.remove('drop-before', 'drop-after', 'drag-source');
+        ghost.style.width = dnd.w + 'px';
+        ghost.style.position = 'fixed';
+        ghost.style.left = (dnd.startX - dnd.offX) + 'px';
+        ghost.style.top = (dnd.startY - dnd.offY) + 'px';
+        ghost.style.pointerEvents = 'none';
+        ghost.style.zIndex = '9999';
+        ghost.style.opacity = '0.95';
+        document.body.appendChild(ghost);
+        dnd.ghost = ghost;
+        dnd.row.classList.add('drag-source');
+      }
+      e.preventDefault();
+      dnd.ghost.style.left = (e.clientX - dnd.offX) + 'px';
+      dnd.ghost.style.top = (e.clientY - dnd.offY) + 'px';
+      clearDropMarks();
+      const under = document.elementFromPoint(e.clientX, e.clientY);
+      const targetRow = under && under.closest ? under.closest('.spot-row') : null;
+      if (targetRow && targetRow !== dnd.row && targetRow.dataset && targetRow.dataset.id) {
+        const r = targetRow.getBoundingClientRect();
+        const after = (e.clientY - r.top) > r.height / 2;
+        targetRow.classList.add(after ? 'drop-after' : 'drop-before');
+        dnd.targetId = targetRow.dataset.id;
+        dnd.after = after;
+      } else {
+        dnd.targetId = null;
+      }
+    }
+    function onGripUp() {
+      window.removeEventListener('pointermove', onGripMove);
+      window.removeEventListener('pointerup', onGripUp);
+      document.body.style.userSelect = '';
+      if (dnd && dnd.moved && dnd.targetId) {
+        reorderSpotTo(dnd.id, dnd.targetId, dnd.after);
+      }
+      if (dnd && dnd.ghost) dnd.ghost.remove();
+      clearDropMarks();
+      dnd = null;
+    }
+    document.addEventListener('pointerdown', onGripDown);
+    function openMoveMenu(evt, id) {
+      evt.stopPropagation();
+      const menu = document.getElementById('moveMenu');
+      const list = document.getElementById('moveMenuList');
+      list.innerHTML = DAYS.map((d, i) => `<button class="move-day-btn" onclick="moveSpot('${id}','${d.id}'); event.stopPropagation();">Day ${i + 1} · ${d.date} ${d.weekday}</button>`).join('');
+      menu.style.display = 'block';
+      const r = evt.currentTarget.getBoundingClientRect();
+      menu.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 220)) + 'px';
+      menu.style.top = (r.bottom + 6) + 'px';
+    }
+    function closeMoveMenu() { const m = document.getElementById('moveMenu'); if (m) m.style.display = 'none'; }
+    function moveSpot(id, targetId) {
+      let spot, fromDay;
+      DAYS.forEach(d => { const i = d.spots.findIndex(x => x.id === id); if (i >= 0) { spot = d.spots[i]; fromDay = d; } });
+      if (!spot || !fromDay) { closeMoveMenu(); return; }
+      if (fromDay.id === targetId) { closeMoveMenu(); return; }
+      fromDay.spots = fromDay.spots.filter(x => x.id !== id);
+      DAYS.find(d => d.id === targetId).spots.push(spot);
+      closeMoveMenu();
+      currentDay = targetId;
+      render();
+    }
+    document.addEventListener('click', function (e) { closeMoveMenu(); closeAdjust(); closeBacklogMenu(); });
+    function newSpot() {
+      if (currentDay === 'overview' || !DAYS.some(d => d.id === currentDay)) currentDay = DAYS[0].id;
+      const day = DAYS.find(d => d.id === currentDay);
+      const id = day.id + '_n' + Date.now();
+      const spot = { id, name: '新行程点', time: '00:00', type: 'sight', loc: day.city.includes('chiangmai') ? 'cnx_tapae' : 'bkk_hotel', checked: true, addr: '', hours: '', duration: '', notes: '', ticket: '', tips: '', boarding: '', warning: null };
+      day.spots.push(spot);
+      editSpot(id);
+    }
+    function editSpot(id) {
+      let spot; DAYS.forEach(d => { const s = d.spots.find(x => x.id === id); if (s) spot = s; });
+      if (!spot) return;
+      document.getElementById('editId').value = id;
+      document.getElementById('editTitle').textContent = spot.name === '新行程点' ? '新建行程点' : '编辑：' + spot.name;
+      document.getElementById('f_name').value = spot.name;
+      document.getElementById('f_time').value = spot.time;
+      document.getElementById('f_type').value = spot.type;
+      document.getElementById('f_notes').value = spot.notes;
+      document.getElementById('f_ticket').value = spot.ticket || '';
+      document.getElementById('f_tips').value = spot.tips || '';
+      document.getElementById('f_addr').value = spot.addr || '';
+      document.getElementById('f_hours').value = spot.hours || '';
+      document.getElementById('f_duration').value = spot.duration || '';
+      document.getElementById('f_boarding').value = spot.boarding || '';
+      document.getElementById('f_warning').value = spot.warning || '';
+      document.getElementById('f_recommended').checked = !!spot.recommended;
+      document.getElementById('editModal').classList.add('show');
+    }
+    function saveSpot() {
+      const id = document.getElementById('editId').value;
+      let spot; DAYS.forEach(d => { const s = d.spots.find(x => x.id === id); if (s) spot = s; });
+      if (!spot) return;
+      spot.name = document.getElementById('f_name').value || '未命名';
+      spot.time = document.getElementById('f_time').value;
+      spot.type = document.getElementById('f_type').value;
+      spot.notes = document.getElementById('f_notes').value;
+      spot.ticket = document.getElementById('f_ticket').value;
+      spot.tips = document.getElementById('f_tips').value;
+      spot.addr = document.getElementById('f_addr').value;
+      spot.hours = document.getElementById('f_hours').value;
+      spot.duration = document.getElementById('f_duration').value;
+      spot.boarding = document.getElementById('f_boarding').value || '';
+      spot.warning = document.getElementById('f_warning').value || null;
+      spot.recommended = document.getElementById('f_recommended').checked;
+      closeModal('editModal');
+      render();
+    }
+    function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+    let selectedSpotId = null;
+    function selectSpot(id) {
+      selectedSpotId = (selectedSpotId === id) ? null : id;
+      renderMap();
+      if (selectedSpotId) {
+        const el = document.querySelector('.spot-row[data-id="' + selectedSpotId + '"]');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function escHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function escAttr(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    // 生成每个行程点的外部攻略 / 导航链接
+    function buildSpotLinks(spot) {
+      const links = [];
+      // 1) 已核实的来源链接：优先用行程点自带的 links 字段，否则用全局 SOURCES 映射（按 id）
+      const custom = Array.isArray(spot.links) ? spot.links : (SOURCES[spot.id] || []);
+      custom.forEach(l => { if (l && l.url) links.push({ icon: l.icon || '🔗', label: l.label || l.url, url: l.url, src: true }); });
+      const kw = encodeURIComponent(spot.name);
+      // 2) 平台搜索攻略（自动基于行程点名称）
+      links.push({ icon: '📕', label: '小红书攻略', url: `https://www.xiaohongshu.com/search_result?keyword=${kw}` });
+      links.push({ icon: '🐧', label: '微博攻略', url: `https://s.weibo.com/weibo?q=${kw}` });
+      // 3) 有地址再补地图导航 + 大众点评
+      if (spot.addr) {
+        links.push({ icon: '🗺️', label: '地图导航', url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spot.name + ' ' + spot.addr)}` });
+        links.push({ icon: '⭐', label: '大众点评', url: `https://www.dianping.com/search/keyword/0_0_1_${kw}` });
+      }
+      return links;
+    }
+
+    // 外部链接打开：普通浏览器用新标签页；预览 iframe（沙箱禁弹窗）被拦截时回退到同页/顶层打开，避免"点了没反应"
+    function openExt(a, e) {
+      if (e) e.preventDefault();
+      const url = a.getAttribute('href');
+      if (!url) return;
+      let w = null;
+      try { w = window.open(url, '_blank', 'noopener'); } catch (err) { w = null; }
+      if (w) return;
+      try { (window.top || window).location.href = url; } catch (err) { window.location.href = url; }
+    }
+
+    function showSpotDetail(id) {
+      let spot, sday; DAYS.forEach(d => { const s = d.spots.find(x => x.id === id); if (s) { spot = s; sday = d; } });
+      if (!spot) return;
+      const cf = sday ? computeConflicts(sday) : new Map();
+      document.getElementById('dTime').textContent = spot.time;
+      document.getElementById('dName').textContent = spot.name;
+      let badges = '';
+      const wmap = { warning: ['warning-badge','注意'], danger: ['danger-badge','冲突'], info: ['info-badge','提示'] };
+      if (spot.warning && wmap[spot.warning]) badges += `<span class="text-xs ${wmap[spot.warning][0]} px-2 py-0.5 rounded" onclick="openAdjust(event,'${id}')">${wmap[spot.warning][1]}</span>`;
+      if (cf.has(id)) badges += `<span class="text-xs conflict-badge px-2 py-0.5 rounded" onclick="openAdjust(event,'${id}')">🚨 时间冲突</span>`;
+      if (spot.ticket) badges += `<span class="text-xs info-badge px-2 py-0.5 rounded">🎫 有门票信息</span>`;
+      if (spot.type === 'flight') badges += `<span class="text-xs flight-badge">✈️ 机场行程点</span>`;
+      if (spot.type === 'hotel') badges += `<span class="text-xs hotel-badge">🏨 住宿行程点</span>`;
+      if (spot.boarding) badges += `<span class="text-xs board-badge">🛫 ${spot.boarding}到机场</span>`;
+      if (spot.tips) badges += `<span class="text-xs" style="background:rgba(34,197,94,0.12);color:var(--success);border:1px solid rgba(34,197,94,0.3);padding:2px 8px;border-radius:6px;">💡 有攻略</span>`;
+      document.getElementById('dBadges').innerHTML = badges || '<span class="text-xs text-[var(--muted)]">无特殊标记</span>';
+      document.getElementById('dInfo').innerHTML =
+        `${spot.addr ? `<div>📍 <span class="text-[var(--muted)]">${spot.addr}</span></div>` : ''}`
+        + `${spot.hours ? `<div>🕒 <span class="text-[var(--muted)]">${spot.hours}</span></div>` : ''}`
+        + `${spot.duration ? `<div>⏱ <span class="text-[var(--muted)]">${spot.duration}</span></div>` : ''}`
+        + `${spot.boarding ? `<div>🛫 <span class="text-[var(--muted)]">${spot.boarding}到机场办理登机</span></div>` : ''}`
+        + `${(!spot.addr && !spot.hours && !spot.duration && !spot.boarding) ? '<div class="text-[var(--muted)]">暂无地址/时间信息</div>' : ''}`;
+      document.getElementById('dNotes').innerHTML = `<div class="font-semibold mb-1">📝 说明</div><div class="text-[var(--muted)]">${spot.notes || '—'}</div>` + (spot.warn ? `<div class="mt-2 backlog-warn"><span class="bw-ico">⚠️</span>${escHtml(spot.warn)}</div>` : '') + (cf.has(id) ? `<div class="mt-2 conflict-note">⚠️ 冲突提醒：${escHtml(cf.get(id))}</div>` : '');
+      const tEl = document.getElementById('dTicket');
+      if (spot.ticket) { tEl.classList.remove('hidden'); document.getElementById('dTicketText').textContent = spot.ticket; } else tEl.classList.add('hidden');
+      const pEl = document.getElementById('dTips');
+      if (spot.tips) { pEl.classList.remove('hidden'); document.getElementById('dTipsText').textContent = spot.tips; } else pEl.classList.add('hidden');
+      // 外部攻略链接
+      const lEl = document.getElementById('dLinks');
+      const ll = document.getElementById('dLinksList');
+      const spotLinks = buildSpotLinks(spot);
+      if (spotLinks.length) {
+        lEl.classList.remove('hidden');
+        ll.innerHTML = spotLinks.map(l => `<a class="${l.src ? 'ext-link-chip src' : 'ext-link-chip'}" href="${escAttr(l.url)}" target="_blank" rel="noopener noreferrer" onclick="openExt(this, event)"><span class="ext-ico">${l.icon || '🔗'}</span>${escHtml(l.label)}${l.src ? '<span class="src-tag">来源</span>' : ''}</a>`).join('');
+      } else {
+        lEl.classList.add('hidden');
+      }
+      document.getElementById('detailModal').classList.add('show');
+    }
+
+    function renderNotes() {
+      const isOverview = currentDay === 'overview';
+      document.getElementById('notesPanelWrap').style.display = isOverview ? 'none' : 'block';
+      if (isOverview) return;
+      const day = DAYS.find(d => d.id === currentDay);
+      const el = document.getElementById('notesPanel');
+      const checkedSpots = day.spots.filter(s => s.checked);
+      const seqList = checkedSpots.filter(s => s.loc).sort((a, b) => timeToMin(a.time) - timeToMin(b.time));
+      if (!checkedSpots.length) { el.innerHTML = '<div class="text-sm text-[var(--muted)]">勾选行程点后可查看对应注意事项；点左侧行程点可看完整详情。</div>'; return; }
+      const wmap = { warning: ['warning-badge','⚠️ 留意'], danger: ['danger-badge','🚨 冲突'], info: ['info-badge','💡 提示'] };
+      const cfNotes = computeConflicts(day);
+      const noteCard = s => {
+        const num = s.loc ? (seqList.findIndex(x => x.id === s.id) + 1) : '';
+        const wbadge = s.warning && wmap[s.warning] ? `<span class="note-badge ${wmap[s.warning][0]} rounded" onclick="openAdjust(event,'${s.id}')">${wmap[s.warning][1]}</span>` : '';
+        const cbadge = cfNotes.has(s.id) ? `<span class="note-badge conflict-badge rounded" onclick="openAdjust(event,'${s.id}')">🚨 时间冲突</span>` : '';
+        const hbadge = s.type === 'hotel' ? `<span class="note-badge hotel-badge rounded">🏨 住宿</span>` : '';
+        const wnote = s.warn ? `<div class="backlog-warn mt-1" style="margin-top:6px"><span class="bw-ico">⚠️</span>${escHtml(s.warn)}</div>` : '';
+        const tip = s.tips ? `<div class="text-[var(--muted)] mt-1">${s.tips}</div>` : (wbadge || cbadge || s.warn ? '' : '<div class="text-xs text-[var(--muted)] mt-1">无特别注意事项</div>');
+        const sel = s.id === selectedSpotId ? ' selected-note' : '';
+        const idAttr = s.id === selectedSpotId ? ` id="note-${s.id}"` : '';
+        return `
+        <div class="note-card bg-[var(--chip-bg)] rounded-lg p-3 text-sm flex items-start gap-2${sel}"${idAttr}>
+          ${num ? `<span class="seq-badge">${num}</span>` : ''}
+          <div class="min-w-0">
+            <div class="font-bold">${s.name}</div>
+            ${wbadge}${cbadge}${hbadge}
+            ${tip}${wnote}
+            ${wbadge ? `<div class="mt-1">${wbadge}</div>` : ''}
+          </div>
+        </div>`;
+      };
+      let html = '';
+      // 冲突推荐区域：有冲突时在顶部显示「推荐行程安排」按钮
+      if (cfNotes.size > 0) {
+        const conflictIds = [...cfNotes.keys()];
+        html += '<div class="conflict-banner rounded-lg p-3 mb-3">';
+        html += '<div class="font-bold mb-1">⚠️ 发现 ' + conflictIds.length + ' 处时间冲突</div>';
+        html += '<div class="text-xs space-y-1 mb-2">' + conflictIds.map(id => {
+          const s = day.spots.find(x => x.id === id);
+          return '<div>🔴 <b>' + escHtml(s ? s.name : id) + '</b>：' + escHtml(cfNotes.get(id)) + '</div>';
+        }).join('') + '</div>';
+        html += '<button class="fix-btn" onclick="var ids=' + JSON.stringify(conflictIds) + '; openConflictModal(event, ids[0]);">🛠️ 查看推荐调整方案</button>';
+        html += '</div>';
+      }
+      html += checkedSpots.map(noteCard).join('');
+      // 当前选中的行程点（无论是否勾选）在注意事项中着重显示
+      const selSpot = day.spots.find(s => s.id === selectedSpotId);
+      if (selSpot && !selSpot.checked) {
+        const wbadge = selSpot.warning && wmap[selSpot.warning] ? `<span class="note-badge ${wmap[selSpot.warning][0]} rounded">${wmap[selSpot.warning][1]}</span>` : '';
+        const hbadge = selSpot.type === 'hotel' ? `<span class="note-badge hotel-badge rounded">🏨 住宿</span>` : '';
+        const tip = selSpot.tips ? `<div class="text-[var(--muted)] mt-1">${selSpot.tips}</div>` : (wbadge || hbadge ? '' : '<div class="text-xs text-[var(--muted)] mt-1">无特别注意事项</div>');
+        html = `
+        <div class="note-card rounded-lg p-3 text-sm flex items-start gap-2 selected-note" id="note-${selSpot.id}">
+          <span class="text-lg">📍</span>
+          <div class="min-w-0">
+            <div class="font-bold text-[var(--accent)]">${selSpot.name}</div>
+            <div class="text-xs text-[var(--accent)] mb-1">📍 当前选中行程点</div>
+            ${tip}
+            ${wbadge ? `<div class="mt-1">${wbadge}</div>` : ''}
+            ${hbadge ? `<div class="mt-1">${hbadge}</div>` : ''}
+          </div>
+        </div>` + html;
+      }
+      el.innerHTML = html || '<div class="text-sm text-[var(--muted)]">勾选行程点后可查看对应注意事项；点左侧行程点名称可在地图上着重显示并查看其注意事项。</div>';
+    }
+
+    function drawBase(svg, type) {
+      if (type === 'bangkok') return `<rect x="-50" y="-40" width="100" height="80" fill="var(--map-bg)"/><circle cx="-18" cy="0" r="22" class="map-land" opacity="0.5"/><circle cx="0" cy="-8" r="12" class="map-land" opacity="0.4"/><text x="-18" y="-14" class="svg-title">曼谷市区</text><text x="38" y="36" class="svg-title">素万那普</text><text x="-38" y="-28" class="svg-title">廊曼</text><line x1="-18" y1="0" x2="0" y2="-8" class="map-road" stroke-width="0.5"/><line x1="-18" y1="0" x2="38" y2="28" class="map-road" stroke-width="0.5"/><line x1="-18" y1="0" x2="-38" y2="-22" class="map-road" stroke-width="0.5"/>`;
+      if (type === 'chiangmai') return `<rect x="-50" y="-40" width="100" height="80" fill="var(--map-bg)"/><rect x="-8" y="-8" width="20" height="20" rx="2" class="map-land"/><text x="2" y="-12" class="svg-title">清迈古城</text><text x="-4" y="1" class="svg-label">塔佩门</text><line x1="0" y1="0" x2="6" y2="0" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="-4" y2="-4" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="0" y2="14" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="14" y2="-6" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="-18" y2="-22" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="28" y2="-22" class="map-road" stroke-width="0.5"/><line x1="28" y1="-22" x2="34" y2="-28" class="map-road" stroke-width="0.5"/><text x="-32" y="34" class="svg-title">清迈机场</text><text x="36" y="-34" class="svg-title">丛林飞跃</text><text x="30" y="-26" class="svg-label">JJ市集</text><text x="-22" y="-26" class="svg-label">宁曼路</text><text x="16" y="-12" class="svg-label">瓦洛洛</text>`;
+      return `<rect x="-50" y="-40" width="100" height="80" fill="var(--map-bg)"/><text x="-42" y="-8" class="svg-title">曼谷</text><text x="32" y="-8" class="svg-title">清迈</text><line x1="-40" y1="0" x2="40" y2="0" class="map-road" stroke-width="0.5"/><text x="0" y="6" class="svg-label">跨城飞行</text>`;
+    }
+
+    function renderMap() {
+      const isOverview = currentDay === 'overview';
+      document.getElementById('singleMapWrap').style.display = isOverview ? 'none' : 'block';
+      document.getElementById('overviewWrap').style.display = isOverview ? 'block' : 'none';
+      if (isOverview) return renderOverview();
+
+      const day = DAYS.find(d => d.id === currentDay);
+      document.getElementById('mapTitle').textContent = `${day.date} ${day.weekday} · 路线轨迹`;
+      const svg = document.getElementById('mapSvg');
+      const singleBox = document.getElementById('singleMapBox');
+      const transitPanel = document.getElementById('transitMapPanel');
+      const isTransit = day.city.includes('bangkok') && day.city.includes('chiangmai');
+      if (isTransit) {
+        singleBox.style.display = 'none';
+        transitPanel.style.display = 'grid';
+        renderTransitMap(day);
+        document.getElementById('routeInfo').textContent = '跨城日：曼谷 → 清迈（飞行）。两张图分别显示当天在两地勾选的点，序号与左侧列表一致。';
+        return;
+      }
+      singleBox.style.display = '';
+      transitPanel.style.display = 'none';
+      const type = day.city.includes('chiangmai') && !day.city.includes('bangkok') ? 'chiangmai' : 'bangkok';
+      let bg = drawBase(svg, type);
+      const checked = getSortedChecked(day).filter(s => getMapCoord(day, s.loc));
+      let routeSvg = '';
+      if (checked.length > 1) {
+        routeSvg += `<polyline points="${checked.map(s => { const c = getMapCoord(day, s.loc); return c[0]+','+c[1]; }).join(' ')}" class="route-line" stroke="${day.color}" stroke-width="1"/>`;
+        for (let i = 0; i < checked.length - 1; i++) {
+          const a = getMapCoord(day, checked[i].loc), b = getMapCoord(day, checked[i+1].loc);
+          routeSvg += `<circle cx="${(a[0]+b[0])/2}" cy="${(a[1]+b[1])/2}" r="1.5" fill="${day.color}" fill-opacity="0.5"/>`;
+        }
+      }
+      let dots = '';
+      day.spots.forEach(s => {
+        if (!s.loc) return;
+        const c = getMapCoord(day, s.loc); if (!c) return;
+        const num = checked.findIndex(x => x.id === s.id) + 1;
+        const isSel = s.id === selectedSpotId;
+        if (isSel) {
+          dots += `<g class="route-dot selected" onclick="selectAndShow('${s.id}')">
+            <circle class="sel-ring" cx="${c[0]}" cy="${c[1]}" r="6"/>
+            <circle class="main-dot" cx="${c[0]}" cy="${c[1]}" r="6" fill="${day.color}" fill-opacity="0.5" stroke="${day.color}" stroke-width="1.5"/>
+            ${num>0?`<text x="${c[0]}" y="${c[1]}" class="route-number" style="paint-order:stroke;stroke:rgba(30,24,48,0.4);stroke-width:0.5">${num}</text>`:''}
+          </g>`;
+        } else if (s.checked) {
+          dots += `<g class="route-dot" onclick="selectAndShow('${s.id}')"><circle cx="${c[0]}" cy="${c[1]}" r="6" fill="${day.color}" fill-opacity="0.5" stroke="${day.color}" stroke-width="1.5"/>${num>0?`<text x="${c[0]}" y="${c[1]}" class="route-number" style="paint-order:stroke;stroke:rgba(30,24,48,0.4);stroke-width:0.5">${num}</text>`:''}</g>`;
+        } else if (s.recommended) {
+          dots += `<g class="route-dot reco-unchecked" onclick="selectAndShow('${s.id}')"><circle cx="${c[0]}" cy="${c[1]}" r="5" fill="rgba(79,201,192,0.18)" stroke="var(--accent-3)" stroke-width="1.4" stroke-dasharray="2 1.6"/><circle cx="${c[0]}" cy="${c[1]}" r="1.8" fill="var(--accent-3)"/></g>`;
+        } else {
+          dots += `<g class="route-dot" onclick="selectAndShow('${s.id}')"><circle cx="${c[0]}" cy="${c[1]}" r="3.5" fill="var(--muted)" fill-opacity="0.3"/></g>`;
+        }
+      });
+      svg.innerHTML = bg + routeSvg + dots;
+      const ri = document.getElementById('routeInfo');
+      ri.textContent = checked.length < 2 ? (checked.length ? `已选 1 个点：${checked[0].name}` : '请勾选至少两个行程点') : `路线：${checked.map(s=>s.name).join(' → ')}`;
+    }
+
+    // 跨城日（曼谷+清迈）：并列两张市集图，按当天时序统一编号
+    function renderTransitMap(day) {
+      const bkkSvg = document.getElementById('transitBkk');
+      const cnxSvg = document.getElementById('transitCnx');
+      const dayPts = day.spots.filter(s => s.checked && s.loc && LOCATIONS[s.loc]);
+      const seq = dayPts.slice().sort((a, b) => timeToMin(a.time) - timeToMin(b.time));
+      const numOf = {}; seq.forEach((s, i) => { numOf[s.id] = i + 1; });
+      const drawCity = (svg, prefix, baseType) => {
+        let html = drawBase(svg, baseType);
+        dayPts.filter(s => s.loc.startsWith(prefix)).forEach(s => {
+          const c = LOCATIONS[s.loc];
+          const num = numOf[s.id];
+          html += `<g class="route-dot" onclick="selectAndShow('${s.id}')"><circle cx="${c[0]}" cy="${c[1]}" r="6" fill="${day.color}" fill-opacity="0.5" stroke="${day.color}" stroke-width="1.5"/>${num ? `<text x="${c[0]}" y="${c[1]}" class="route-number" style="paint-order:stroke;stroke:rgba(30,24,48,0.4);stroke-width:0.5">${num}</text>` : ''}</g>`;
+        });
+        svg.innerHTML = html;
+      };
+      drawCity(bkkSvg, 'bkk', 'bangkok');
+      drawCity(cnxSvg, 'cnx', 'chiangmai');
+    }
+
+    // 点地图圆点：同时高亮选中（选中环 + 注意事项同步）并打开详情
+    function selectAndShow(id) { selectSpot(id); showSpotDetail(id); }
+
+    function renderOverview() {
+      const bkkEl = document.getElementById('mapSvgBkk');
+      const cnxEl = document.getElementById('mapSvgCnx');
+      const bkkPts = [], cnxPts = [];
+      DAYS.forEach(day => day.spots.forEach(s => {
+        if (!s.checked || !s.loc) return;
+        const city = s.loc.startsWith('bkk') ? 'bkk' : 'cnx';
+        const pt = { x: LOCATIONS[s.loc][0], y: LOCATIONS[s.loc][1], color: day.color, name: s.name, dayNo: DAYS.indexOf(day) + 1, id: s.id };
+        if (city === 'bkk') bkkPts.push(pt); else cnxPts.push(pt);
+      }));
+      const renderOverviewSvg = (svg, pts, type) => {
+        let html = drawBase(svg, type);
+        pts.forEach(p => {
+          const isSel = p.id === selectedSpotId;
+          html += `<g class="route-dot${isSel ? ' selected' : ''}" onclick="selectAndShow('${p.id}')">${isSel ? `<circle class="sel-ring" cx="${p.x}" cy="${p.y}" r="6"/>` : ''}<circle class="main-dot" cx="${p.x}" cy="${p.y}" r="6" fill="${p.color}" fill-opacity="0.5" stroke="${p.color}" stroke-width="1.5"/><text x="${p.x}" y="${p.y-9}" class="ov-daynum" style="fill:${p.color}">${p.dayNo}</text></g>`;
+        });
+        svg.innerHTML = html;
+      };
+      renderOverviewSvg(bkkEl, bkkPts, 'bangkok');
+      renderOverviewSvg(cnxEl, cnxPts, 'chiangmai');
+      const onEl = document.getElementById('overviewNotes');
+      const all = [];
+      const cfAll = new Map();
+      DAYS.forEach(day => computeConflicts(day).forEach((v, k) => cfAll.set(k, v)));
+      DAYS.forEach(day => day.spots.forEach(s => { if (s.checked && (s.notes || s.tips || s.warn || s.warning || cfAll.has(s.id))) all.push({ day, s }); }));
+      if (!all.length) { onEl.innerHTML = '<div class="text-sm text-[var(--muted)]">勾选行程点后可查看对应注意事项；点地图上的行程点可看完整详情。</div>'; return; }
+      const wmap = { warning: ['warning-badge','⚠️ 留意'], danger: ['danger-badge','🚨 冲突'], info: ['info-badge','💡 提示'] };
+      onEl.innerHTML = all.map(({day, s}) => {
+        const dayNo = DAYS.indexOf(day) + 1;
+        const wbadge = s.warning && wmap[s.warning] ? `<span class="note-badge ${wmap[s.warning][0]} rounded">${wmap[s.warning][1]}</span>` : '';
+        const cbadge = cfAll.has(s.id) ? `<span class="note-badge conflict-badge rounded">🚨 时间冲突</span>` : '';
+        const wnote = s.warn ? `<div class="backlog-warn mt-1" style="margin-top:6px"><span class="bw-ico">⚠️</span>${escHtml(s.warn)}</div>` : '';
+        const tip = s.tips ? `<div class="text-[var(--muted)] mt-1">${s.tips}</div>` : (wbadge || cbadge || s.warn ? '' : '<div class="text-xs text-[var(--muted)] mt-1">无特别注意事项</div>');
+        return `
+        <div class="note-card bg-[var(--chip-bg)] rounded-lg p-3 text-sm flex items-start gap-2">
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 mb-1 flex-wrap">
+              <span class="ov-day-pill" style="background:${day.color}">Day ${dayNo}</span>
+              <span class="font-bold">${s.name}</span>
+            </div>
+            ${wbadge}${cbadge}
+            ${tip}${wnote}
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function copyShareLink() {
+      const obj = { days: DAYS.map(d => ({ id: d.id, spots: d.spots.map(s => ({ id: s.id, name: s.name, time: s.time, type: s.type, loc: s.loc, checked: s.checked, recommended: !!s.recommended, addr: s.addr, hours: s.hours, duration: s.duration, notes: s.notes, ticket: s.ticket, tips: s.tips, boarding: s.boarding, warning: s.warning, warn: s.warn || '', links: s.links })) })), currentDay };
+      const url = location.origin + location.pathname + '#data=' + encodeURIComponent(JSON.stringify(obj));
+      navigator.clipboard.writeText(url).then(() => alert('分享链接已复制到剪贴板！\n\n' + url)).catch(() => prompt('复制以下链接分享：', url));
+    }
+
+    function initBgDeco(){
+      const layer = document.getElementById('bgDeco');
+      if(!layer) return;
+      const dotColors = ['rgba(91,141,239,','rgba(79,201,192,','rgba(239,154,58,','rgba(124,176,255,','rgba(173,127,255,'];
+      const stars = ['✨','⭐','🌟','💫','🌟'];
+      let html = '';
+      // 一弯月亮（夜空主角）
+      html += '<span class="bg-moon" style="top:5%;right:6%;font-size:48px;opacity:0.55;animation-delay:-3s">🌙</span>';
+      // 星星（随机分布，更大漂浮）
+      for(let i=0;i<24;i++){
+        const g = stars[Math.floor(Math.random()*stars.length)];
+        const size = 10 + Math.random()*16;
+        const left = Math.random()*100, top = Math.random()*100;
+        const dur = 11 + Math.random()*12;
+        const delay = -(Math.random()*dur);
+        const op = 0.12 + Math.random()*0.22;
+        html += '<span class="bg-star" style="left:'+left.toFixed(2)+'%;top:'+top.toFixed(2)+'%;font-size:'+size.toFixed(1)+'px;opacity:'+op.toFixed(2)+';animation-duration:'+dur.toFixed(1)+'s,'+(dur*1.6).toFixed(1)+'s;animation-delay:'+delay.toFixed(1)+'s,'+delay.toFixed(1)+'s">'+g+'</span>';
+      }
+      // 波点（随机分布、幅度更大）
+      for(let i=0;i<28;i++){
+        const col = dotColors[Math.floor(Math.random()*dotColors.length)];
+        const size = 6 + Math.random()*18;
+        const left = Math.random()*100, top = Math.random()*100;
+        const dur = 14 + Math.random()*16;
+        const delay = -(Math.random()*dur);
+        const op = (0.06 + Math.random()*0.12).toFixed(2);
+        html += '<span class="bg-dot" style="left:'+left.toFixed(2)+'%;top:'+top.toFixed(2)+'%;width:'+size.toFixed(1)+'px;height:'+size.toFixed(1)+'px;background:'+col+op+';animation-duration:'+dur.toFixed(1)+'s;animation-delay:'+delay.toFixed(1)+'s"></span>';
+      }
+      // 闪烁微星（夜空碎钻）
+      for(let i=0;i<18;i++){
+        const col = dotColors[Math.floor(Math.random()*dotColors.length)];
+        const size = 2 + Math.random()*4;
+        const left = Math.random()*100, top = Math.random()*100;
+        const dur = 3 + Math.random()*4;
+        const delay = -(Math.random()*dur);
+        html += '<span class="bg-twinkle" style="left:'+left.toFixed(2)+'%;top:'+top.toFixed(2)+'%;width:'+size.toFixed(1)+'px;height:'+size.toFixed(1)+'px;background:'+col+'0.5;animation-duration:'+dur.toFixed(1)+'s;animation-delay:'+delay.toFixed(1)+'s"></span>';
+      }
+      layer.innerHTML = html;
+    }
+    // 标题小熊：循环切换表情（正常开心 / 惊讶 / 单眼 wink / 闭眼）
+    function initBear(){
+      const bear = document.getElementById('bearSvg');
+      if(!bear) return;
+      const seq = [
+        'mood-happy', 'mood-happy',
+        'mood-surprised', 'mood-happy', 'mood-wink', 'mood-happy', 'mood-blink', 'mood-happy'
+      ];
+      let i = 0;
+      setInterval(() => {
+        i = (i + 1) % seq.length;
+        bear.setAttribute('class', 'w-14 h-14 bear ' + seq[i]);
+      }, 2600);
+    }
+    /* ===== 布局模式：手机版 / 网页版 ===== */
+    function applyLayoutMode(mode) {
+      document.body.classList.remove('mode-mobile', 'mode-web');
+      document.body.classList.add('mode-' + mode);
+      const btn = document.getElementById('modeBtn');
+      if (btn) btn.innerHTML = mode === 'mobile' ? '📱 手机版' : '🌐 网页版';
+      try { localStorage.setItem('layoutMode', mode); } catch (e) {}
+    }
+    function toggleLayoutMode() {
+      const cur = document.body.classList.contains('mode-web') ? 'web' : 'mobile';
+      applyLayoutMode(cur === 'web' ? 'mobile' : 'web');
+    }
+    function initLayoutMode() {
+      let mode = null;
+      try { mode = localStorage.getItem('layoutMode'); } catch (e) {}
+      if (!mode) mode = window.matchMedia('(max-width: 820px)').matches ? 'mobile' : 'web';
+      applyLayoutMode(mode);
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        const b = document.getElementById('installBtn'); if (b) b.style.display = 'none';
+      }
+    }
+
+    /* ===== 添加到主屏幕（PWA 安装） ===== */
+    let deferredPrompt = null;
+    function installApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => { deferredPrompt = null; }).catch(() => {});
+        return;
+      }
+      const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      const def = isIOS ? 'ios' : (isAndroid ? 'android' : 'desktop');
+      selectInstallOS(def);
+      document.getElementById('installModal').classList.add('show');
+    }
+    function selectInstallOS(os) {
+      const tabs = document.querySelectorAll('#installModal .install-tab');
+      tabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-os') === os));
+      ['ios', 'android', 'desktop'].forEach(p => {
+        const pane = document.getElementById('installPane' + p.charAt(0).toUpperCase() + p.slice(1));
+        if (pane) pane.style.display = (p === os) ? 'block' : 'none';
+      });
+    }
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault(); deferredPrompt = e;
+      const b = document.getElementById('installBtn'); if (b) b.style.display = '';
+    });
+    window.addEventListener('appinstalled', () => {
+      const b = document.getElementById('installBtn'); if (b) b.style.display = 'none';
+    });
+    function registerSW() {
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+      }
+    }
+
+    function renderBacklog() {
+      const box = document.getElementById('backlogList');
+      if (!box) return;
+      if (!BACKLOG.length) {
+        box.innerHTML = `<div class="text-sm text-[var(--muted)] py-2">🎉 暂无未计入事项。删掉的行程点、或你之后想加的备选都会先收在这里。</div>`;
+        return;
+      }
+      box.innerHTML = BACKLOG.map(b => `
+        <div class="backlog-card">
+          <div class="flex items-start gap-3 flex-1 min-w-0">
+            <div class="backlog-icon">${b.icon || '📍'}</div>
+            <div class="min-w-0 flex-1">
+              <div class="backlog-name">${escHtml(b.name)}</div>
+              <div class="backlog-note">${escHtml(b.notes || '')}</div>
+              ${b.warn ? `<div class="backlog-warn"><span class="bw-ico">⚠️</span>${escHtml(b.warn)}</div>` : ''}
+            </div>
+          </div>
+          <div class="backlog-actions">
+            <button class="btn-cute backlog-add" onclick="addBacklogItem(event, '${b.id}')">➕ 添加行程</button>
+            <span class="row-action" title="永久删除" onclick="deleteBacklog('${b.id}')">🗑️</span>
+          </div>
+        </div>`).join('');
+    }
+    function render() { closeMoveMenu(); renderTabs(); renderNowBanner(); renderSpotList(); renderMap(); renderBacklog(); syncSave(); }
+    window.addEventListener('hashchange', () => { location.reload(); });
+    initLayoutMode();
+    registerSW();
+    initBgDeco();
+    initBear();
+    render();
+    setTimeout(jumpToNow, 300);
+  </script>
+
+  <!-- 添加到主屏幕 指引 -->
+  <div class="modal-overlay" id="installModal" onclick="if(event.target===this)closeModal('installModal')">
+    <div class="panel rounded-2xl p-5 max-w-sm w-full">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="cute-font font-bold text-lg">📲 添加到主屏幕</h2>
+        <button class="icon-btn" onclick="closeModal('installModal')">✕</button>
+      </div>
+      <p class="text-sm text-[var(--muted)] mb-3">把行程单存到主屏幕，以后像 App 一样点开就能看，全屏无浏览器地址栏～ 选择你的设备：</p>
+      <div class="install-tabs">
+        <button class="install-tab" data-os="ios" onclick="selectInstallOS('ios')">🍎 苹果 iOS</button>
+        <button class="install-tab" data-os="android" onclick="selectInstallOS('android')">🤖 安卓</button>
+        <button class="install-tab" data-os="desktop" onclick="selectInstallOS('desktop')">💻 桌面</button>
+      </div>
+
+      <div id="installPaneIOS" class="install-pane mt-4">
+        <div class="text-sm font-semibold mb-2 text-[var(--accent)]">iPhone / iPad（必须用 Safari 浏览器）</div>
+        <ol class="text-sm text-[var(--muted)] list-decimal pl-5 space-y-1">
+          <li>在 iPhone 上用自带的 <b>Safari</b> 打开本页面（微信 / Chrome 内置浏览器不行）</li>
+          <li>点底部工具栏中间的 <b>分享</b> 图标 ⬆️（方框带向上箭头）</li>
+          <li>向上滑动，找到并点 <b>“添加到主屏幕”</b></li>
+          <li>可改个名字，点右上角 <b>添加</b>，桌面即出现图标 ✅</li>
+        </ol>
+        <div class="install-note">⚠️ iOS 不支持“一键安装弹窗”，只能通过 Safari 的分享菜单手动添加；图标会用到页面里的 apple-touch-icon，桌面显示名为「泰旅行程」。</div>
+      </div>
+
+      <div id="installPaneAndroid" class="install-pane mt-4" style="display:none;">
+        <div class="text-sm font-semibold mb-2 text-[var(--accent)]">安卓（Chrome / Edge / 三星浏览器）</div>
+        <ol class="text-sm text-[var(--muted)] list-decimal pl-5 space-y-1">
+          <li>用 Chrome 等浏览器打开本页面</li>
+          <li>点右上角 <b>⋮ 菜单</b></li>
+          <li>选 <b>“安装应用”</b> 或 <b>“添加到主屏幕”</b>（Install app / Add to Home screen）</li>
+          <li>点 <b>安装 / 添加</b>，桌面即出现图标 ✅</li>
+        </ol>
+        <div class="install-note">若地址栏右侧直接出现 <b>“安装”</b> 图标（⬇️ 或 ⊕），点它可一键安装，无需进菜单。</div>
+      </div>
+
+      <div id="installPaneDesktop" class="install-pane mt-4" style="display:none;">
+        <div class="text-sm font-semibold mb-2 text-[var(--accent)]">电脑桌面（Windows / macOS · Chrome / Edge）</div>
+        <ol class="text-sm text-[var(--muted)] list-decimal pl-5 space-y-1">
+          <li>用 Chrome 或 Edge 打开本页面</li>
+          <li>点右上角 <b>⋮ 菜单 → 应用 → 将此站点安装为应用</b></li>
+          <li>（或地址栏右侧出现 <b>⊕ 安装</b> 图标，点它）</li>
+          <li>确认后会在桌面 / 开始菜单生成独立图标 ✅</li>
+        </ol>
+        <div class="install-note">装成应用后，下次从桌面图标打开即为全屏无地址栏的“类 App”窗口。</div>
+      </div>
+
+      <button onclick="closeModal('installModal')" class="btn-cute mt-4 w-full py-2.5 bg-[var(--accent)] text-white text-sm cute-font">知道啦</button>
+    </div>
+  </div>
+
+  <!-- 移动到其他天的浮动菜单 -->
+  <div id="moveMenu" style="display:none; position:fixed; z-index:90;">
+    <div class="panel rounded-2xl p-2" style="min-width:200px; box-shadow:var(--shadow); border:1.5px solid var(--border);">
+      <div class="text-xs text-[var(--muted)] px-2 py-1 font-medium">🔀 移动到哪一天</div>
+      <div id="moveMenuList"></div>
+    </div>
+  </div>
+
+  <div id="backlogMenu" style="display:none; position:fixed; z-index:90;">
+    <div class="panel rounded-2xl p-2" style="min-width:200px; box-shadow:var(--shadow); border:1.5px solid var(--border);">
+      <div class="text-xs text-[var(--muted)] px-2 py-1 font-medium">➕ 添加到哪一天（未勾选 · 推荐）</div>
+      <div id="backlogMenuList"></div>
+    </div>
+  </div>
+  <!-- 多方案推荐弹窗 -->
+  <div class="modal-overlay" id="conflictFixModal" onclick="if(event.target===this)closeConflictModal()">
+    <div class="modal-panel panel rounded-2xl p-4" style="max-width:420px; width:92%; box-shadow:var(--shadow); border:1.5px solid var(--border);">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="cute-font font-bold text-base flex items-center gap-1">🛠️ 推荐调整方案</h3>
+        <span class="row-action" title="关闭" onclick="closeConflictModal()">✕</span>
+      </div>
+      <div id="conflictFixBody" class="space-y-1"></div>
+      <div class="mt-3">
+        <button onclick="closeConflictModal()" class="w-full py-2 rounded-xl border border-[var(--border)] text-sm" style="font-family:var(--font-cute);">暂不调整</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="adjustPopover" style="display:none; position:fixed; z-index:92;" onclick="event.stopPropagation();">
+    <div class="panel rounded-2xl p-3" style="box-shadow:var(--shadow); border:1.5px solid var(--border);">
+      <div class="text-xs text-[var(--muted)] px-1 pb-2 font-medium flex items-center gap-1">🛠️ 推荐调整</div>
+      <div id="adjustBody"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="suggestModal" onclick="if(event.target===this)closeSuggest()">
+    <div class="modal-panel panel rounded-2xl p-5" style="max-width:460px; width:92%; box-shadow:var(--shadow); border:1.5px solid var(--border);">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="cute-font font-bold text-lg" id="sugTitle">💡 温馨提示</h3>
+        <span class="row-action" title="关闭" onclick="closeSuggest()">✕</span>
+      </div>
+      <div id="sugBody"></div>
+      <div id="sugStep1" class="flex gap-2 mt-4">
+        <button class="btn-cute" style="flex:1" onclick="confirmSuggestAdd()">➕ 添加到行程</button>
+        <button class="btn-cute ghost" style="flex:1" onclick="dismissSuggest()">暂不需要</button>
+      </div>
+      <div id="sugStep2" style="display:none">
+        <div class="text-sm text-[var(--muted)] mb-1">要按推荐时间插入，还是你自己安排时间？</div>
+        <div class="text-xs text-[var(--muted)] mb-3">推荐时间：<b id="sugTimeText" class="text-[var(--accent)]"></b></div>
+        <div class="flex gap-2">
+          <button class="btn-cute" style="flex:1" onclick="chooseSugTime(true)">按推荐时间插入</button>
+          <button class="btn-cute ghost" style="flex:1" onclick="chooseSugTime(false)">我自己安排时间</button>
+        </div>
+        <button class="btn-cute ghost w-full mt-2" onclick="closeSuggest()">返回</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 时间演示弹窗 -->
+  <div class="modal-overlay" id="nowSimModal" onclick="if(event.target===this)closeNowSim()">
+    <div class="modal-panel panel rounded-2xl p-5" style="max-width:360px; width:92%; box-shadow:var(--shadow); border:1.5px solid var(--border);">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="cute-font font-bold text-lg">🕐 时间演示</h3>
+        <span class="row-action" title="关闭" onclick="closeNowSim()">✕</span>
+      </div>
+      <div class="text-sm text-[var(--muted)] mb-3">设置一个模拟时间，预览某天某时刻的进行中高亮效果。</div>
+      <label class="block text-xs mb-1">日期</label>
+      <input type="date" id="simDate" class="w-full p-2 rounded-lg border border-[var(--border)] bg-[var(--panel)] text-sm mb-3">
+      <label class="block text-xs mb-1">时间</label>
+      <input type="time" id="simTime" class="w-full p-2 rounded-lg border border-[var(--border)] bg-[var(--panel)] text-sm mb-4">
+      <div class="flex gap-3">
+        <button onclick="applyNowSim()" class="flex-1 py-2.5 rounded-xl bg-[var(--accent)] text-white font-medium hover:opacity-90 transition">应用</button>
+        <button onclick="clearNowSim()" class="px-4 py-2.5 rounded-xl border border-[var(--border)] text-sm">清除演示</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
