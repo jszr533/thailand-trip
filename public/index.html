@@ -345,6 +345,10 @@
           <button onclick="toggleTheme()" class="btn-cute px-4 py-2.5 border-2 border-[var(--border)] bg-[var(--panel)] text-sm cute-font text-[var(--text)]">🌓 主题</button>
           <button onclick="nowRef=null; nowSimActive=false; document.getElementById('nowSimBtn').textContent='🕐 演示'; jumpToNow();" class="btn-cute px-4 py-2.5 border-2 border-[var(--border)] bg-[var(--panel)] text-sm cute-font text-[var(--text)]">📍 定位当前</button>
           <button onclick="toggleNowSim()" id="nowSimBtn" class="btn-cute px-4 py-2.5 border-2 border-[var(--border)] bg-[var(--panel)] text-sm cute-font text-[var(--text)]">🕐 演示</button>
+          <span id="syncIndicator" style="display:none;" class="px-2 py-1 text-xs rounded-full border border-[var(--accent-3)]/40 bg-[var(--accent-3)]/5 text-[var(--accent-3)] whitespace-nowrap">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent-3);animation:nbPulse 1.8s infinite;margin-right:4px;vertical-align:middle;"></span>
+            <span id="syncStatusText" style="vertical-align:middle;">多人同步中</span>
+          </span>
         </div>
       </div>
       <span class="deco deco-sway text-4xl" style="top:6px; right:34%; animation-delay:-0.5s;">🌸</span>
@@ -480,14 +484,6 @@
         </div>
       </div>
       <span class="deco text-2xl" style="top:8px; right:6%; animation-delay:-3.1s;">🐻</span>
-    </div>
-
-    <!-- 同步状态（无码自动同步）-->
-    <div style="display:flex;align-items:center;gap:6px;margin:-8px 0 6px;font-size:11px;color:var(--muted);">
-      <span id="syncIndicator" style="display:none;">
-        <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent-3);animation:nbPulse 1.8s infinite;"></span>
-        <span id="syncStatusText">多人同步中</span>
-      </span>
     </div>
 
     <div class="flex flex-wrap gap-2 mb-4" id="dayTabs"></div>
