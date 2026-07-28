@@ -819,8 +819,8 @@
       <div class="space-y-3 text-sm">
         <div><label class="block text-xs text-[var(--muted)] mb-1">行程名称</label><input id="mtTitle" class="input-field" placeholder="如 曼谷·清迈双城"></div>
         <div class="grid grid-cols-2 gap-3">
-          <div><label class="block text-xs text-[var(--muted)] mb-1">城市 / 地区</label><input id="mtCity" class="input-field" placeholder="如 泰国 / 东京"></div>
-          <div><label class="block text-xs text-[var(--muted)] mb-1">国家</label><input id="mtCountry" class="input-field" placeholder="如 泰国"></div>
+          <div><label class="block text-xs text-[var(--muted)] mb-1">覆盖城市 <span class="text-[var(--accent)]">· 自动汇总 🔄</span></label><input id="mtCity" class="input-field opacity-80" disabled placeholder="自动从行程天数/景点汇总"></div>
+          <div><label class="block text-xs text-[var(--muted)] mb-1">国家 <span class="text-[var(--accent)]">· 自动汇总 🔄</span></label><input id="mtCountry" class="input-field opacity-80" disabled placeholder="自动汇总"></div>
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div><label class="block text-xs text-[var(--muted)] mb-1">出发日期</label><input id="mtStart" class="input-field" placeholder="如 7.31"></div>
@@ -844,7 +844,8 @@
           <div id="cityEditor" class="space-y-2"></div>
           <datalist id="cityList"></datalist>
         </div>
-        <p class="text-xs text-[var(--muted)] mt-3">💡 城市用于关联「同景点历史评价」：同为某城市的不同行程，点开同一景点会显示你以前留下的评价。</p>
+        <p class="text-xs text-[var(--muted)] mt-3">📍 覆盖城市会自动从「各天所属城市」(如本程 曼谷 / 清迈) +「下方手动点亮」+「行程名称」汇总，并在世界地图上<b>逐个点亮</b>。想增删精确城市，用上方「📍 点亮城市」即可。</p>
+        <p class="text-xs text-[var(--muted)] mt-1">💡 城市用于关联「同景点历史评价」：同为某城市的不同行程，点开同一景点会显示你以前留下的评价。</p>
       </div>
       <div class="flex gap-3 mt-5">
         <button onclick="saveTripMetaFromForm()" class="flex-1 py-2.5 rounded-xl bg-[var(--accent)] text-white font-medium hover:opacity-90 transition">保存</button>
@@ -931,6 +932,12 @@
       "埃及":"非洲","南非":"非洲","肯尼亚":"非洲","摩洛哥":"非洲",
       "澳大利亚":"大洋洲","新西兰":"大洋洲","斐济":"大洋洲"
     };
+    // 行程天数 day.city 里用的英文 slug → 中文城市名（与 CITY_DB 对应）
+    var CITY_SLUG = {
+      'bangkok':'曼谷','bkk':'曼谷','bangkok_suvarnabhumi':'曼谷','suvarnabhumi':'曼谷',
+      'chiangmai':'清迈','cnx':'清迈','chiang-mai':'清迈',
+      'phuket':'普吉岛','chiangrai':'清莱','chiang-rai':'清莱'
+    };
     var editingCities = [];
 
     function geoToXY(lat,lng){ return [ (lng+180)/360*1000, (90-lat)/180*500 ]; }
@@ -942,6 +949,46 @@
         if(text.indexOf(name)>=0){ var c=CITY_DB[name]; found.push({name:name, country:c[2], lat:c[0], lng:c[1]}); }
       }
       return found;
+    }
+
+    // 自动汇总行程的「精确城市」：手动点亮 + 各天 day.city + 标题识别，三者合并去重。
+    // 保证「行程涉及多个城市」时，世界地图自动逐个点亮，且行程的 城市/地区 显示为精确城市（如 曼谷 · 清迈）。
+    function syncCities(t){
+      if(!t) return;
+      var map = {};
+      function add(name){
+        if(!name) return;
+        name = String(name).trim(); if(!name) return;
+        if(map[name]) return;
+        var co=null, la=null, ln=null;
+        if(CITY_DB[name]){ co=CITY_DB[name][2]; la=CITY_DB[name][0]; ln=CITY_DB[name][1]; }
+        map[name] = { name:name, country:co||'', lat:la, lng:ln };
+      }
+      // 1) 已手动点亮的城市（保留其坐标与国家）
+      (t.cities||[]).forEach(function(c){
+        if(!c||!c.name) return;
+        add(c.name);
+        if(map[c.name]){ var m=map[c.name]; if(c.country) m.country=c.country; if(c.lat!=null&&c.lat!=='') m.lat=+c.lat; if(c.lng!=null&&c.lng!=='') m.lng=+c.lng; }
+      });
+      // 2) 每个行程天的 city 字段（可能是 slug 或中文名，支持逗号分隔多个城市）
+      (t.days||[]).forEach(function(d){
+        var cc = d && d.city; if(!cc) return;
+        String(cc).split(',').forEach(function(s){
+          s = s.trim(); if(!s) return;
+          var nm = CITY_SLUG[s] || (CITY_DB[s] ? s : null);
+          add(nm);
+        });
+      });
+      // 3) 标题兜底（如「曼谷·清迈双城」未在以上出现时）
+      if(Object.keys(map).length===0){ seedCitiesFromText(t.title||'').forEach(function(c){ add(c.name); }); }
+      // 写入 trip.cities（保留有名字的城市；无名坐标的也保留用于展示）
+      t.cities = Object.keys(map).map(function(k){ var m=map[k]; return {name:m.name, country:m.country||'', lat:m.lat, lng:m.lng}; }).filter(function(c){ return c.name; });
+      // 自动同步「城市/地区」与「国家」为精确城市
+      if(t.cities.length){
+        t.city = t.cities.map(function(c){return c.name;}).join(' · ');
+        var cs = {}; t.cities.forEach(function(c){ if(c.country) cs[c.country]=1; });
+        t.country = Object.keys(cs).join(' · ');
+      }
     }
 
     function aggregateCities(){
@@ -1238,7 +1285,7 @@
           const obj = JSON.parse(raw);
           if (obj && Array.isArray(obj.trips) && obj.trips.length) {
             TRIPS = obj.trips;
-            TRIPS.forEach(function(t){ if(!t.status) t.status='active'; if(!Array.isArray(t.days)) t.days=[]; });
+            TRIPS.forEach(function(t){ if(!t.status) t.status='active'; if(!Array.isArray(t.days)) t.days=[]; syncCities(t); });
             activeTripId = (obj.active && TRIPS.some(t=>t.id===obj.active)) ? obj.active : TRIPS[0].id;
             DAYS = (TRIPS.find(t=>t.id===activeTripId) || TRIPS[0]).days;
           }
@@ -1255,6 +1302,7 @@
     }
     function currentTrip(){ return (TRIPS && TRIPS.find(t=>t.id===activeTripId)) || (TRIPS && TRIPS[0]) || null; }
     function persistAll(){
+      if (TRIPS && Array.isArray(TRIPS)) TRIPS.forEach(function(t){ syncCities(t); });
       try { localStorage.setItem(LS_TRIPS, JSON.stringify({ trips: TRIPS, active: activeTripId })); } catch(e){}
       try { localStorage.setItem('days', JSON.stringify(DAYS)); } catch(e){}
     }
@@ -1294,7 +1342,6 @@
       const t = currentTrip(); if(!t) return [];
       const set = [];
       (t.cities||[]).forEach(function(c){ if(c.name && set.indexOf(c.name)<0) set.push(c.name); });
-      if (t.city && set.indexOf(t.city)<0) set.push(t.city);
       return set.filter(function(n){ return POI_DB[n] && POI_DB[n].length; });
     }
     function poiAddedNames(){
