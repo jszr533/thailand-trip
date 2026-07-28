@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: thailand-trip-sync
+    env: node
+    buildCommand: ""
+    startCommand: node server/server.js
+    healthCheckPath: /api/
+    envVars:
+      - key: PORT
+        value: "10000"
+      - key: NODE_VERSION
+        value: "22"
