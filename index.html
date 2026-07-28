@@ -199,6 +199,23 @@
     .status-opt { flex:1; font-size:12px; padding:7px 4px; border-radius:10px; border:1.5px solid var(--border); background:var(--chip-bg); cursor:pointer; transition:all .15s; color:var(--text); white-space:nowrap; }
     .status-opt:hover { border-color:var(--accent); }
     .status-opt.selected { background:var(--accent); color:#fff; border-color:var(--accent); }
+    /* 城市景点库弹窗 */
+    .poi-panel { max-height:86vh; display:flex; flex-direction:column; }
+    .poi-body { overflow-y:auto; padding-right:6px; }
+    .poi-city { margin-bottom:18px; }
+    .poi-city-h { font-weight:800; font-size:15px; margin-bottom:8px; color:var(--accent); }
+    .poi-city-n { font-size:11px; color:var(--muted); font-weight:500; margin-left:6px; }
+    .poi-cat { font-size:12px; color:var(--muted); margin:10px 0 6px; font-weight:700; border-left:3px solid var(--accent); padding-left:8px; }
+    .poi-list { display:flex; flex-direction:column; gap:6px; }
+    .poi-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 12px; border:1.5px solid var(--border); border-radius:12px; background:var(--panel); transition:all .15s; }
+    .poi-row.in { border-color:var(--accent); background:rgba(14,165,233,.10); }
+    .poi-info { min-width:0; }
+    .poi-name { font-weight:600; font-size:14px; }
+    .poi-note { font-size:12px; color:var(--muted); margin-top:2px; }
+    .poi-add { flex-shrink:0; font-size:13px; padding:6px 14px; border-radius:999px; border:1.5px solid var(--accent); background:var(--accent); color:#fff; cursor:pointer; transition:all .15s; white-space:nowrap; }
+    .poi-add:hover { opacity:.9; }
+    .poi-add.added { background:transparent; color:var(--accent); }
+    .poi-empty { text-align:center; color:var(--muted); padding:24px; }
     .rv-stars { color:#f5a623; letter-spacing:1px; font-size:13px; }
     /* 时间小提醒卡片可点击 → 跳到对应行程点编辑 */
     .urg-jump { cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; position: relative; }
@@ -448,6 +465,7 @@
       <div class="flex items-center gap-3 flex-wrap">
         <span class="text-sm font-bold cute-font text-[var(--accent)] whitespace-nowrap">🗂 我的行程库</span>
         <button onclick="openWorldMap()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap hover:border-[var(--accent)] transition">🌍 我的足迹</button>
+        <button onclick="openPoi()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap hover:border-[var(--accent)] transition">📚 城市景点库</button>
         <div id="tripChips" class="flex gap-2 flex-wrap flex-1"></div>
         <button onclick="createTrip()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap">➕ 新建行程</button>
       </div>
@@ -1145,6 +1163,69 @@
         ] },
     ];
 
+    // ===== 城市景点库：按城市罗列「有点名气」的景点 / 美食 / 玩乐，供任意行程挑选 =====
+    // 这些是参考清单——每一程选不选都随你；加入行程后也只是「候选」（未勾选），用不用你再定。
+    const POI_DB = {
+      '曼谷': [
+        { name:'大皇宫 & 玉佛寺', cat:'景点', type:'sight', note:'泰国地标，建议8点前到避人流' },
+        { name:'卧佛寺 Wat Pho', cat:'景点', type:'sight', note:'巨型卧佛 + 传统按摩学校' },
+        { name:'郑王庙(黎明寺) Wat Arun', cat:'景点', type:'sight', note:'河对岸标志尖塔，黄昏极美' },
+        { name:'四面佛 Erawan', cat:'景点', type:'sight', note:'市中心商圈祈福胜地' },
+        { name:'金佛寺 Wat Traimit', cat:'景点', type:'sight', note:'纯金佛像，唐人街旁' },
+        { name:'恰图恰周末市场', cat:'景点', type:'market', note:'全球最大周末市场(仅六、日)' },
+        { name:'河滨码头夜市 Asiatique', cat:'景点', type:'market', note:'河岸摩天轮 + 夜市' },
+        { name:'考山路 Khao San', cat:'景点', type:'sight', note:'背包客酒吧街' },
+        { name:'唐人街(耀华力)', cat:'景点', type:'sight', note:'街头美食 + 金店' },
+        { name:'暹罗天地 ICONSIAM', cat:'景点', type:'shop', note:'豪华商场 + 室内水上市场' },
+        { name:'曼谷艺术文化中心 BACC', cat:'景点', type:'sight', note:'当代艺术馆' },
+        { name:'建兴酒家 Somboon', cat:'美食', type:'food', note:'咖喱蟹名店' },
+        { name:'七珍海南鸡饭 Go Ang', cat:'美食', type:'food', note:'米其林鸡饭' },
+        { name:'芒果探戈 Mango Tango', cat:'美食', type:'food', note:'芒果甜品' },
+        { name:'火车夜市(拉差达)', cat:'美食', type:'food', note:'网红夜市 + 街头小吃' },
+        { name:'昭披耶河晚餐游船', cat:'玩乐', type:'activity', note:'水上夜景晚餐' },
+        { name:'安帕瓦水上市场', cat:'玩乐', type:'activity', note:'近郊黄昏市集 + 萤火虫' },
+        { name:'泰式按摩(女子监狱等)', cat:'玩乐', type:'relax', note:'经典放松' },
+        { name:'Terminal 21 商场', cat:'玩乐', type:'shop', note:'各国主题楼层' },
+        { name:'Siam Paragon 购物', cat:'玩乐', type:'shop', note:'高端商场' }
+      ],
+      '清迈': [
+        { name:'双龙寺(素贴山) Doi Suthep', cat:'景点', type:'sight', note:'山上金顶寺庙，俯瞰全景' },
+        { name:'契迪龙寺 Wat Chedi Luang', cat:'景点', type:'sight', note:'古城中心巨大佛塔遗迹' },
+        { name:'塔佩门 Tha Phae Gate', cat:'景点', type:'sight', note:'古城东门 + 鸽子广场' },
+        { name:'清曼寺 Wat Chiang Man', cat:'景点', type:'sight', note:'清迈最古老寺庙' },
+        { name:'松德寺 Wat Suan Dok', cat:'景点', type:'sight', note:'素贴山脚白塔' },
+        { name:'宁曼路 Nimman', cat:'景点', type:'shop', note:'文艺小店咖啡街' },
+        { name:'因他暖山 Doi Inthanon', cat:'景点', type:'sight', note:'泰国屋脊一日游' },
+        { name:'清迈夜间动物园', cat:'景点', type:'sight', note:'夜间观光车看动物' },
+        { name:'周日夜市 Sunday Market', cat:'美食', type:'food', note:'古城最大夜市' },
+        { name:'长康路夜市 Night Bazaar', cat:'美食', type:'food', note:'每日手信 + 小吃' },
+        { name:'清迈门夜市', cat:'美食', type:'food', note:'当地小吃夜市' },
+        { name:'泰北咖喱面 Khao Soi', cat:'美食', type:'food', note:'清迈招牌面' },
+        { name:'凤飞飞猪脚饭', cat:'美食', type:'food', note:'机场网红猪脚饭' },
+        { name:'丛林飞跃 Jungle Flight', cat:'玩乐', type:'activity', note:'树顶滑索' },
+        { name:'大象自然公园 Elephant Nature Park', cat:'玩乐', type:'activity', note:'救援象保育' },
+        { name:'清迈女子监狱按摩', cat:'玩乐', type:'relax', note:'平价口碑按摩' },
+        { name:'古城单车游', cat:'玩乐', type:'activity', note:'租单车逛古城' },
+        { name:'泰式烹饪课', cat:'玩乐', type:'activity', note:'学做泰餐' }
+      ],
+      '普吉岛': [
+        { name:'普吉老镇 Old Town', cat:'景点', type:'sight', note:'中葡风格彩色老街' },
+        { name:'芭东海滩 Patong', cat:'景点', type:'sight', note:'最热闹海滩' },
+        { name:'大佛 Big Buddha', cat:'景点', type:'sight', note:'山顶白色巨佛' },
+        { name:'神仙半岛 Promthep', cat:'景点', type:'sight', note:'看日落海角' },
+        { name:'皮皮岛一日游', cat:'玩乐', type:'activity', note:'浮潜跳岛' },
+        { name:'西蒙人妖秀 Simon Cabaret', cat:'玩乐', type:'activity', note:'知名人妖歌舞秀' },
+        { name:'普吉夜市', cat:'美食', type:'food', note:'海鲜 + 小吃' }
+      ],
+      '清莱': [
+        { name:'白庙 Wat Rong Khun', cat:'景点', type:'sight', note:'通体雪白艺术寺' },
+        { name:'黑庙 Black House', cat:'景点', type:'sight', note:'深色木构艺术馆' },
+        { name:'蓝庙 Blue Temple', cat:'景点', type:'sight', note:'深蓝金饰寺庙' },
+        { name:'金三角 Golden Triangle', cat:'景点', type:'sight', note:'泰缅老交界' },
+        { name:'长颈族村落', cat:'玩乐', type:'activity', note:'探访山地民族' }
+      ]
+    };
+
     // ===== 多行程库（一个网页管理多次出游）=====
     let TRIPS = null;
     let activeTripId = null;
@@ -1207,6 +1288,70 @@
     function saveTripMeta(id, meta){
       const t = TRIPS.find(x=>x.id===id); if(!t) return;
       Object.assign(t, meta); persistAll(); render();
+    }
+    // ===== 城市景点库：浏览某行程关联城市的「有名气地点」，可选入行程 =====
+    function poiCities(){
+      const t = currentTrip(); if(!t) return [];
+      const set = [];
+      (t.cities||[]).forEach(function(c){ if(c.name && set.indexOf(c.name)<0) set.push(c.name); });
+      if (t.city && set.indexOf(t.city)<0) set.push(t.city);
+      return set.filter(function(n){ return POI_DB[n] && POI_DB[n].length; });
+    }
+    function poiAddedNames(){
+      const set = {};
+      DAYS.forEach(function(d){ (d.spots||[]).forEach(function(s){ if(s.name) set[s.name]=true; }); });
+      return set;
+    }
+    function openPoi(){
+      const cities = poiCities();
+      if (!cities.length){ alert('当前行程还没关联城市，无法显示景点库。\n请先在「编辑行程信息 → 📍 点亮城市」里加上城市（如 曼谷、清迈）。'); return; }
+      const sel = document.getElementById('poiDaySel');
+      sel.innerHTML = DAYS.map(function(d,i){ return '<option value="'+d.id+'">Day '+(i+1)+' · '+(d.date||'')+' '+(d.weekday||'')+'</option>'; }).join('');
+      sel.value = (currentDay && currentDay!=='overview' && DAYS.some(function(d){return d.id===currentDay;})) ? currentDay : (DAYS[0]&&DAYS[0].id);
+      document.getElementById('poiCitiesTitle').textContent = cities.join(' · ');
+      renderPoi('');
+      document.getElementById('poiModal').classList.add('show');
+      setTimeout(function(){ const i=document.getElementById('poiSearch'); if(i) i.focus(); }, 60);
+    }
+    function renderPoi(q){
+      q = (q||'').trim();
+      const cities = poiCities();
+      const added = poiAddedNames();
+      const order = ['景点','美食','玩乐'];
+      let html = '';
+      cities.forEach(function(city){
+        const items = (POI_DB[city]||[]).filter(function(p){ return !q || (p.name+q).indexOf(q)>=0 || (p.note && p.note.indexOf(q)>=0); });
+        if (!items.length) return;
+        html += '<div class="poi-city"><div class="poi-city-h">📍 '+escHtml(city)+' <span class="poi-city-n">'+items.length+' 处</span></div>';
+        order.forEach(function(cat){
+          const grp = items.filter(function(p){ return p.cat===cat; });
+          if (!grp.length) return;
+          html += '<div class="poi-cat">'+cat+'</div><div class="poi-list">';
+          grp.forEach(function(p){
+            const isIn = !!added[p.name];
+            html += '<div class="poi-row'+(isIn?' in':'')+'">'
+              + '<div class="poi-info"><div class="poi-name">'+escHtml(p.name)+'</div>'+(p.note?'<div class="poi-note">'+escHtml(p.note)+'</div>':'')+'</div>'
+              + '<button class="poi-add'+(isIn?' added':'')+'" onclick="togglePoi(\''+escAttr(city)+'\',\''+escAttr(p.name)+'\')">'+(isIn?'✓ 已加入':'➕ 加入')+'</button>';
+          });
+          html += '</div>';
+        });
+        html += '</div>';
+      });
+      if (!html) html = '<div class="poi-empty">没找到匹配的地点。换个关键词试试？</div>';
+      document.getElementById('poiBody').innerHTML = html;
+    }
+    function togglePoi(city, name){
+      const added = poiAddedNames();
+      if (added[name]) {
+        DAYS.forEach(function(d){ d.spots = d.spots.filter(function(s){ return s.name!==name; }); });
+      } else {
+        const p = (POI_DB[city]||[]).find(function(x){ return x.name===name; }); if(!p) return;
+        const dayId = document.getElementById('poiDaySel').value || (DAYS[0]&&DAYS[0].id);
+        const day = DAYS.find(function(d){ return d.id===dayId; }); if(!day) return;
+        const spot = { id:'poi_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), name:p.name, time:'自由安排', type:p.type||'sight', loc:null, addr:'', checked:false, recommended:false, hours:'', duration:'', notes:p.note||'', ticket:'', tips:'', boarding:'', warning:null, fromLib:true };
+        day.spots.push(spot);
+      }
+      persistAll(); render(); renderPoi(document.getElementById('poiSearch').value||'');
     }
     function renderTripBar(){
       const wrap = document.getElementById('tripChips'); if(!wrap) return;
