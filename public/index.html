@@ -67,6 +67,14 @@
     body.mode-web .flight-grid { grid-template-columns: repeat(2, 1fr) !important; }
     body.mode-mobile .custom-checkbox { width: 22px; height: 22px; }
     body.mode-mobile .spot-row { padding: 14px 12px; }
+    /* 地图缩略图 */
+    #singleMapBox { max-height: 160px; transition: max-height 0.2s; }
+    #singleMapBox .map-expand-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.03); color:transparent; font-size:14px; font-weight:600; transition:all 0.2s; border-radius:inherit; pointer-events:none; }
+    #singleMapBox:hover .map-expand-overlay { background:rgba(0,0,0,0.08); color:var(--accent); backdrop-filter:blur(2px); }
+    .dark #singleMapBox:hover .map-expand-overlay { background:rgba(255,255,255,0.06); color:#7fb0ff; }
+    #mapExpandModal .modal-panel { max-width:90vw !important; max-height:90vh !important; width:90vw; height:90vh; padding:0 !important; background:var(--panel-solid); }
+    #mapExpandModal .map-expand-svg { width:100%; height:100%; min-height:300px; }
+    body.mode-mobile #singleMapBox { max-height: 120px; }
     body { overflow-x: hidden; }
     body.mode-mobile .max-w-7xl { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
     body.mode-mobile .main-layout { grid-template-columns: 1fr !important; gap: 0.5rem !important; }
@@ -552,11 +560,12 @@
               <span class="ml-1">· 点击圆点看详情</span>
             </div>
           </div>
-          <div id="singleMapBox" class="map-container rounded-xl overflow-hidden relative aspect-[4/3] md:aspect-[16/9]">
+          <div id="singleMapBox" class="map-container rounded-xl overflow-hidden relative aspect-[4/3] md:aspect-[16/9] cursor-pointer" onclick="openMapExpand()">
             <svg id="mapSvg" viewBox="-55 -45 110 90" class="w-full h-full"></svg>
             <div class="absolute bottom-3 right-3 glass-chip rounded-lg px-3 py-2 text-xs border border-[var(--border)] shadow">
               <div id="routeInfo">请选择行程点</div>
             </div>
+            <div class="map-expand-overlay">🔍 点击放大地图</div>
           </div>
           <div id="transitMapPanel" class="grid grid-cols-1 md:grid-cols-2 gap-4" style="display:none;">
             <div>
@@ -2292,6 +2301,19 @@
         </div>`;
       }).join('');
     }
+    // ===== 地图放大/缩小 =====
+    function openMapExpand() {
+      const src = document.getElementById('mapSvg');
+      const dst = document.getElementById('mapExpandSvg');
+      if (!src || !dst) return;
+      dst.innerHTML = src.innerHTML;
+      dst.setAttribute('viewBox', src.getAttribute('viewBox') || '-55 -45 110 90');
+      document.getElementById('mapExpandTitle').textContent = document.getElementById('mapTitle').textContent || '当日路线轨迹';
+      document.getElementById('mapExpandModal').classList.add('show');
+    }
+    function closeMapExpand() {
+      document.getElementById('mapExpandModal').classList.remove('show');
+    }
 
     function copyShareLink() {
       const obj = { days: DAYS.map(d => ({ id: d.id, spots: d.spots.map(s => ({ id: s.id, name: s.name, time: s.time, type: s.type, loc: s.loc, checked: s.checked, recommended: !!s.recommended, addr: s.addr, hours: s.hours, duration: s.duration, notes: s.notes, ticket: s.ticket, tips: s.tips, boarding: s.boarding, warning: s.warning, warn: s.warn || '', links: s.links })) })), currentDay };
@@ -2572,6 +2594,21 @@
       <div id="conflictFixBody" class="space-y-1"></div>
       <div class="mt-3">
         <button onclick="closeConflictModal()" class="w-full py-2 rounded-xl border border-[var(--border)] text-sm" style="font-family:var(--font-cute);">暂不调整</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 地图放大弹窗 -->
+  <div class="modal-overlay" id="mapExpandModal" onclick="if(event.target===this)closeMapExpand()" style="z-index:60;">
+    <div class="modal-panel panel rounded-2xl overflow-hidden flex flex-col">
+      <div class="flex items-center justify-between p-3 shrink-0">
+        <h3 class="cute-font font-bold text-base" id="mapExpandTitle">当日路线轨迹</h3>
+        <button class="icon-btn" onclick="closeMapExpand()">✕</button>
+      </div>
+      <div class="flex-1 p-3 pt-0 overflow-hidden">
+        <div class="map-container rounded-xl overflow-hidden w-full h-full">
+          <svg id="mapExpandSvg" viewBox="-55 -45 110 90" class="w-full h-full map-expand-svg"></svg>
+        </div>
       </div>
     </div>
   </div>
