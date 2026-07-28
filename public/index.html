@@ -181,6 +181,16 @@
     .dark .urg-urgent { color:#ff8a8e; } .dark .urg-warn { color:#f0b35a; } .dark .urg-normal { color:#5fd6c8; }
     .urg-legend { display:flex; flex-wrap:wrap; gap:10px; font-size:11px; color:var(--muted); margin:-4px 0 10px; }
     .urg-legend span { display:inline-flex; align-items:center; gap:3px; }
+    .trip-chip { display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:9999px; border:1.5px solid var(--border); background:var(--panel); cursor:pointer; transition:all .2s; max-width:340px; }
+    .trip-chip:hover { border-color:var(--accent); transform:translateY(-1px); }
+    .trip-chip.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .trip-chip.active .tc-meta { color:rgba(255,255,255,.85); }
+    .trip-chip .tc-title { font-weight:500; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:190px; }
+    .trip-chip .tc-meta { font-size:11px; color:var(--muted); }
+    .trip-chip .tc-actions { display:inline-flex; gap:4px; font-size:12px; }
+    .trip-chip .tc-actions span { opacity:.65; }
+    .trip-chip .tc-actions span:hover { opacity:1; }
+    .rv-stars { color:#f5a623; letter-spacing:1px; font-size:13px; }
     /* 时间小提醒卡片可点击 → 跳到对应行程点编辑 */
     .urg-jump { cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; position: relative; }
     .urg-jump:hover { transform: translateY(-2px); box-shadow: 0 8px 22px -10px rgba(0,0,0,0.28); }
@@ -370,7 +380,7 @@
             </svg>
           </div>
           <div>
-            <h1 class="text-2xl md:text-3xl cute-font mb-1 title-gradient">曼谷 · 清迈 双城旅行行程</h1>
+            <h1 class="text-2xl md:text-3xl cute-font mb-1 title-gradient" id="tripTitleH1">曼谷 · 清迈 双城旅行行程</h1>
             <p class="text-sm text-[var(--muted)]">可勾选生成路线 · 可编辑 · 总览图 · 点地图小点看攻略</p>
           </div>
         </div>
@@ -396,7 +406,15 @@
       <span class="deco text-2xl" style="top:10px; right:8%; animation-delay:-2.4s;">🍑</span>
     </div>
 
-      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 flight-grid">
+    <div class="panel p-4 mb-6" id="tripBarPanel">
+      <div class="flex items-center gap-3 flex-wrap">
+        <span class="text-sm font-bold cute-font text-[var(--accent)] whitespace-nowrap">🗂 我的行程库</span>
+        <div id="tripChips" class="flex gap-2 flex-wrap flex-1"></div>
+        <button onclick="createTrip()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap">➕ 新建行程</button>
+      </div>
+    </div>
+
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 flight-grid">
         <div class="rounded-xl p-3 border border-[var(--border)] bg-[var(--chip-bg)]">
           <div class="text-xs text-[var(--muted)] mb-1">7月31日 周五</div>
           <div class="font-bold text-sm">MU2803</div>
@@ -661,6 +679,10 @@
           <div id="dLinksList" class="flex flex-wrap gap-2"></div>
           <div class="text-xs text-[var(--muted)] mt-2">带 <span class="src-tag inline">来源</span> 标记的是我为你核实过的官网 / 攻略页；其余为按行程点名称自动生成的平台搜索（Google / 小红书 / 微博 / 地图 / Grab）。</div>
         </div>
+        <div id="dHistory" class="hidden">
+          <div class="font-semibold text-[var(--accent)] mb-2">📚 同景点历史评价</div>
+          <div id="dHistoryList" class="space-y-2"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -708,10 +730,49 @@
           <label class="block text-xs text-[var(--muted)] mb-1">🌟 设为推荐行程</label>
           <label class="flex items-center gap-2 cursor-pointer select-none"><input type="checkbox" id="f_recommended" class="custom-checkbox"> <span class="text-sm text-[var(--muted)]">在「推荐行程」区展示</span></label>
         </div>
+        <div class="border-t border-[var(--border)] pt-3 mt-1">
+          <div class="font-semibold text-[var(--accent)] mb-2 text-sm">⭐ 我的评价（游玩后记录）</div>
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="block text-xs text-[var(--muted)] mb-1">评分</label>
+              <select id="f_rating" class="input-field">
+                <option value="0">未评分</option><option value="1">★ 1 分</option><option value="2">★★ 2 分</option><option value="3">★★★ 3 分</option><option value="4">★★★★ 4 分</option><option value="5">★★★★★ 5 分</option>
+              </select>
+            </div>
+            <div><label class="block text-xs text-[var(--muted)] mb-1">评价日期</label><input id="f_reviewDate" type="date" class="input-field"></div>
+          </div>
+          <div class="mt-3"><label class="block text-xs text-[var(--muted)] mb-1">评价内容</label><textarea id="f_reviewText" class="input-field" rows="2" placeholder="好吃 / 避坑 / 最佳时间…"></textarea></div>
+        </div>
       </div>
       <div class="flex gap-3 mt-5">
         <button onclick="saveSpot()" class="flex-1 py-2.5 rounded-xl bg-[var(--accent)] text-white font-medium hover:opacity-90 transition">保存</button>
         <button onclick="closeModal('editModal')" class="px-4 py-2.5 rounded-xl border border-[var(--border)] text-sm">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trip Meta Modal -->
+  <div class="modal-overlay" id="tripMetaModal" onclick="if(event.target===this)closeModal('tripMetaModal')">
+    <div class="panel rounded-2xl p-6 max-w-lg w-full">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-bold cute-font">✏️ 编辑行程信息</h3>
+        <button class="icon-btn" onclick="closeModal('tripMetaModal')">✕</button>
+      </div>
+      <input type="hidden" id="mtId">
+      <div class="space-y-3 text-sm">
+        <div><label class="block text-xs text-[var(--muted)] mb-1">行程名称</label><input id="mtTitle" class="input-field" placeholder="如 曼谷·清迈双城"></div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-xs text-[var(--muted)] mb-1">城市 / 地区</label><input id="mtCity" class="input-field" placeholder="如 泰国 / 东京"></div>
+          <div><label class="block text-xs text-[var(--muted)] mb-1">国家</label><input id="mtCountry" class="input-field" placeholder="如 泰国"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-xs text-[var(--muted)] mb-1">出发日期</label><input id="mtStart" class="input-field" placeholder="如 7.31"></div>
+          <div><label class="block text-xs text-[var(--muted)] mb-1">返程日期</label><input id="mtEnd" class="input-field" placeholder="如 8.5"></div>
+        </div>
+        <p class="text-xs text-[var(--muted)]">💡 城市用于关联「同景点历史评价」：同为某城市的不同行程，点开同一景点会显示你以前留下的评价。</p>
+      </div>
+      <div class="flex gap-3 mt-5">
+        <button onclick="saveTripMetaFromForm()" class="flex-1 py-2.5 rounded-xl bg-[var(--accent)] text-white font-medium hover:opacity-90 transition">保存</button>
+        <button onclick="closeModal('tripMetaModal')" class="px-4 py-2.5 rounded-xl border border-[var(--border)] text-sm">取消</button>
       </div>
     </div>
   </div>
@@ -741,7 +802,7 @@
       cnx_threekings: [-2, -10], cnx_maya: [-24, -26], cnx_shooting: [28, -34], cnx_akha: [-20, -18], cnx_khaosoi: [4, -6], cnx_lila: [-8, -2],
     };
 
-    const DAYS = [
+    let DAYS = [
       { id: 'd1', date: '7.31', weekday: '周五', title: '南京出发 · 红眼航班飞曼谷', city: 'bangkok', color: '#ff8fb1',
         weather: { icon: '☀️🌧️', high: 36, low: 28, desc: '闷热·午后有雨', tip: '南京暑热，机舱冷气足备薄外套' },
         spots: [
@@ -825,6 +886,112 @@
           { id: 'd6_2', name: '南京禄口机场 抵达', time: '07:10', type: 'flight', loc: null, checked: true, addr: '南京市江宁区禄口街道（南京禄口国际机场 T2）', hours: '07:10 抵达', duration: '—', notes: '抵达南京，行程结束。', ticket: '', tips: '', warning: null },
         ] },
     ];
+
+    // ===== 多行程库（一个网页管理多次出游）=====
+    let TRIPS = null;
+    let activeTripId = null;
+    const LS_TRIPS = 'trips_v1';
+    function genTripId(){ return 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+    function loadAllTrips(){
+      try {
+        const raw = lsGet(LS_TRIPS);
+        if (raw) {
+          const obj = JSON.parse(raw);
+          if (obj && Array.isArray(obj.trips) && obj.trips.length) {
+            TRIPS = obj.trips;
+            activeTripId = (obj.active && TRIPS.some(t=>t.id===obj.active)) ? obj.active : TRIPS[0].id;
+            DAYS = (TRIPS.find(t=>t.id===activeTripId) || TRIPS[0]).days;
+          }
+        }
+      } catch(e){}
+      if (!TRIPS) {
+        // 迁移：把当前单行程包成第一个 trip
+        const first = { id: genTripId(), title: '曼谷 · 清迈 双城旅行', city: '泰国', country: '泰国', start: '7.31', end: '8.5', days: DAYS };
+        TRIPS = [first];
+        activeTripId = first.id;
+        persistAll();
+      }
+      if (!DAYS || !DAYS.some(d => d.id === currentDay)) currentDay = (DAYS && DAYS.length) ? DAYS[0].id : 'overview';
+    }
+    function currentTrip(){ return (TRIPS && TRIPS.find(t=>t.id===activeTripId)) || (TRIPS && TRIPS[0]) || null; }
+    function persistAll(){
+      try { localStorage.setItem(LS_TRIPS, JSON.stringify({ trips: TRIPS, active: activeTripId })); } catch(e){}
+      try { localStorage.setItem('days', JSON.stringify(DAYS)); } catch(e){}
+    }
+    function setActiveTrip(id){
+      const t = TRIPS.find(x=>x.id===id); if(!t) return;
+      activeTripId = id; DAYS = t.days;
+      if (DAYS && DAYS.length) currentDay = DAYS[0].id;
+      persistAll(); render();
+    }
+    function createTrip(){
+      const t = { id: genTripId(), title:'新行程', city:'', country:'', start:'', end:'', days:[{ id:'d1', date:'', weekday:'', title:'第 1 天', city:'', color:'#0ea5e9', weather:null, spots:[] }] };
+      TRIPS.push(t); activeTripId = t.id; DAYS = t.days; currentDay = 'd1';
+      persistAll(); render();
+    }
+    function deleteTrip(id){
+      if (!TRIPS || TRIPS.length<=1){ alert('至少保留一个行程'); return; }
+      if (!confirm('确定删除该行程？此操作不可撤销。')) return;
+      TRIPS = TRIPS.filter(t=>t.id!==id);
+      if (activeTripId===id){ activeTripId = TRIPS[0].id; DAYS = TRIPS[0].days; }
+      persistAll(); render();
+    }
+    function saveTripMeta(id, meta){
+      const t = TRIPS.find(x=>x.id===id); if(!t) return;
+      Object.assign(t, meta); persistAll(); render();
+    }
+    function renderTripBar(){
+      const wrap = document.getElementById('tripChips'); if(!wrap) return;
+      if (!TRIPS) return;
+      wrap.innerHTML = TRIPS.map(t=>{
+        const active = t.id===activeTripId ? ' active' : '';
+        const meta = [t.city, (t.start?(t.end? (t.start+'→'+t.end):t.start):'')].filter(Boolean).join(' · ');
+        return `<button class="trip-chip${active}" onclick="setActiveTrip('${t.id}')" title="点击切换到该行程">
+          <span class="tc-title">${escHtml(t.title||'未命名行程')}</span>
+          ${meta?`<span class="tc-meta">${escHtml(meta)}</span>`:''}
+          <span class="tc-actions">
+            <span onclick="event.stopPropagation();editTripMeta('${t.id}')" title="编辑行程信息">✏️</span>
+            <span onclick="event.stopPropagation();deleteTrip('${t.id}')" title="删除行程">🗑️</span>
+          </span>
+        </button>`;
+      }).join('');
+    }
+    function editTripMeta(id){
+      const t = TRIPS.find(x=>x.id===id); if(!t) return;
+      document.getElementById('mtId').value = id;
+      document.getElementById('mtTitle').value = t.title||'';
+      document.getElementById('mtCity').value = t.city||'';
+      document.getElementById('mtCountry').value = t.country||'';
+      document.getElementById('mtStart').value = t.start||'';
+      document.getElementById('mtEnd').value = t.end||'';
+      document.getElementById('tripMetaModal').classList.add('show');
+    }
+    function saveTripMetaFromForm(){
+      const id = document.getElementById('mtId').value;
+      saveTripMeta(id, {
+        title: document.getElementById('mtTitle').value || '未命名行程',
+        city: document.getElementById('mtCity').value,
+        country: document.getElementById('mtCountry').value,
+        start: document.getElementById('mtStart').value,
+        end: document.getElementById('mtEnd').value,
+      });
+      closeModal('tripMetaModal');
+    }
+    function historyReviews(spot){
+      const cur = currentTrip(); if(!cur) return [];
+      const out = [];
+      (TRIPS||[]).forEach(t=>{
+        if (t.id===cur.id) return;
+        const sameCity = (cur.city && t.city && (cur.city.indexOf(t.city)>=0 || t.city.indexOf(cur.city)>=0)) || (!cur.city && !t.city);
+        if (!sameCity) return;
+        (t.days||[]).forEach(d=> (d.spots||[]).forEach(s=>{
+          if (s.name===spot.name && (s.reviewText || (s.rating>0))) {
+            out.push({ title:t.title, rating:s.rating||0, date:s.reviewDate||'', text:s.reviewText||'' });
+          }
+        }));
+      });
+      return out;
+    }
 
     // ===== 未计入事项（备选用法）=====
     // 这里放「上述行程都没列、但值得考虑」的推荐备选，例如榴莲哪里好吃、泰式按摩、大象营等。
@@ -1051,7 +1218,7 @@
           else { updateSyncStatus('同步不可用', false); return; }
         }
       }
-      try { localStorage.setItem('days', JSON.stringify(DAYS)); } catch(e){}
+      try { persistAll(); } catch(e){}
       updateSyncStatus('多人同步中', true);
       startSyncPoll();
       render();
@@ -1119,6 +1286,7 @@
       }));
       restoreBacklogMeta();
     }
+    loadAllTrips();
     importState();
 
     // ===== 初始化：尝试从 URL / localStorage 恢复行程码 =====
@@ -1653,6 +1821,7 @@
             <div class="flex items-center gap-2 flex-wrap">
               <span class="text-xs font-mono text-[var(--accent)] bg-[var(--accent)]/10 px-2 py-0.5 rounded">${s.time}</span>
               <span class="font-medium text-sm">${s.name}</span>
+              ${(s.rating>0) ? `<span class="rv-stars" title="我的评分 ${s.rating}/5${s.reviewDate?(' · '+s.reviewDate):''}">${'★'.repeat(s.rating)}${'☆'.repeat(5-s.rating)}</span>` : ''}
               ${s.type === 'flight' ? '<span class="text-xs flight-badge">✈️ 机场</span>' : ''}
               ${s.type === 'hotel' ? '<span class="text-xs hotel-badge">🏨 住宿</span>' : ''}
               ${s.boarding ? `<span class="text-xs board-badge">🛫 ${s.boarding}到机场</span>` : ''}
@@ -2023,6 +2192,9 @@
       document.getElementById('f_boarding').value = spot.boarding || '';
       document.getElementById('f_warning').value = spot.warning || '';
       document.getElementById('f_recommended').checked = !!spot.recommended;
+      document.getElementById('f_rating').value = String(spot.rating || 0);
+      document.getElementById('f_reviewDate').value = spot.reviewDate || '';
+      document.getElementById('f_reviewText').value = spot.reviewText || '';
       document.getElementById('editModal').classList.add('show');
     }
     function saveSpot() {
@@ -2041,6 +2213,9 @@
       spot.boarding = document.getElementById('f_boarding').value || '';
       spot.warning = document.getElementById('f_warning').value || null;
       spot.recommended = document.getElementById('f_recommended').checked;
+      spot.rating = parseInt(document.getElementById('f_rating').value, 10) || 0;
+      spot.reviewDate = document.getElementById('f_reviewDate').value || '';
+      spot.reviewText = document.getElementById('f_reviewText').value.trim() || '';
       closeModal('editModal');
       render();
     }
@@ -2110,7 +2285,8 @@
         + `${spot.duration ? `<div>⏱ <span class="text-[var(--muted)]">${spot.duration}</span></div>` : ''}`
         + `${spot.boarding ? `<div>🛫 <span class="text-[var(--muted)]">${spot.boarding}到机场办理登机</span></div>` : ''}`
         + `${(!spot.addr && !spot.hours && !spot.duration && !spot.boarding) ? '<div class="text-[var(--muted)]">暂无地址/时间信息</div>' : ''}`;
-      document.getElementById('dNotes').innerHTML = `<div class="font-semibold mb-1">📝 说明</div><div class="text-[var(--muted)]">${spot.notes || '—'}</div>` + (spot.warn ? `<div class="mt-2 backlog-warn"><span class="bw-ico">⚠️</span>${escHtml(spot.warn)}</div>` : '') + (cf.has(id) ? `<div class="mt-2 conflict-note">⚠️ 冲突提醒：${escHtml(cf.get(id))}</div>` : '');
+      const ownReviewHtml = (spot.rating>0 || spot.reviewText) ? `<div class="mt-3 rounded-lg p-3 bg-[var(--chip-bg)] border border-[var(--border)]"><div class="font-semibold text-[var(--accent)] mb-1">⭐ 我的评价</div><div class="flex items-center gap-2 text-xs"><span class="rv-stars">${'★'.repeat(spot.rating||0)}${'☆'.repeat(5-(spot.rating||0))}</span>${spot.reviewDate?`<span class="text-[var(--muted)]">🗓 ${escHtml(spot.reviewDate)}</span>`:''}</div>${spot.reviewText?`<div class="text-sm text-[var(--muted)] mt-1">${escHtml(spot.reviewText)}</div>`:''}</div>` : '';
+      document.getElementById('dNotes').innerHTML = `<div class="font-semibold mb-1">📝 说明</div><div class="text-[var(--muted)]">${spot.notes || '—'}</div>` + (spot.warn ? `<div class="mt-2 backlog-warn"><span class="bw-ico">⚠️</span>${escHtml(spot.warn)}</div>` : '') + (cf.has(id) ? `<div class="mt-2 conflict-note">⚠️ 冲突提醒：${escHtml(cf.get(id))}</div>` : '') + ownReviewHtml;
       const tEl = document.getElementById('dTicket');
       if (spot.ticket) { tEl.classList.remove('hidden'); document.getElementById('dTicketText').textContent = spot.ticket; } else tEl.classList.add('hidden');
       const pEl = document.getElementById('dTips');
@@ -2124,6 +2300,23 @@
         ll.innerHTML = spotLinks.map(l => `<a class="${l.src ? 'ext-link-chip src' : 'ext-link-chip'}" href="${escAttr(l.url)}" target="_blank" rel="noopener noreferrer" onclick="openExt(this, event)"><span class="ext-ico">${l.icon || '🔗'}</span>${escHtml(l.label)}${l.src ? '<span class="src-tag">来源</span>' : ''}</a>`).join('');
       } else {
         lEl.classList.add('hidden');
+      }
+      // 跨行程同景点历史评价
+      const hr = historyReviews(spot);
+      const hEl = document.getElementById('dHistory');
+      if (hr.length) {
+        hEl.classList.remove('hidden');
+        document.getElementById('dHistoryList').innerHTML = hr.map(r => `
+          <div class="rounded-lg p-3 bg-[var(--chip-bg)] border border-[var(--border)]">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold">${escHtml(r.title)}</span>
+              <span class="rv-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
+            </div>
+            ${r.date?`<div class="text-xs text-[var(--muted)]">🗓 ${escHtml(r.date)}</div>`:''}
+            ${r.text?`<div class="text-sm text-[var(--muted)] mt-1">${escHtml(r.text)}</div>`:''}
+          </div>`).join('');
+      } else {
+        hEl.classList.add('hidden');
       }
       document.getElementById('detailModal').classList.add('show');
     }
@@ -2378,7 +2571,7 @@
             if (data.addedSugSpots) addedSugSpots = data.addedSugSpots;
             if (data.dismissedSugs) dismissedSugs = data.dismissedSugs;
             // 持久化到 localStorage
-            try { localStorage.setItem('days', JSON.stringify(DAYS)); } catch(e){}
+            try { persistAll(); } catch(e){}
             persistBacklog();
             persistSuggestMeta();
             render();
@@ -2598,7 +2791,7 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
           </div>
         </div>`).join('');
     }
-    function render() { closeMoveMenu(); renderTabs(); renderNowBanner(); renderSpotList(); renderMap(); renderBacklog(); syncSave(); }
+    function render() { closeMoveMenu(); renderTripBar(); const _h1=document.getElementById('tripTitleH1'); if(_h1){const _t=currentTrip(); _h1.textContent=(_t&&_t.title)||'我的行程';} renderTabs(); renderNowBanner(); renderSpotList(); renderMap(); renderBacklog(); syncSave(); }
     window.addEventListener('hashchange', () => { location.reload(); });
     initLayoutMode();
     registerSW();
