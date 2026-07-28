@@ -649,7 +649,7 @@
         <div id="dLinks" class="hidden">
           <div class="font-semibold text-[var(--accent)] mb-2">🔗 来源 / 攻略 / 导航</div>
           <div id="dLinksList" class="flex flex-wrap gap-2"></div>
-          <div class="text-xs text-[var(--muted)] mt-2">带 <span class="src-tag inline">来源</span> 标记的是我为你核实过的官网 / 攻略页；其余为按行程点名称自动生成的平台搜索（小红书 / 微博 / 大众点评 / 地图）。</div>
+          <div class="text-xs text-[var(--muted)] mt-2">带 <span class="src-tag inline">来源</span> 标记的是我为你核实过的官网 / 攻略页；其余为按行程点名称自动生成的平台搜索（小红书 / 微博 / 地图 / Grab）。</div>
         </div>
       </div>
     </div>
@@ -2049,10 +2049,10 @@
       // 2) 平台搜索攻略（自动基于行程点名称）
       links.push({ icon: '📕', label: '小红书攻略', url: `https://www.xiaohongshu.com/search_result?keyword=${kw}` });
       links.push({ icon: '🐧', label: '微博攻略', url: `https://s.weibo.com/weibo?q=${kw}` });
-      // 3) 有地址再补地图导航 + 大众点评
+      // 3) 有地址再补地图导航 + Grab 打车（泰国本地实用；移除打不开的大众点评）
       if (spot.addr) {
         links.push({ icon: '🗺️', label: '地图导航', url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spot.name + ' ' + spot.addr)}` });
-        links.push({ icon: '⭐', label: '大众点评', url: `https://www.dianping.com/search/keyword/0_0_1_${kw}` });
+        links.push({ icon: '🚕', label: 'Grab 打车', url: 'https://www.grab.com/th/en/' });
       }
       return links;
     }
