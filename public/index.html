@@ -537,6 +537,28 @@
     .pt-spot-note { font-size:12.5px; color:var(--text); margin-top:3px; line-height:1.5; }
     .pt-spot-warn { font-size:12px; color:var(--warn-text); margin-top:3px; }
     .pt-spot-links { margin-top:6px; display:flex; gap:8px; flex-wrap:wrap; }
+    /* 城市库：同城同点合并卡片 + 可折叠「行程记录」 */
+    .pt-rec-h { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:6px 0 10px; }
+    .pt-rec-h .pt-trip-title { color:var(--accent); }
+    .pt-rec-h .pt-trip-meta { font-size:11.5px; }
+    .lib-spot { flex-wrap:wrap; }
+    .lib-main { cursor:pointer; }
+    .lib-main:hover .pt-spot-name { color:var(--accent); }
+    .poi-years { font-weight:700; letter-spacing:.5px; }
+    .spot-log { width:100%; margin-top:8px; display:flex; flex-direction:column; gap:6px; order:10; }
+    .spot-log.collapsed { display:none; }
+    .log-row { display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12px; color:var(--text); background:var(--chip-bg); border:1px solid var(--border); border-radius:10px; padding:7px 10px; cursor:pointer; transition:all .15s; }
+    .log-row:hover { border-color:var(--accent); background:rgba(91,141,239,.08); }
+    .log-year { color:var(--accent); font-weight:700; }
+    .log-edit { margin-left:auto; color:var(--accent-3); font-weight:700; white-space:nowrap; }
+    @media (max-width:560px){
+      .pt-spot { gap:8px; padding:9px 10px; }
+      .poi-reviews { gap:5px; }
+      .poi-visit { font-size:9.5px; padding:2px 7px; }
+      .poi-review-btn, .poi-review-sum { font-size:10.5px; padding:3px 8px; }
+      .poi-years { font-size:9.5px; }
+      .log-row { font-size:11px; padding:6px 8px; }
+    }
     .pt-rec { margin-top:18px; border-top:1.5px dashed var(--border); padding-top:14px; }
     #tripContentView, #pageHome, #pageCities, #pagePoints { display:none; }
     body.flow-home #pageHome { display:block; }
@@ -742,7 +764,7 @@
           <div class="home-h">📍 <span id="pointsCityName"></span> 的行程点库</div>
           <button class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)]" onclick="setFlow('cities')">← 返回城市</button>
         </div>
-        <div class="text-xs text-[var(--muted)] mb-3">以下是「<span id="pointsCityName2"></span>」在所有行程里的行程点，按行程 → 天 → 时间排好；✅已结束行程里勾选过的点会显示<b>去过几次</b>，每个点可<b>多次评价</b>。下面还附推荐去处，点「➕ 加入」即可加进对应行程。</div>
+        <div class="text-xs text-[var(--muted)] mb-3">以下是「<span id="pointsCityName2"></span>」在所有行程里的行程点——<b>同城同点已合并成一行卡片</b>，点卡片可展开「去过几次 · 在哪几次行程」；✅已结束行程里勾选过的点会显示<b>去过次数 + 年份</b>，每个点可<b>多次评价</b>。下面还附推荐去处，点「➕ 加入」即可加进对应行程。</div>
         <div id="pointsBody" class="space-y-4"></div>
       </div>
     </div>
@@ -1112,10 +1134,12 @@
           <div><label class="block text-xs text-[var(--muted)] mb-1">覆盖城市 <span class="text-[var(--accent)]">· 自动汇总 🔄</span></label><input id="mtCity" class="input-field opacity-80" disabled placeholder="自动从行程天数/景点汇总"></div>
           <div><label class="block text-xs text-[var(--muted)] mb-1">国家 <span class="text-[var(--accent)]">· 自动汇总 🔄</span></label><input id="mtCountry" class="input-field opacity-80" disabled placeholder="自动汇总"></div>
         </div>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-3 gap-3">
+          <div><label class="block text-xs text-[var(--muted)] mb-1">年份</label><input id="mtYear" type="number" inputmode="numeric" class="input-field" placeholder="如 2025"></div>
           <div><label class="block text-xs text-[var(--muted)] mb-1">出发日期</label><input id="mtStart" class="input-field" placeholder="如 7.31"></div>
           <div><label class="block text-xs text-[var(--muted)] mb-1">返程日期</label><input id="mtEnd" class="input-field" placeholder="如 8.5"></div>
         </div>
+        <p class="text-xs text-[var(--muted)] mt-1">📅 年份用于「去过几次 · 年份」展示，也帮助跨年行程准确判断状态（留空默认今年）。</p>
         <div class="mt-3">
           <label class="block text-xs text-[var(--muted)] mb-2">行程状态</label>
           <div class="flex gap-2">
@@ -1373,7 +1397,7 @@
       var pts=document.getElementById('wmPoints'); var h='';
       cities.forEach(function(c){
         var xy=geoToXY(c.lat,c.lng);
-        var tripsStr=c.trips.map(function(t){return t.title+' ('+(t.start||'')+(t.end?('→'+t.end):'')+')';}).join(' | ');
+        var tripsStr=c.trips.map(function(t){return t.title+' ('+(t.start||'')+(t.end?('→'+t.end):'')+(t.year?(' · '+t.year):'')+')';}).join(' | ');
         h+='<g class="wm-pt" data-name="'+escAttr(c.name)+'" data-country="'+escAttr(c.country||'')+'" data-trips="'+escAttr(tripsStr)+'" transform="translate('+xy[0]+','+xy[1]+')">'
           +'<circle r="9" class="wm-pulse" fill="none" stroke="#22d3ee" stroke-width="0.8"/>'
           +'<circle r="3.4" fill="url(#wmGlow)" stroke="#e0f7ff" stroke-width="0.4" style="filter:url(#wmBlur)"/>'
@@ -1477,35 +1501,58 @@
         return;
       }
       var html=''; var added=poiAddedNames(); var visitMap=computeVisitMap();
+      // ===== 我的行程点：按「地点名称」聚合，同城同点只显示一行卡片，多次出现用可折叠「行程记录」展开 =====
+      var curYear = new Date().getFullYear();
+      var groups = {};
       trips.forEach(function(t){
-        var st = tripTimeStatus(t);
-        html+='<div class="pt-trip">';
-        html+='<div class="pt-trip-h"><span class="pt-trip-title">🗂️ '+escHtml(t.title||'未命名行程')+'</span>'
-          +'<span class="tc-badge '+st+'">'+(ST_LABEL[st]||'进行中')+'</span>'
-          +(t.start?('<span class="pt-trip-meta">'+(t.end?(t.start+'→'+t.end):t.start)+'</span>'):'')+'</div>';
+        var yr = (t.year!=null && !isNaN(t.year)) ? Number(t.year) : curYear;
         t.days.forEach(function(d){
-          var spots=(d.spots||[]).slice().sort(function(a,b){ return (a.time||'').localeCompare(b.time||''); });
-          html+='<div class="pt-day"><div class="pt-day-h">📅 '+(d.title||'某天')+(d.date?(' · '+d.date+' '+(d.weekday||'')):'')+'</div>';
-          if(!spots.length){ html+='<div class="pt-empty">这天还没安排行程点。</div>'; }
-          spots.forEach(function(s){
-            var links=buildSpotLinks(s);
-            html+='<div class="pt-spot'+(s.checked?' checked':'')+(s.recommended?' reco':'')+(s.type==='flight'?' flight':'')+'">'
-              +'<div class="pt-spot-main">'
-              +'<span class="pt-spot-time">'+(s.time||'自由安排')+'</span>'
-              +'<div class="pt-spot-name">'+escHtml(s.name||'未命名')+(s.type==='flight'&&s.flightNo?(' · ✈️'+escHtml(s.flightNo)):'')+'</div>'
-              +(s.addr?'<div class="pt-spot-sub">📍 '+escHtml(s.addr)+'</div>':'')
-              +(s.notes?'<div class="pt-spot-note">'+escHtml(s.notes)+'</div>':'')
-              +(s.warn?'<div class="pt-spot-warn">⚠️ '+escHtml(s.warn)+'</div>':'')
-              +(s.ticket?'<div class="pt-spot-sub">🎫 '+escHtml(s.ticket)+'</div>':'')
-              +'</div>'
-              +(links.length?'<div class="pt-spot-links">'+links.map(function(l){return '<a class="flight-link" href="'+escAttr(l.url)+'" target="_blank" rel="noopener">'+escHtml(l.icon||'🔗')+' '+escHtml(l.label||'链接')+'</a>';}).join('')+'</div>':'')
-              + reviewBlock(city, s.name||'', visitMap[reviewKey(city, s.name||'')]||0)
-              +'</div>';
+          (d.spots||[]).forEach(function(s){
+            if(!s.name) return;
+            if(!groups[s.name]) groups[s.name] = { name:s.name, items:[] };
+            groups[s.name].items.push({ trip:t, day:d, spot:s, year:yr });
           });
-          html+='</div>';
         });
-        html+='</div>';
       });
+      var names = Object.keys(groups).sort(function(a,b){ return a.localeCompare(b); });
+      if (names.length) {
+        html += '<div class="pt-rec-h"><span class="pt-trip-title">🧳 我的行程点（按地点聚合）</span><span class="pt-trip-meta">同城同点合并为一行 · 点卡片展开「去过几次」</span></div>';
+        names.forEach(function(name){
+          var g = groups[name];
+          var first = g.items[0];
+          var s = first.spot;
+          var hk = hashId(reviewKey(city, name));
+          var visit = visitMap[reviewKey(city, name)] || { count:0, years:[] };
+          var isIn = !!added[name];
+          var multi = g.items.length > 1;
+          html += '<div class="pt-spot lib-spot'+(s.checked?' checked':'')+(s.recommended?' reco':'')+(s.type==='flight'?' flight':'')+'">';
+          html += '<div class="pt-spot-main lib-main" onclick="toggleSpotLog(\''+hk+'\')">';
+          html += '<span class="pt-spot-time">'+(multi?('📋 多时段 ('+g.items.length+')'):(s.time||'自由安排'))+'</span>';
+          html += '<div class="pt-spot-name">'+escHtml(name)+(s.type==='flight'&&s.flightNo?(' · ✈️'+escHtml(s.flightNo)):'')+'</div>';
+          html += (s.addr?'<div class="pt-spot-sub">📍 '+escHtml(s.addr)+'</div>':'');
+          html += (s.notes?'<div class="pt-spot-note">'+escHtml(s.notes)+'</div>':'');
+          html += (s.warn?'<div class="pt-spot-warn">⚠️ '+escHtml(s.warn)+'</div>':'');
+          html += (s.ticket?'<div class="pt-spot-sub">🎫 '+escHtml(s.ticket)+'</div>':'');
+          html += '</div>';
+          var links = buildSpotLinks(s);
+          if(links.length) html += '<div class="pt-spot-links">'+links.map(function(l){return '<a class="flight-link" href="'+escAttr(l.url)+'" target="_blank" rel="noopener">'+escHtml(l.icon||'🔗')+' '+escHtml(l.label||'链接')+'</a>';}).join('')+'</div>';
+          html += reviewBlock(city, name, visit);
+          html += '<button class="poi-add'+(isIn?' added':'')+'" onclick="togglePoi(\''+escAttr(city)+'\',\''+escAttr(name)+'\')">'+(isIn?'✓ 已加入':'➕ 加入')+'</button>';
+          if (multi) {
+            html += '<div class="spot-log collapsed" id="log-'+hk+'">';
+            g.items.forEach(function(it){
+              var dayLabel = (it.day.title||'某天') + (it.day.date?(' · '+it.day.date):'');
+              html += '<div class="log-row" onclick="event.stopPropagation();jumpToSpot(\''+escAttr(it.trip.id)+'\',\''+escAttr(it.day.id)+'\')">'
+                + '🗂️ '+escHtml(it.trip.title)+' <span class="log-year">('+it.year+')</span> · 📅 '+escHtml(dayLabel)+' · ⏰ '+(it.spot.time||'自由安排')
+                + ' <span class="log-edit">✏️ 编辑</span></div>';
+            });
+            html += '</div>';
+          }
+          html += '</div>';
+        });
+      } else {
+        html += '<div class="pt-empty">这个城市还没有任何行程点。去「🗓️ 我的行程」添加，或从下方推荐去处「➕ 加入」吧。</div>';
+      }
       var recs=(POI_DB[city]||[]);
       if(recs.length){
         html+='<div class="pt-rec"><div class="pt-trip-h"><span class="pt-trip-title">✨ '+escHtml(city)+' 推荐去处</span><span class="pt-trip-meta">点「➕ 加入」可加进对应行程</span></div>';
@@ -1518,7 +1565,7 @@
             var isIn=!!added[p.name];
             html+='<div class="pt-spot'+(isIn?' checked':'')+'"><div class="pt-spot-main"><div class="pt-spot-name">'+escHtml(p.name)+'</div>'+(p.note?'<div class="pt-spot-note">'+escHtml(p.note)+'</div>':'')+'</div>'
               +'<button class="poi-add'+(isIn?' added':'')+'" onclick="togglePoi(\''+escAttr(city)+'\',\''+escAttr(p.name)+'\')">'+(isIn?'✓ 已加入':'➕ 加入')+'</button>'
-              + reviewBlock(city, p.name, visitMap[reviewKey(city, p.name)]||0)
+              + reviewBlock(city, p.name, visitMap[reviewKey(city, p.name)]||{count:0,years:[]})
               +'</div>';
           });
           html+='</div>';
@@ -1545,7 +1592,7 @@
       var pts=document.getElementById('homeMapPoints'); var h='';
       cities.forEach(function(c){
         var xy=geoToXY(c.lat,c.lng);
-        var tripsStr=c.trips.map(function(t){return t.title+' ('+(t.start||'')+(t.end?('→'+t.end):'')+')';}).join(' | ');
+        var tripsStr=c.trips.map(function(t){return t.title+' ('+(t.start||'')+(t.end?('→'+t.end):'')+(t.year?(' · '+t.year):'')+')';}).join(' | ');
         h+='<g class="wm-pt" data-name="'+escAttr(c.name)+'" data-country="'+escAttr(c.country||'')+'" data-trips="'+escAttr(tripsStr)+'" transform="translate('+xy[0]+','+xy[1]+')">'
           +'<circle r="9" class="wm-pulse" fill="none" stroke="#22d3ee" stroke-width="0.8"/>'
           +'<circle r="3.4" fill="url(#homeGlow)" stroke="#e0f7ff" stroke-width="0.4" style="filter:url(#homeBlur)"/>'
@@ -1878,7 +1925,7 @@
           const obj = JSON.parse(raw);
           if (obj && Array.isArray(obj.trips) && obj.trips.length) {
             TRIPS = obj.trips;
-            TRIPS.forEach(function(t){ if(!t.status) t.status='active'; if(!Array.isArray(t.days)) t.days=[]; syncCities(t); });
+            TRIPS.forEach(function(t){ if(!t.status) t.status='active'; if(!Array.isArray(t.days)) t.days=[]; if(t.year==null) t.year=new Date().getFullYear(); syncCities(t); });
             activeTripId = (obj.active && TRIPS.some(t=>t.id===obj.active)) ? obj.active : TRIPS[0].id;
             DAYS = (TRIPS.find(t=>t.id===activeTripId) || TRIPS[0]).days;
           }
@@ -1886,7 +1933,7 @@
       } catch(e){}
       if (!TRIPS) {
         // 迁移：把当前单行程包成第一个 trip
-        const first = { id: genTripId(), title: '曼谷 · 清迈 双城旅行', city: '泰国', country: '泰国', start: '7.31', end: '8.5', status: 'active', days: DAYS, cities: seedCitiesFromText('曼谷 · 清迈 双城旅行') };
+        const first = { id: genTripId(), title: '曼谷 · 清迈 双城旅行', city: '泰国', country: '泰国', start: '7.31', end: '8.5', year: new Date().getFullYear(), status: 'active', days: DAYS, cities: seedCitiesFromText('曼谷 · 清迈 双城旅行') };
         TRIPS = [first];
         activeTripId = first.id;
         persistAll();
@@ -1937,20 +1984,27 @@
     function hashId(s){ let h=0; for(let i=0;i<s.length;i++){ h=(h*31 + s.charCodeAt(i))|0; } return 'h'+(h>>>0).toString(36); }
     function starsHtml(n){ n = Math.max(0, Math.min(5, n|0)); return '★'.repeat(n) + '☆'.repeat(5-n); }
     function todayStr(){ const d=new Date(); const m=('0'+(d.getMonth()+1)).slice(-2), day=('0'+d.getDate()).slice(-2); return d.getFullYear()+'-'+m+'-'+day; }
-    // 去过次数：仅统计「已结束/归档」行程中、已勾选(实际去了)的行程点，按 城市+名称 计数
+    // 去过次数：仅统计「已结束/归档」行程中、已勾选(实际去了)的行程点，按 城市+名称 计数，并收集年份
     function computeVisitMap(){
       const map = {};
+      const curYear = new Date().getFullYear();
       (TRIPS||[]).forEach(function(t){
         if (tripTimeStatus(t) !== 'closed') return;
+        const yr = (t.year!=null && !isNaN(t.year)) ? Number(t.year) : curYear;
         (t.days||[]).forEach(function(d){
           (d.spots||[]).forEach(function(s){
             if (!s.checked || !s.name) return;
             spotCitiesOf(d, s).forEach(function(city){
               const k = reviewKey(city, s.name);
-              map[k] = (map[k]||0) + 1;
+              if(!map[k]) map[k] = { count:0, years:{} };
+              map[k].count += 1;
+              map[k].years[yr] = true;
             });
           });
         });
+      });
+      Object.keys(map).forEach(function(k){
+        map[k].years = Object.keys(map[k].years).map(Number).sort(function(a,b){ return a-b; });
       });
       return map;
     }
@@ -1966,7 +2020,7 @@
       persistAll(); render();
     }
     function createTrip(){
-      const t = { id: genTripId(), title:'新行程', city:'', country:'', start:'', end:'', status:'active', cities:[], days:[{ id:'d1', date:'', weekday:'', title:'第 1 天', city:'', color:'#0ea5e9', weather:null, spots:[] }] };
+      const t = { id: genTripId(), title:'新行程', city:'', country:'', start:'', end:'', year:new Date().getFullYear(), status:'active', cities:[], days:[{ id:'d1', date:'', weekday:'', title:'第 1 天', city:'', color:'#0ea5e9', weather:null, spots:[] }] };
       TRIPS.push(t); activeTripId = t.id; DAYS = t.days; currentDay = 'd1';
       persistAll(); render();
     }
@@ -2045,13 +2099,16 @@
     }
     // ===== 行程点评价（旅游日志）=====
     var reviewCtx = null, reviewRating = 0;
-    // 在库里每个行程点下方渲染：去过次数 + 评价按钮 + 可展开的评价列表（日期 + 星级）
-    function reviewBlock(city, name, visitCount){
+    // 在库里每个行程点下方渲染：去过次数 + 年份 + 评价按钮 + 可展开的评价列表（日期 + 星级）
+    function reviewBlock(city, name, visit){
       const k = reviewKey(city, name);
       const revs = SPOT_REVIEWS[k] || [];
       const hk = hashId(k);
+      visit = visit || { count:0, years:[] };
       let html = '<div class="poi-reviews" onclick="event.stopPropagation()">';
-      if (visitCount > 0) html += '<span class="poi-visit">✅ 去过 '+visitCount+' 次</span>';
+      if (visit.count > 0) {
+        html += '<span class="poi-visit">✅ 去过 '+visit.count+' 次'+(visit.years&&visit.years.length?(' · <span class="poi-years">'+visit.years.join(' ')+'</span>'):'')+'</span>';
+      }
       html += '<button class="poi-review-btn" onclick="openReviewModal(\''+escAttr(city)+'\',\''+escAttr(name)+'\')">✍️ 评价</button>';
       if (revs.length) {
         const avg = revs.reduce(function(a,r){ return a + (r.rating||0); }, 0) / revs.length;
@@ -2070,6 +2127,20 @@
       }
       html += '</div>';
       return html;
+    }
+    // 城市库里：点行程点卡片 → 展开/收起「去过几次 · 在哪几次行程」记录
+    function toggleSpotLog(hk){
+      var el = document.getElementById('log-'+hk);
+      if(!el) return;
+      el.classList.toggle('collapsed');
+    }
+    // 从城市库跳到某个行程的具体某天去编辑
+    function jumpToSpot(tripId, dayId){
+      var t = TRIPS.find(function(x){ return x.id===tripId; });
+      if(!t) return;
+      setActiveTrip(tripId);
+      if(dayId) currentDay = dayId;
+      setFlow('trip');
     }
     function openReviewModal(city, name){
       reviewCtx = { city:city, name:name };
@@ -2151,6 +2222,7 @@
       document.getElementById('mtCountry').value = t.country||'';
       document.getElementById('mtStart').value = t.start||'';
       document.getElementById('mtEnd').value = t.end||'';
+      document.getElementById('mtYear').value = (t.year!=null ? t.year : '');
       editingCities = (t.cities||[]).map(function(c){return {name:c.name||'', country:c.country||'', lat:(c.lat!=null?c.lat:''), lng:(c.lng!=null?c.lng:'')};});
       renderCityEditor();
       setMetaStatus(t.status || 'active');
@@ -2168,6 +2240,7 @@
         country: document.getElementById('mtCountry').value,
         start: document.getElementById('mtStart').value,
         end: document.getElementById('mtEnd').value,
+        year: (function(){ var y=document.getElementById('mtYear').value; return (y!=='' && !isNaN(y))?Number(y):null; })(),
         status: document.getElementById('mtStatus').value || 'active',
         cities: editingCities.filter(function(c){return c.name && c.lat!=='' && c.lng!=='';}).map(function(c){return {name:c.name.trim(), country:c.country||'', lat:Number(c.lat), lng:Number(c.lng)};}),
       });
