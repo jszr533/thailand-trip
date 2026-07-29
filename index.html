@@ -635,7 +635,7 @@
           </div>
           <div>
             <h1 class="text-2xl md:text-3xl cute-font mb-1 title-gradient" id="tripTitleH1">曼谷 · 清迈 双城旅行行程</h1>
-            <p class="text-sm text-[var(--muted)]">可勾选生成路线 · 可编辑 · 总览图 · 点地图小点看攻略</p>
+            <p class="text-sm text-[var(--muted)]" id="tripSubtitle">可勾选生成路线 · 可编辑 · 总览图 · 点地图小点看攻略</p>
           </div>
         </div>
         <div class="flex items-center gap-2 flex-wrap justify-end">
@@ -1479,10 +1479,34 @@
         if(el) el.classList.toggle('active', x===f);
       });
     }
+    // 顶部标题随页面（flow）切换：h1 + 副标题一起变
+    function setFlowTitle(f){
+      var h1=document.getElementById('tripTitleH1');
+      var sub=document.getElementById('tripSubtitle');
+      var t, s;
+      if(f==='home'){
+        t='🌍 我的世界足迹';
+        s='走过的城市在地图上亮起，没去过的在下面等你。点开地图上的点，或从「城市」一路走到每一处行程点。';
+      } else if(f==='cities'){
+        t='🏙️ 我的城市库';
+        s='每个城市都是一座「库」——点开任意城市，进去看它的城市指南。';
+      } else if(f==='points'){
+        var c=(typeof pointsCity==='string'?pointsCity:'').trim();
+        t='📍 '+(c||'城市指南')+(c?' · 城市指南':'');
+        s='当地入境须知 + 该城市交通须知 + 行程点库，点开任意行程点看详情。';
+      } else {
+        var tr=(typeof currentTrip==='function')?currentTrip():null;
+        t=(tr&&tr.title)||'我的行程';
+        s='可勾选生成路线 · 可编辑 · 总览图 · 点地图小点看攻略';
+      }
+      if(h1) h1.textContent=t;
+      if(sub) sub.textContent=s;
+    }
     function setFlow(f){
       currentFlow = f;
       ['home','cities','points','trip'].forEach(function(x){ document.body.classList.toggle('flow-'+x, x===f); });
       setNavActive(f);
+      setFlowTitle(f);
       if(f==='trip'){ if(!DAYS || !DAYS.some(function(d){return d.id===currentDay;})) currentDay=(DAYS&&DAYS.length)?DAYS[0].id:'overview'; }
       if(f==='points' && !pointsCity){ var c=aggregateCities(); if(c.length) pointsCity=c[0].name; }
       render();
@@ -4340,7 +4364,7 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
           </div>
         </div>`).join('');
     }
-    function render() { closeMoveMenu(); renderTripBar(); const _h1=document.getElementById('tripTitleH1'); if(_h1){const _t=currentTrip(); _h1.textContent=(_t&&_t.title)||'我的行程';} renderTabs(); renderNowBanner(); renderSpotList(); renderMap(); renderBacklog(); syncSave(); if(currentFlow==='trip'){ /* 编辑器可见，无需额外渲染 */ } else if(currentFlow==='home'){ renderHome(); } else if(currentFlow==='cities'){ renderCities(); } else if(currentFlow==='points'){ renderPoints(pointsCity); } }
+    function render() { closeMoveMenu(); renderTripBar(); setFlowTitle(currentFlow); renderTabs(); renderNowBanner(); renderSpotList(); renderMap(); renderBacklog(); syncSave(); if(currentFlow==='trip'){ /* 编辑器可见，无需额外渲染 */ } else if(currentFlow==='home'){ renderHome(); } else if(currentFlow==='cities'){ renderCities(); } else if(currentFlow==='points'){ renderPoints(pointsCity); } }
     window.addEventListener('hashchange', () => { location.reload(); });
     // 统一启动入口：收敛所有初始化逻辑，确保所有 let/const 状态变量初始化后再 render，杜绝 TDZ
     function boot() {
@@ -4353,6 +4377,7 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
       initBgDeco();
       initBear();
       render();
+      setFlowTitle(currentFlow); // 首次加载同步顶部标题
       setTimeout(jumpToNow, 300);
     }
     boot();

@@ -77,6 +77,16 @@ function run() {
   });
   step('setFlow(trip) 我的行程可打开', () => { window.setFlow('trip'); });
   step('setFlow(home) 回到首页', () => { window.setFlow('home'); });
+  step('标题随 flow 切换', () => {
+    const h1 = window.document.getElementById('tripTitleH1');
+    const sub = window.document.getElementById('tripSubtitle');
+    if (!h1 || !sub) throw new Error('标题元素缺失');
+    window.setFlow('home');   if (!/世界足迹/.test(h1.textContent)) throw new Error('home 标题错: ' + h1.textContent);
+    window.setFlow('cities'); if (!/城市库/.test(h1.textContent)) throw new Error('cities 标题错: ' + h1.textContent);
+    if (window.openCity) window.openCity('曼谷'); window.setFlow('points'); if (!/曼谷/.test(h1.textContent)) throw new Error('points 标题错: ' + h1.textContent);
+    window.setFlow('trip');   if (!h1.textContent.trim()) throw new Error('trip 标题空');
+    window.setFlow('home');
+  });
 
   console.log('==== 导航模拟 ====');
   steps.forEach(s => console.log(s));
