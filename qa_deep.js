@@ -94,21 +94,40 @@ function run() {
 
   // ---- 评价流程 ----
   step('openReviewModal(曼谷, 大皇宫)', () => { window.openReviewModal('曼谷', '大皇宫'); });
-  step('setReviewStar(4)', () => { window.setReviewStar(4); });
-  step('saveReview 保存评价', () => { window.saveReview(); });
-  step('评价后 refreshReviewHost 不崩', () => { const b = D.getElementById('pointsBody'); if (!b) throw new Error('pointsBody 缺失'); });
-  step('openReviewModal 再次打开看评价列表', () => { window.openReviewModal('曼谷', '大皇宫'); window.setFlow('points'); });
-  step('toggleReviews 展开/收起', () => {
-    window.renderReviewStars();
-    const revs = D.querySelectorAll('#pointsBody .poi-reviews .rev-list, #pointsBody [id^="rev-"]');
-    // 直接调一个已知 hk
-    const el = D.querySelector('#pointsBody [id^="rev-"]');
-    if (el) window.toggleReviews(el.id.replace('rev-', ''));
+  step('saveReview 空内容 -> reviewErr 提示且不崩', () => {
+    window.setReviewStar(0);
+    const ta = D.getElementById('reviewText'); if(ta) ta.value='';
+    window.saveReview();
+    const e = D.getElementById('reviewErr'); if(!e || !e.textContent) throw new Error('未显示 reviewErr 提示');
   });
-  step('deleteReview 删除第一条', () => {
-    const k = window.reviewKey('曼谷', '大皇宫');
+  step('setReviewStar(4) + 填文字', () => { window.setReviewStar(4); const ta=D.getElementById('reviewText'); if(ta) ta.value='测试评价'; });
+  step('saveReview 保存评价', () => { window.saveReview(); });
+  step('评价已写入 SPOT_REVIEWS', () => {
+    const k = window.reviewKey('曼谷','大皇宫');
     const arr = window.SPOT_REVIEWS && window.SPOT_REVIEWS[k];
-    if (arr && arr.length) window.deleteReview('曼谷', '大皇宫', 0);
+    if (!arr || !arr.length) throw new Error('评价未保存');
+  });
+  step('exportTripState 含 reviews(云端同步准备)', () => {
+    const st = window.exportTripState();
+    if (!st.reviews) throw new Error('exportTripState 未包含 reviews');
+  });
+  step('openReviewModal 再次打开看评价列表', () => { window.openReviewModal('曼谷', '大皇宫'); window.setFlow('points'); });
+  step('toggleReviews 展开', () => {
+    const el = D.querySelector('#pointsBody [id^="rev-"]');
+    if (el) window.toggleReviews(el.id.replace('rev-',''));
+  });
+  step('deleteReview 触发自定义确认框并确认删除', () => {
+    const k = window.reviewKey('曼谷','大皇宫');
+    const arr = window.SPOT_REVIEWS && window.SPOT_REVIEWS[k];
+    if (arr && arr.length) {
+      const before = arr.length;
+      window.deleteReview('曼谷','大皇宫',0);
+      const modal = D.getElementById('confirmModal');
+      if (!modal || !modal.classList.contains('show')) throw new Error('确认框未弹出');
+      const yes = D.getElementById('confirmYes'); if (yes) yes.click();
+      const after = (window.SPOT_REVIEWS[k]||[]).length;
+      if (after !== before-1) throw new Error('确认后未删除: before='+before+' after='+after);
+    }
   });
 
   // ---- 推荐加入行程 ----
