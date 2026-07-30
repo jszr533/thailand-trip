@@ -1492,12 +1492,14 @@
       if(sub) sub.textContent=s;
     }
     function setFlow(f){
+      // 入境须知/交通须知（城市指南）只允许通过「城市页 → 点城市」进入；
+      // 顶部「📍 行程点」导航在尚未选城市时，改去城市页让用户先选，避免直接暴露默认城市的指南。
+      if(f==='points' && !pointsCity){ f='cities'; }
       currentFlow = f;
       ['home','cities','points','trip'].forEach(function(x){ document.body.classList.toggle('flow-'+x, x===f); });
       setNavActive(f);
       setFlowTitle(f);
       if(f==='trip'){ if(!DAYS || !DAYS.some(function(d){return d.id===currentDay;})) currentDay=(DAYS&&DAYS.length)?DAYS[0].id:'overview'; }
-      if(f==='points' && !pointsCity){ var c=aggregateCities(); if(c.length) pointsCity=c[0].name; }
       render();
     }
     function renderHome(){

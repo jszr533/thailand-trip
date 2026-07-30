@@ -87,6 +87,16 @@ function run() {
     window.setFlow('trip');   if (!h1.textContent.trim()) throw new Error('trip 标题空');
     window.setFlow('home');
   });
+  step('导航📍行程点 无选中城市时改去城市页（不暴露默认城市指南）', () => {
+    window.eval('pointsCity = ""');
+    window.setFlow('points');
+    if (!/flow-cities/.test(window.document.body.className)) throw new Error('setFlow(points) 无城市时未跳城市页, body=' + window.document.body.className);
+    if (/flow-points/.test(window.document.body.className)) throw new Error('setFlow(points) 无城市时错误进入了城市指南(入境须知/交通须知)');
+    window.eval('pointsCity = "曼谷"');
+    window.setFlow('points');
+    if (!/flow-points/.test(window.document.body.className)) throw new Error('setFlow(points) 已有选中城市时应进入城市指南');
+    window.setFlow('home');
+  });
 
   console.log('==== 导航模拟 ====');
   steps.forEach(s => console.log(s));
