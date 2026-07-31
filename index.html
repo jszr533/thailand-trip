@@ -372,7 +372,6 @@
     .wm-tip { position: absolute; pointer-events: none; background: rgba(10,16,36,0.95); border: 1px solid rgba(94,234,212,0.5); border-radius: 10px; padding: 7px 10px; font-size: 12px; color: #d6f7f1; box-shadow: 0 6px 24px rgba(0,0,0,0.45); max-width: 240px; z-index: 5; }
     .wm-tip-name { font-weight: 700; color: #5eead4; }
     .wm-tip-sub { color: #9fb3c8; margin: 1px 0 3px; }
-    .wm-tip-trips { color: #cbd5e1; font-size: 11px; line-height: 1.4; }
     .wm-side { border-left: 1px solid var(--border); padding: 12px; overflow-y: auto; background: rgba(255,255,255,0.02); }
     .wm-tree { font-size: 13px; }
     .wm-cont { margin-bottom: 10px; }
@@ -1414,8 +1413,7 @@
       cities.forEach(function(c){
         var xy=geoToXY(c.lat,c.lng);
         var yi=cityYearInfo(c); var col=yearColor(yi.rep); var multi=yi.years.length>1;
-        var tripsStr=c.trips.map(function(t){return t.title+' ('+(t.start||'')+(t.end?('→'+t.end):'')+(t.year?(' · '+t.year):'')+')';}).join(' | ');
-        h+='<g class="wm-pt'+(multi?' wm-multi':'')+'" data-name="'+escAttr(c.name)+'" data-country="'+escAttr(c.country||'')+'" data-trips="'+escAttr(tripsStr)+'" transform="translate('+xy[0]+','+xy[1]+')">'
+        h+='<g class="wm-pt'+(multi?' wm-multi':'')+'" data-name="'+escAttr(c.name)+'" data-country="'+escAttr(c.country||'')+'" transform="translate('+xy[0]+','+xy[1]+')">'
           +'<circle r="9" class="wm-pulse" fill="none" stroke="'+col+'" stroke-width="0.9"/>'
           +(multi?'<circle r="6.6" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-dasharray="2 2" opacity="0.75"/>':'')
           +'<circle r="3.6" fill="'+col+'" stroke="#e0f7ff" stroke-width="0.4" style="filter:url(#wmBlur)"/>'
@@ -1424,7 +1422,7 @@
       pts.innerHTML=h;
       var tip=document.getElementById('worldTip'); var wrap=document.getElementById('worldMapWrap');
       pts.querySelectorAll('.wm-pt').forEach(function(gp){
-        gp.addEventListener('mouseenter',function(){ tip.innerHTML='<div class="wm-tip-name">'+gp.dataset.name+'</div><div class="wm-tip-sub">'+(gp.dataset.country||'')+'</div><div class="wm-tip-trips">'+gp.dataset.trips+'</div>'; tip.classList.remove('hidden'); });
+        gp.addEventListener('mouseenter',function(){ tip.innerHTML='<div class="wm-tip-name">'+gp.dataset.name+'</div>'+(gp.dataset.country?'<div class="wm-tip-sub">'+gp.dataset.country+'</div>':''); tip.classList.remove('hidden'); });
         gp.addEventListener('mousemove',function(ev){ var wr=wrap.getBoundingClientRect(); tip.style.left=(ev.clientX-wr.left+12)+'px'; tip.style.top=(ev.clientY-wr.top+12)+'px'; });
         gp.addEventListener('mouseleave',function(){ tip.classList.add('hidden'); });
         gp.addEventListener('click',function(){ openFlowCity(gp.dataset.name); });
@@ -1762,8 +1760,7 @@
       cities.forEach(function(c){
         var xy=geoToXY(c.lat,c.lng);
         var yi=cityYearInfo(c); var col=yearColor(yi.rep); var multi=yi.years.length>1;
-        var tripsStr=c.trips.map(function(t){return t.title+' ('+(t.start||'')+(t.end?('→'+t.end):'')+(t.year?(' · '+t.year):'')+')';}).join(' | ');
-        h+='<g class="wm-pt'+(multi?' wm-multi':'')+'" data-name="'+escAttr(c.name)+'" data-country="'+escAttr(c.country||'')+'" data-trips="'+escAttr(tripsStr)+'" transform="translate('+xy[0]+','+xy[1]+')">'
+        h+='<g class="wm-pt'+(multi?' wm-multi':'')+'" data-name="'+escAttr(c.name)+'" data-country="'+escAttr(c.country||'')+'" transform="translate('+xy[0]+','+xy[1]+')">'
           +'<circle r="9" class="wm-pulse" fill="none" stroke="'+col+'" stroke-width="0.9"/>'
           +(multi?'<circle r="6.6" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-dasharray="2 2" opacity="0.75"/>':'')
           +'<circle r="3.6" fill="'+col+'" stroke="#e0f7ff" stroke-width="0.4" style="filter:url(#homeBlur)"/>'
@@ -1772,7 +1769,7 @@
       pts.innerHTML=h;
       var tip=document.getElementById('homeTip'); var wrap=document.getElementById('homeMapWrap');
       pts.querySelectorAll('.wm-pt').forEach(function(gp){
-        gp.addEventListener('mouseenter',function(){ tip.innerHTML='<div class="wm-tip-name">'+gp.dataset.name+'</div><div class="wm-tip-sub">'+(gp.dataset.country||'')+'</div><div class="wm-tip-trips">'+gp.dataset.trips+'</div>'; tip.classList.remove('hidden'); });
+        gp.addEventListener('mouseenter',function(){ tip.innerHTML='<div class="wm-tip-name">'+gp.dataset.name+'</div>'+(gp.dataset.country?'<div class="wm-tip-sub">'+gp.dataset.country+'</div>':''); tip.classList.remove('hidden'); });
         gp.addEventListener('mousemove',function(ev){ var wr=wrap.getBoundingClientRect(); tip.style.left=(ev.clientX-wr.left+12)+'px'; tip.style.top=(ev.clientY-wr.top+12)+'px'; });
         gp.addEventListener('mouseleave',function(){ tip.classList.add('hidden'); });
         gp.addEventListener('click',function(){ openFlowCity(gp.dataset.name); });
