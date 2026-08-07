@@ -1674,8 +1674,8 @@
       // 城市行程点总库：仅收录城市通用推荐地点（POI_DB），与「我的行程」彻底解耦——不拉取任何行程点、不显示行程字样
       var list=[];
       (POI_DB[city]||[]).forEach(function(p){
-        if(!p.name||!p.addr) return;
-        list.push({name:p.name,addr:p.addr,note:p.note||'',warn:p.warn||'',ticket:p.ticket||'',links:[],reco:true});
+        if(!p.name) return;
+        list.push({name:p.name,addr:p.addr||'',note:p.note||'',warn:p.warn||'',ticket:p.ticket||'',links:[],reco:true});
       });
       pointsSpots=list;
       if(!list.length){ box.innerHTML='<div class="home-empty">「'+escHtml(city)+'」暂无收录的地点。想补充，直接告诉我城市名和地点即可。</div>'; return; }
@@ -1689,7 +1689,7 @@
       var col=new Intl.Collator('zh-CN');
       var filtered=pointsSpots.filter(function(s){
         if(pointsLetter && firstLetter(s.name)!==pointsLetter) return false;
-        if(q && (s.name.toLowerCase().indexOf(q)<0) && (s.addr.toLowerCase().indexOf(q)<0)) return false;
+        if(q && (s.name.toLowerCase().indexOf(q)<0) && ((s.addr||'').toLowerCase().indexOf(q)<0)) return false;
         return true;
       }).sort(function(a,b){
         var la=firstLetter(a.name), lb=firstLetter(b.name);
@@ -1717,7 +1717,7 @@
           html+='<div class="pt-spot lib-card">';
           html+='<div class="pt-spot-main">';
           html+='<div class="pt-spot-name">'+escHtml(s.name)+(s.reco?' <span class="lib-reco">💡推荐</span>':'')+'</div>';
-          html+='<div class="pt-spot-sub">📍 '+escHtml(s.addr)+'</div>';
+          if(s.addr) html+='<div class="pt-spot-sub">📍 '+escHtml(s.addr)+'</div>';
           if(s.note) html+='<div class="pt-spot-note">'+escHtml(s.note)+'</div>';
           if(s.warn) html+='<div class="pt-spot-warn">⚠️ '+escHtml(s.warn)+'</div>';
           if(s.ticket) html+='<div class="pt-spot-sub">🎫 '+escHtml(s.ticket)+'</div>';
@@ -2064,23 +2064,23 @@
         { name:'长颈族村落', cat:'玩乐', type:'activity', note:'探访山地民族' }
       ],
       '首尔': [
-        { name:'明洞圣诞灯街', cat:'景点', type:'sight', note:'首尔最著名圣诞灯海，雪景拱门' },
-        { name:'N首尔塔(南山塔)', cat:'景点', type:'sight', note:'爱情锁墙 + 圣诞夜景全景' },
-        { name:'清溪川圣诞灯河', cat:'景点', type:'sight', note:'市中心圣诞灯光长廊，傍晚最梦幻' },
-        { name:'首尔市厅广场圣诞树+溜冰', cat:'玩乐', type:'activity', note:'首尔最大圣诞树 + 室外滑冰场' },
-        { name:'景福宫', cat:'景点', type:'sight', note:'雪中宫殿，穿韩服免票' },
-        { name:'北村韩屋村', cat:'景点', type:'sight', note:'韩屋雪景，圣诞童话感' },
-        { name:'仁寺洞', cat:'景点', type:'sight', note:'传统茶屋 + 圣诞手作伴手礼' },
-        { name:'广藏市场', cat:'美食', type:'food', note:'绿豆煎饼/生拌牛肉/紫菜包饭/辣炒年糕' },
-        { name:'弘大', cat:'玩乐', type:'relax', note:'圣诞街艺 + 独立咖啡馆' },
-        { name:'东大门 DDP', cat:'景点', type:'sight', note:'玫瑰金曲面建筑 + 圣诞投影灯光' },
-        { name:'乐天世界', cat:'玩乐', type:'activity', note:'圣诞魔法冰宫，室内不怕冷' },
-        { name:'COEX 星空图书馆', cat:'景点', type:'sight', note:'巨型书墙 + 圣诞装置' },
-        { name:'南怡岛', cat:'玩乐', type:'activity', note:'圣诞灯光雪林小火车，近郊一日' },
-        { name:'明洞圣堂', cat:'景点', type:'sight', note:'哥特式教堂圣诞弥撒' },
-        { name:'圣水洞咖啡街', cat:'玩乐', type:'relax', note:'网红咖啡 + 圣诞限定饮品' },
-        { name:'奖忠洞韩式烤肉', cat:'美食', type:'food', note:'首尔老牌烤肉一条街' },
-        { name:'鹭梁津水产市场', cat:'美食', type:'food', note:'活海鲜现吃' }
+        { name:'明洞圣诞灯街', cat:'景点', type:'sight', addr:'首尔中区明洞 (Jung-gu, Myeongdong)', note:'首尔最著名圣诞灯海，雪景拱门' },
+        { name:'N首尔塔(南山塔)', cat:'景点', type:'sight', addr:'首尔龙山区南山公园路 (Yongsan-gu, Namsan)', note:'爱情锁墙 + 圣诞夜景全景' },
+        { name:'清溪川圣诞灯河', cat:'景点', type:'sight', addr:'首尔钟路区清溪川路 (Jongno-gu, Cheonggyecheon)', note:'市中心圣诞灯光长廊，傍晚最梦幻' },
+        { name:'首尔市厅广场圣诞树+溜冰', cat:'玩乐', type:'activity', addr:'首尔中区世宗大路 (Jung-gu, Seoul City Hall)', note:'首尔最大圣诞树 + 室外滑冰场' },
+        { name:'景福宫', cat:'景点', type:'sight', addr:'首尔钟路区社稷路 (Jongno-gu, Gyeongbokgung)', note:'雪中宫殿，穿韩服免票' },
+        { name:'北村韩屋村', cat:'景点', type:'sight', addr:'首尔钟路区桂洞 (Jongno-gu, Bukchon)', note:'韩屋雪景，圣诞童话感' },
+        { name:'仁寺洞', cat:'景点', type:'sight', addr:'首尔钟路区仁寺洞 (Jongno-gu, Insadong)', note:'传统茶屋 + 圣诞手作伴手礼' },
+        { name:'广藏市场', cat:'美食', type:'food', addr:'首尔钟路区昌庆宫路 (Jongno-gu, Gwangjang)', note:'绿豆煎饼/生拌牛肉/紫菜包饭/辣炒年糕' },
+        { name:'弘大', cat:'玩乐', type:'relax', addr:'首尔麻浦区弘益路 (Mapo-gu, Hongdae)', note:'圣诞街艺 + 独立咖啡馆' },
+        { name:'东大门 DDP', cat:'景点', type:'sight', addr:'首尔中区乙支路 (Jung-gu, Dongdaemun DDP)', note:'玫瑰金曲面建筑 + 圣诞投影灯光' },
+        { name:'乐天世界', cat:'玩乐', type:'activity', addr:'首尔松坡区奥林匹克路 (Songpa-gu, Lotte World)', note:'圣诞魔法冰宫，室内不怕冷' },
+        { name:'COEX 星空图书馆', cat:'景点', type:'sight', addr:'首尔江南区永东大路 (Gangnam-gu, COEX)', note:'巨型书墙 + 圣诞装置' },
+        { name:'南怡岛', cat:'玩乐', type:'activity', addr:'江原道春川市南面 (Nami Island, Chuncheon)', note:'圣诞灯光雪林小火车，近郊一日' },
+        { name:'明洞圣堂', cat:'景点', type:'sight', addr:'首尔中区明洞路 (Jung-gu, Myeongdong Cathedral)', note:'哥特式教堂圣诞弥撒' },
+        { name:'圣水洞咖啡街', cat:'玩乐', type:'relax', addr:'首尔城东区圣水洞 (Seongdong-gu, Seongsu)', note:'网红咖啡 + 圣诞限定饮品' },
+        { name:'奖忠洞韩式烤肉', cat:'美食', type:'food', addr:'首尔中区奖忠洞 (Jung-gu, Jangchung)', note:'首尔老牌烤肉一条街' },
+        { name:'鹭梁津水产市场', cat:'美食', type:'food', addr:'首尔铜雀区鹭梁津路 (Dongjak-gu, Noryangjin)', note:'活海鲜现吃' }
       ]
     };
 
