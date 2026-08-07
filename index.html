@@ -1851,7 +1851,7 @@
       var res=all.filter(function(c){ return c.name.indexOf(q)>=0 || (c.country&&c.country.indexOf(q)>=0); }).slice(0,12);
       if(!res.length){ box.innerHTML='<span class="home-empty">没找到「'+escHtml(q)+'」，换个词试试？</span>'; return; }
       box.innerHTML=res.map(function(c){
-        return '<span class="home-search-res '+(c.visited?'visited':'wish')+'" onclick="'+(c.visited?'openCity':'openRecs')+'(\''+escAttr(c.name)+'\')">'
+        return '<span class="home-search-res '+(c.visited?'visited':'wish')+'" onclick="'+(c.visited?'openFlowCity':'openRecs')+'(\''+escAttr(c.name)+'\')">'
           +(c.visited?'📍 ':'✨ ')+escHtml(c.name)+(c.country?(' · '+escHtml(c.country)):'')+(c.visited?' (去过)':' (想去)')+'</span>';
       }).join('');
     }
