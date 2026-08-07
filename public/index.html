@@ -2059,8 +2059,74 @@
         { name:'蓝庙 Blue Temple', cat:'景点', type:'sight', note:'深蓝金饰寺庙' },
         { name:'金三角 Golden Triangle', cat:'景点', type:'sight', note:'泰缅老交界' },
         { name:'长颈族村落', cat:'玩乐', type:'activity', note:'探访山地民族' }
+      ],
+      '首尔': [
+        { name:'明洞圣诞灯街', cat:'景点', type:'sight', note:'首尔最著名圣诞灯海，雪景拱门' },
+        { name:'N首尔塔(南山塔)', cat:'景点', type:'sight', note:'爱情锁墙 + 圣诞夜景全景' },
+        { name:'清溪川圣诞灯河', cat:'景点', type:'sight', note:'市中心圣诞灯光长廊，傍晚最梦幻' },
+        { name:'首尔市厅广场圣诞树+溜冰', cat:'玩乐', type:'activity', note:'首尔最大圣诞树 + 室外滑冰场' },
+        { name:'景福宫', cat:'景点', type:'sight', note:'雪中宫殿，穿韩服免票' },
+        { name:'北村韩屋村', cat:'景点', type:'sight', note:'韩屋雪景，圣诞童话感' },
+        { name:'仁寺洞', cat:'景点', type:'sight', note:'传统茶屋 + 圣诞手作伴手礼' },
+        { name:'广藏市场', cat:'美食', type:'food', note:'绿豆煎饼/生拌牛肉/紫菜包饭/辣炒年糕' },
+        { name:'弘大', cat:'玩乐', type:'relax', note:'圣诞街艺 + 独立咖啡馆' },
+        { name:'东大门 DDP', cat:'景点', type:'sight', note:'玫瑰金曲面建筑 + 圣诞投影灯光' },
+        { name:'乐天世界', cat:'玩乐', type:'activity', note:'圣诞魔法冰宫，室内不怕冷' },
+        { name:'COEX 星空图书馆', cat:'景点', type:'sight', note:'巨型书墙 + 圣诞装置' },
+        { name:'南怡岛', cat:'玩乐', type:'activity', note:'圣诞灯光雪林小火车，近郊一日' },
+        { name:'明洞圣堂', cat:'景点', type:'sight', note:'哥特式教堂圣诞弥撒' },
+        { name:'圣水洞咖啡街', cat:'玩乐', type:'relax', note:'网红咖啡 + 圣诞限定饮品' },
+        { name:'奖忠洞韩式烤肉', cat:'美食', type:'food', note:'首尔老牌烤肉一条街' },
+        { name:'鹭梁津水产市场', cat:'美食', type:'food', note:'活海鲜现吃' }
       ]
     };
+
+    // ===== 种子行程：首尔 · 圣诞周末（南京出发，2026 圣诞周五→周日）=====
+    const SEED_SEOUL_ID = 'seed_seoul_xmas_2026';
+    const SEOUL_DAYS = [
+      { id: 's1', date: '12.25', weekday: '周五', title: '南京→首尔 · 圣诞亮灯初体验', city: '首尔', color: '#e11d48',
+        weather: { icon: '❄️', high: 3, low: -4, desc: '干冷·可能下雪', tip: '保暖羽绒+防滑鞋；圣诞夜户外冷，备暖宝宝' },
+        spots: [
+          { id: 's1_f1', name: '南京禄口 T2 出发', time: '08:15 起飞', type: 'flight', loc: null, checked: false, addr: '南京市江宁区禄口街道（南京禄口国际机场 T2）', hours: '值机 06:15 起', duration: '飞行约 2 小时', notes: '东航 MU579 / 大韩 KE5860，08:15 起飞，11:15 抵达首尔仁川 ICN T1。圣诞旺季机票偏紧，建议提前订、提前 3 小时到机场。', ticket: '', tips: '带好护照、往返机票单、韩国入境登记（K-ETA 或免签确认）；圣诞航班易满', boarding: '提前 3 小时', warning: null, flightNo: 'MU579' },
+          { id: 's1_f2', name: '首尔仁川机场 落地 + 入韩', time: '11:15', type: 'flight', loc: null, checked: false, addr: '仁川国际机场 ICN T1（首尔）', hours: '24h', duration: '入境+进市区约 1.5 小时', notes: '落地后买 T-money 交通卡 / 租 WiFi egg；乘 AREX 机场快线（约 43-58 分钟）或机场大巴进市区。', ticket: '', tips: 'AREX 直达列车到首尔站最快；圣诞期间人较多，预留时间', warning: null },
+          { id: 's1_h1', name: '明洞酒店 入住（待订）', time: '约 13:30', type: 'hotel', loc: null, checked: false, addr: '明洞 / 钟路一带（近圣诞灯街与地铁）', hours: '入住 15:00 后（行李可先寄存）', duration: '放行李', notes: '圣诞季明洞最热闹，住这步行即达灯街、教堂、美食街。先寄存行李轻装逛。酒店待订。', ticket: '', tips: '明洞圣堂旁、乙支路、忠武路一带酒店选择多', warning: 'info' },
+          { id: 's1_r1', name: '明洞圣诞灯街', time: '17:00-21:00', type: 'sight', loc: null, checked: false, recommended: true, addr: '明洞步行街（Myeongdong）', hours: '入夜亮灯', duration: '约 1.5 小时', notes: '首尔最著名的圣诞灯街，整条街霓虹灯海 + 雪景拱门，圣诞氛围拉满。', ticket: '免费', tips: '19:00 后最旺；与明洞圣堂联动', warning: null },
+          { id: 's1_food1', name: '明洞美食街（炸鸡·辣炒年糕·刀削面）', time: '18:30-20:30', type: 'food', loc: null, checked: false, addr: '明洞周边小吃街', hours: '傍晚-深夜', duration: '约 2 小时', notes: '韩式炸鸡+啤酒（치맥）、辣炒年糕、刀削面、海鲜煎饼、糖饼。圣诞夜来份热年糕超应景。', ticket: '', tips: '必试：明洞炸鸡、辣炒年糕、鲫鱼饼', warning: null },
+          { id: 's1_r2', name: 'N 首尔塔 圣诞夜景 + 爱情锁', time: '20:00-22:00', type: 'sight', loc: null, checked: false, recommended: true, addr: '南山公园 N Seoul Tower', hours: '约 10:00-23:00', duration: '约 1.5 小时', notes: '登塔看首尔圣诞灯海全景，塔下爱情锁墙。缆车上下南山。', ticket: '登塔约 ₩21000', tips: '明洞步行或缆车到南山；圣诞夜人很多，错峰', warning: null },
+          { id: 's1_r3', name: '东大门 DDP 灯光建筑', time: '21:00-22:30', type: 'sight', loc: null, checked: false, recommended: true, addr: '东大门设计广场 DDP', hours: '外观 24h', duration: '约 1 小时', notes: '玫瑰金曲面建筑 + 圣诞投影灯光，夜景出片。', ticket: '免费（外观）', tips: 'DDP 夜间灯光是首尔地标打卡', warning: null }
+        ] },
+      { id: 's2', date: '12.26', weekday: '周六', title: '圣诞深度 · 传统与灯河 · 美食', city: '首尔', color: '#16a34a',
+        weather: { icon: '❄️', high: 4, low: -4, desc: '晴冷·圣诞装扮全城', tip: '室内外温差大，商场暖；户外戴帽手套' },
+        spots: [
+          { id: 's2_1', name: '景福宫 + 北村韩屋村', time: '09:30-12:00', type: 'sight', loc: null, checked: false, addr: '景福宫（钟路区）/ 北村韩屋村', hours: '景福宫 09:00-17:00', duration: '约 2.5 小时', notes: '雪中韩屋与宫殿最有圣诞童话感；穿韩服免门票拍照超出片。', ticket: '景福宫 ₩3000（韩服免费）', tips: '光化门换岗仪式整点；北村拍照请轻声、勿扰民', warning: null },
+          { id: 's2_2', name: '仁寺洞 传统茶屋 + 文创', time: '12:00-13:30', type: 'relax', loc: null, checked: false, addr: '仁寺洞 Insadong 街', hours: '约 10:00-20:00', duration: '约 1.5 小时', notes: '传统韩屋茶屋喝五味子茶/柚子茶，买圣诞手作伴手礼。', ticket: '', tips: '推荐传统茶+打糕；圣诞限定手作多', warning: null },
+          { id: 's2_3', name: '清溪川 圣诞灯河', time: '14:00-16:00', type: 'sight', loc: null, checked: false, addr: '清溪川（光化门~东大门段）', hours: '日落后最佳', duration: '约 1.5 小时', notes: '首尔市中心圣诞灯光长廊，沿清溪川布置灯饰与天使装置，圣诞氛围最浓的一段。', ticket: '免费', tips: '傍晚后亮灯最梦幻；沿河步行御寒', warning: null },
+          { id: 's2_4', name: '首尔市厅广场 圣诞树 + 户外溜冰', time: '16:30-18:00', type: 'activity', loc: null, checked: false, addr: '首尔市厅广场 Seoul City Hall', hours: '溜冰场 约 10:00-22:00', duration: '约 1.5 小时', notes: '首尔最大的圣诞树 + 室外滑冰场，圣诞必打卡。', ticket: '溜冰约 ₩1000-2000', tips: '带手套袜子；圣诞期间排队久', warning: null },
+          { id: 's2_food1', name: '广藏市场 美食（绿豆煎饼·生拌牛肉·紫菜包饭）', time: '18:00-20:00', type: 'food', loc: null, checked: false, addr: '广藏市场 Gwangjang Market', hours: '约 08:30-23:00', duration: '约 2 小时', notes: '韩剧同款：绿豆煎饼（bindaetteok）、生拌牛肉（yukhoe）、紫菜包饭、辣炒年糕。老市场烟火气十足。', ticket: '', tips: '必试：绿豆煎饼、生拌牛肉配生鸡蛋；现金更顺', warning: null },
+          { id: 's2_r1', name: '弘大 圣诞街艺 + 咖啡', time: '20:00-22:00', type: 'relax', loc: null, checked: false, recommended: true, addr: '弘大 Hongdae', hours: '傍晚-凌晨', duration: '约 2 小时', notes: '年轻人聚集地，圣诞街头表演、霓虹与独立咖啡馆，活力满满。', ticket: '免费', tips: 'Live 公演免费；咖啡馆圣诞限定饮品', warning: null },
+          { id: 's2_r2', name: '乐天世界 / COEX 星空图书馆 圣诞', time: '14:00-17:00', type: 'sight', loc: null, checked: false, recommended: true, addr: '蚕室乐天世界 / 江南 COEX 星空图书馆', hours: '乐天 约 10:00-22:00', duration: '约 2.5 小时', notes: '乐天世界魔法冰宫圣诞装饰梦幻；COEX 星空图书馆巨型书墙 + 圣诞装置，室内不怕冷。', ticket: '乐天入场约 ₩59000', tips: '带娃/怕冷首选室内；江南 COEX 与乐天二选一', warning: null },
+          { id: 's2_r3', name: '南怡岛 圣诞灯光（近郊一日）', time: '09:00-17:00', type: 'activity', loc: null, checked: false, recommended: true, addr: '南怡岛 Nami Island（春川，首尔东北约 1.5 小时）', hours: '轮渡 07:30-21:40', duration: '约 1 天', notes: '冬季「南怡岛星光花园」圣诞灯海 + 雪林小火车，韩剧《冬季恋歌》取景地，圣诞氛围绝绝子。', ticket: '含往返+船票约 ₩24000+', tips: '距市区较远，需整段安排；雪天路滑穿防滑鞋', warning: 'info' }
+        ] },
+      { id: 's3', date: '12.27', weekday: '周日', title: '圣诞礼拜 · 采购 · 返程南京', city: '首尔', color: '#2563eb',
+        weather: { icon: '☁️', high: 5, low: -3, desc: '多云转晴·返程', tip: '返程行李别超免税额度；预留退税' },
+        spots: [
+          { id: 's3_1', name: '明洞圣堂 圣诞弥撒', time: '约 09:00-10:30', type: 'sight', loc: null, checked: false, addr: '明洞圣堂 Myeongdong Cathedral', hours: '主日弥撒约 09:00', duration: '约 1 小时', notes: '哥特式教堂圣诞弥撒，唱诗班与烛光，圣诞仪式感满。', ticket: '免费', tips: '非教徒也可安静旁听；着装得体', warning: null },
+          { id: 's3_2', name: '酒店退房 + 最后咖啡/采购', time: '10:30-12:00', type: 'relax', loc: null, checked: false, addr: '明洞 / 圣水洞（Seongsu）咖啡街', hours: '店铺约 10:00-22:00', duration: '约 1.5 小时', notes: '圣诞限定伴手礼（化妆品、蜂蜜黄油杏仁、圣诞版零食）；圣水洞网红咖啡收尾。', ticket: '', tips: '免税店圣诞促销多；预留退税时间', warning: null },
+          { id: 's3_t1', name: 'AREX 机场快线 → 仁川', time: '约 12:30', type: 'transit', loc: null, checked: false, addr: '首尔站 → 仁川机场 ICN', hours: '约 43-58 分钟', duration: '进机场', notes: '从首尔站乘 AREX 直达列车到仁川 T1，圣诞期间提前出发。', ticket: '', tips: '预留值机+安检；国际航班提前 3 小时到', warning: null },
+          { id: 's3_f1', name: '首尔仁川 出发（返程）', time: '12:15 起飞', type: 'flight', loc: null, checked: false, addr: '仁川国际机场 ICN T1', hours: '12:15 起飞', duration: '飞行约 2 小时 10 分', notes: '东航 MU580 / 大韩 KE5859，12:15 起飞，13:25 抵达南京禄口 T2。若想多逛可改晚班 MU2922 20:15→21:45。', ticket: '', tips: '圣诞返程票紧，提前订；备选晚班 MU2922', boarding: '提前 3 小时', warning: null, flightNo: 'MU580' },
+          { id: 's3_f2', name: '南京禄口 T2 抵达', time: '13:25', type: 'flight', loc: null, checked: false, addr: '南京市江宁区禄口街道（南京禄口国际机场 T2）', hours: '13:25 抵达', duration: '—', notes: '抵达南京，圣诞首尔行结束。', ticket: '', tips: '', warning: null }
+        ] }
+    ];
+    function buildSeoulTrip(){
+      return { id: SEED_SEOUL_ID, title: '首尔 · 圣诞周末', city: '首尔', country: '韩国', start: '12.25', end: '12.27', year: 2026, status: 'active', days: SEOUL_DAYS, cities: seedCitiesFromText('首尔') };
+    }
+    function ensureSeoulSeed(){
+      try { if (localStorage.getItem('seoul_seed_v1')) return; } catch(e){}
+      if (!TRIPS) return;
+      if (TRIPS.some(function(t){ return t.id === SEED_SEOUL_ID; })) return;
+      TRIPS.push(buildSeoulTrip());
+      try { persistAll(); } catch(e){}
+    }
 
     // ===== 多行程库（一个网页管理多次出游）=====
     let TRIPS = null;
@@ -2089,6 +2155,7 @@
         persistAll();
       }
       if (!DAYS || !DAYS.some(d => d.id === currentDay)) currentDay = (DAYS && DAYS.length) ? DAYS[0].id : 'overview';
+      ensureSeoulSeed();
     }
     function currentTrip(){ return (TRIPS && TRIPS.find(t=>t.id===activeTripId)) || (TRIPS && TRIPS[0]) || null; }
     // ===== 行程状态：按「实际时间」自动标注（待开始 / 进行中 / 已结束）=====
@@ -2193,6 +2260,7 @@
     function deleteTrip(id){
       if (!TRIPS || TRIPS.length<=1){ alert('至少保留一个行程'); return; }
       if (!confirm('确定删除该行程？此操作不可撤销。')) return;
+      if (id===SEED_SEOUL_ID){ try{ localStorage.setItem('seoul_seed_v1','1'); }catch(e){} }
       TRIPS = TRIPS.filter(t=>t.id!==id);
       if (activeTripId===id){ activeTripId = TRIPS[0].id; DAYS = TRIPS[0].days; }
       persistAll(); render();
