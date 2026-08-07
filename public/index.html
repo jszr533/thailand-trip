@@ -203,6 +203,8 @@
     .trip-chip .tc-badge.closed { background:rgba(140,140,140,.18); color:#8a8a8a; }
     .trip-chip .tc-badge.upcoming { background:rgba(245,158,11,.18); color:#d97706; }
     .trip-chip.active .tc-badge { background:rgba(255,255,255,.24); color:#fff; }
+    .trip-chip.tc-toggle { border-style:dashed; color:var(--muted); background:transparent; font-weight:600; }
+    .trip-chip.tc-toggle:hover { color:var(--accent); border-color:var(--accent); transform:translateY(-1px); }
     /* 行程状态下拉（弹窗内分段控件） */
     .status-opt { flex:1; font-size:12px; padding:7px 4px; border-radius:10px; border:1.5px solid var(--border); background:var(--chip-bg); cursor:pointer; transition:all .15s; color:var(--text); white-space:nowrap; }
     .status-opt:hover { border-color:var(--accent); }
@@ -2459,10 +2461,20 @@
       const el = document.getElementById('rev-'+hk);
       if (el) el.classList.toggle('collapsed');
     }
+    var tripListExpanded = false;
     function renderTripBar(){
       const wrap = document.getElementById('tripChips'); if(!wrap) return;
       if (!TRIPS) return;
-      wrap.innerHTML = TRIPS.map(t=>{
+      const total = TRIPS.length;
+      const hasActive = TRIPS.some(t=>t.id===activeTripId);
+      let list;
+      if (tripListExpanded) {
+        list = TRIPS;
+      } else {
+        // 收起态：只显示当前行程（无则第一个），其余收进「展开全部」
+        list = hasActive ? TRIPS.filter(t=>t.id===activeTripId) : (total ? [TRIPS[0]] : []);
+      }
+      let html = list.map(t=>{
         const active = t.id===activeTripId ? ' active' : '';
         const st = tripTimeStatus(t);
         const badge = `<span class="tc-badge ${st}">${ST_LABEL[st]||'进行中'}</span>`;
@@ -2481,6 +2493,18 @@
           </span>
         </button>`;
       }).join('');
+      if (total > 1) {
+        if (tripListExpanded) {
+          html += `<button class="trip-chip tc-toggle" onclick="toggleTripList()" title="收起行程列表">▴ 收起</button>`;
+        } else {
+          html += `<button class="trip-chip tc-toggle" onclick="toggleTripList()" title="展开全部行程">▾ 全部 ${total} 个行程</button>`;
+        }
+      }
+      wrap.innerHTML = html;
+    }
+    function toggleTripList(){
+      tripListExpanded = !tripListExpanded;
+      renderTripBar();
     }
     function editTripMeta(id){
       const t = TRIPS.find(x=>x.id===id); if(!t) return;
