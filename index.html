@@ -1747,15 +1747,8 @@
       grid.innerHTML=g;
       document.getElementById('homeMapLand').setAttribute('d', WORLD_PATH);
       var cities=aggregateCities();
-      var arcCities=orderedCities();
-      var arcs=document.getElementById('homeMapArcs'); var a='';
-      for(var i=0;i<arcCities.length-1;i++){
-        var p1=geoToXY(arcCities[i].lat,arcCities[i].lng), p2=geoToXY(arcCities[i+1].lat,arcCities[i+1].lng);
-        var mx=(p1[0]+p2[0])/2, my=(p1[1]+p2[1])/2 - Math.abs(p2[0]-p1[0])*0.18 - 12;
-        var yc = cityYearInfo(arcCities[i+1]).rep;
-        a+='<path d="M'+p1[0]+' '+p1[1]+' Q'+mx+' '+my+' '+p2[0]+' '+p2[1]+'" fill="none" stroke="'+yearColor(yc)+'" stroke-opacity="0.85" stroke-width="1.1" stroke-dasharray="3 5" class="wm-arc"/>';
-      }
-      arcs.innerHTML=a;
+      // 首页地图只展示「去过哪些城市」的足迹，不画行程路线（避免首页出现详细行程）
+      var arcs=document.getElementById('homeMapArcs'); if(arcs) arcs.innerHTML='';
       var pts=document.getElementById('homeMapPoints'); var h='';
       cities.forEach(function(c){
         var xy=geoToXY(c.lat,c.lng);
