@@ -534,7 +534,6 @@
     .pt-alpha-h { font-size:13px; font-weight:800; color:var(--accent); letter-spacing:.05em; margin:14px 0 8px; padding-bottom:4px; border-bottom:1px dashed var(--border); }
     .lib-card { flex-wrap:wrap; }
     .lib-reco { font-size:11px; font-weight:700; color:var(--accent-3); background:color-mix(in srgb,var(--accent-3) 14%, transparent); padding:1px 7px; border-radius:999px; margin-left:4px; vertical-align:middle; }
-    .lib-trips { font-size:11px; color:var(--muted); margin-top:3px; }
     /* 城市库：同城同点合并卡片 + 可折叠「行程记录」 */
     .pt-rec-h { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:6px 0 10px; }
     .pt-rec-h .pt-trip-title { color:var(--accent); }
@@ -714,7 +713,7 @@
 
       <div class="panel p-5">
         <div class="home-h mb-1">📚 我去过的城市 · 我的城市库</div>
-        <div class="text-xs text-[var(--muted)] mb-3">每个城市都是一座「库」——点开任意城市，进去看它的<b>城市指南</b>：📋 入境须知 + 🚇 该城市交通须知 + 🗺️ 行程点库（我的行程点 + 推荐去处 + 去过几次 + 评价）。</div>
+        <div class="text-xs text-[var(--muted)] mb-3">每个城市都是一座「库」——点开任意城市，进去看它的<b>城市指南</b>：📋 入境须知 + 🚇 该城市交通须知 + 🗺️ 行程点库（推荐去处 + 去过几次 + 评价）。</div>
         <div id="homeVisited" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
       </div>
 
@@ -747,7 +746,7 @@
       <!-- 行程点库（最下方，保留上轮成果） -->
       <div class="panel p-5">
         <div class="home-h mb-1">🗺️ <span id="pointsCityName2"></span> 的行程点库</div>
-        <div class="text-xs text-[var(--muted)] mb-3">这是「<span id="pointsCityName2"></span>」的<b>城市行程点总库</b>——只收录有<b>具体地址</b>的地点，按<b>首字母排序</b>，可<b>搜索</b>或按<b>首字母筛选</b>。这里不排某一次行程的时间安排；要看某次具体安排，请打开「🗂️ 我的行程」。✅已结束行程里勾选过的点会显示<b>去过几次 + 年份</b>，每个点可<b>多次评价</b>。</div>
+        <div class="text-xs text-[var(--muted)] mb-3">这是「<span id="pointsCityName2"></span>」的<b>城市行程点总库</b>——只收录有<b>具体地址</b>的地点，按<b>首字母排序</b>，可<b>搜索</b>或按<b>首字母筛选</b>。这里是城市通用地点库，与「我的行程」解耦、不含任何行程安排。✅你评价过的点会显示<b>去过几次 + 年份</b>，每个点可<b>多次评价</b>。</div>
         <input id="pointsSearch" class="input-field mb-3" placeholder="🔍 搜索地点或地址…" oninput="pointsQuery=this.value;renderPointsList()">
         <div id="pointsBody" class="space-y-4"></div>
       </div>
@@ -1670,24 +1669,14 @@
       renderCityEntry();
       renderCityTransit(city);
       if(!city){ box.innerHTML='<div class="home-empty">请先在「城市」页选择一个城市。</div>'; return; }
-      var seen={}; var list=[];
-      // 1) 所有行程里、属于该城市、且带具体地址的行程点（按名称去重，合并为「城市行程点总库」）
-      (TRIPS||[]).forEach(function(t){
-        (t.days||[]).forEach(function(d){
-          (d.spots||[]).forEach(function(s){
-            if(!s.name||!s.addr) return;
-            if(spotCitiesOf(d,s).indexOf(city)<0) return;
-            if(!seen[s.name]){ seen[s.name]={name:s.name,addr:s.addr,note:s.note||'',warn:s.warn||'',ticket:s.ticket||'',links:buildSpotLinks(s),tripCount:0,reco:false}; list.push(seen[s.name]); }
-            seen[s.name].tripCount++;
-          });
-        });
-      });
-      // 2) 推荐去处（仅含具体地址）
+      // 城市行程点总库：仅收录城市通用推荐地点（POI_DB），与「我的行程」彻底解耦——不拉取任何行程点、不显示行程字样
+      var list=[];
       (POI_DB[city]||[]).forEach(function(p){
         if(!p.name||!p.addr) return;
-        if(!seen[p.name]){ seen[p.name]={name:p.name,addr:p.addr,note:p.note||'',warn:p.warn||'',ticket:p.ticket||'',links:[],tripCount:0,reco:true}; list.push(seen[p.name]); }
+        list.push({name:p.name,addr:p.addr,note:p.note||'',warn:p.warn||'',ticket:p.ticket||'',links:[],reco:true});
       });
       pointsSpots=list;
+      if(!list.length){ box.innerHTML='<div class="home-empty">「'+escHtml(city)+'」暂无收录的地点。想补充，直接告诉我城市名和地点即可。</div>'; return; }
       renderPointsList();
     }
     function setPointsLetter(L){ pointsLetter=L; renderPointsList(); }
@@ -1727,7 +1716,6 @@
           html+='<div class="pt-spot-main">';
           html+='<div class="pt-spot-name">'+escHtml(s.name)+(s.reco?' <span class="lib-reco">💡推荐</span>':'')+'</div>';
           html+='<div class="pt-spot-sub">📍 '+escHtml(s.addr)+'</div>';
-          if(s.tripCount>0) html+='<div class="lib-trips">🗂️ 出现在 '+s.tripCount+' 个行程</div>';
           if(s.note) html+='<div class="pt-spot-note">'+escHtml(s.note)+'</div>';
           if(s.warn) html+='<div class="pt-spot-warn">⚠️ '+escHtml(s.warn)+'</div>';
           if(s.ticket) html+='<div class="pt-spot-sub">🎫 '+escHtml(s.ticket)+'</div>';
@@ -2171,25 +2159,17 @@
     function todayStr(){ const d=new Date(); const m=('0'+(d.getMonth()+1)).slice(-2), day=('0'+d.getDate()).slice(-2); return d.getFullYear()+'-'+m+'-'+day; }
     // 去过次数：仅统计「已结束/归档」行程中、已勾选(实际去了)的行程点，按 城市+名称 计数，并收集年份
     function computeVisitMap(){
+      // 「去过几次 + 年份」仅由评价系统(SPOT_REVIEWS)统计，与「我的行程」彻底解耦
       const map = {};
-      const curYear = new Date().getFullYear();
-      (TRIPS||[]).forEach(function(t){
-        if (tripTimeStatus(t) !== 'closed') return;
-        const yr = (t.year!=null && !isNaN(t.year)) ? Number(t.year) : curYear;
-        (t.days||[]).forEach(function(d){
-          (d.spots||[]).forEach(function(s){
-            if (!s.checked || !s.name) return;
-            spotCitiesOf(d, s).forEach(function(city){
-              const k = reviewKey(city, s.name);
-              if(!map[k]) map[k] = { count:0, years:{} };
-              map[k].count += 1;
-              map[k].years[yr] = true;
-            });
-          });
+      Object.keys(SPOT_REVIEWS).forEach(function(k){
+        const revs = SPOT_REVIEWS[k] || [];
+        if(!revs.length) return;
+        const years = {};
+        revs.forEach(function(r){
+          const y = (r.date||'').slice(0,4);
+          if(/^\d{4}$/.test(y)) years[y] = true;
         });
-      });
-      Object.keys(map).forEach(function(k){
-        map[k].years = Object.keys(map[k].years).map(Number).sort(function(a,b){ return a-b; });
+        map[k] = { count: revs.length, years: Object.keys(years).map(Number).sort(function(a,b){ return a-b; }) };
       });
       return map;
     }
