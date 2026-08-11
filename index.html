@@ -1915,6 +1915,18 @@
       cnx_doisuthep: [-34, -28], cnx_phrasing: [10, -10], cnx_chiangman: [-10, -10],
       cnx_threekings: [-2, -10], cnx_maya: [-24, -26], cnx_shooting: [28, -34], cnx_akha: [-20, -18], cnx_khaosoi: [4, -6], cnx_lila: [-8, -2],
       sel_icn: [-44, -22], sel_seoulstation: [-8, -2], sel_myeongdong: [2, 4], sel_namsan: [7, 12], sel_namdaemun: [0, 9], sel_cityhall: [-2, -8], sel_cheonggyecheon: [10, -1], sel_gwangjang: [22, 1], sel_ddp: [22, -4], sel_hongdae: [-22, 4], sel_insadong: [5, -4], sel_gyeongbokgung: [2, -18], sel_seongsu: [26, 20], sel_jamsil: [30, 24], sel_coex: [34, 14], sel_nami: [46, -30],
+      // 槟城 George Town
+      pen_airport: [24, 34], pen_hotel: [0, 0], pen_kimberley: [4, 6], pen_lovelane: [-2, 4], pen_tohsoon: [2, 8],
+      pen_mural: [-4, 2], pen_jetties: [8, -4], pen_chickenrice: [0, 6], peranakan: [-6, 0], pen_blue: [-8, 4],
+      pen_khoo: [-2, -2], pen_littleindia: [6, 2], pen_hill: [-28, -18], pen_laksa: [2, 10], pen_museum: [4, -2], pen_joohooi: [0, 8],
+      // 古晋 Kuching
+      kch_airport: [38, 8], kch_hotel: [0, 0], kch_waterfront: [2, 2], kch_laksa: [0, 4], kch_scv: [34, -24],
+      kch_damai: [40, -30], kch_bazaar: [-2, -2], kch_chmuseum: [-4, -2], kch_tua: [4, 0], kch_topspot: [-4, 6],
+      kch_market: [-2, 4], kch_museum: [-8, 4], kch_cat: [10, -8],
+      // 吉隆坡 Kuala Lumpur
+      kul_airport: [0, 40], kul_hotel: [0, 0], kul_merdeka: [-2, 2], kul_gallery: [-4, 2], kul_mosque: [-10, 4],
+      kul_iamm: [-14, 6], kul_nasilemak: [24, 16], kul_chinatown: [-4, 14], kul_centralmarket: [-6, 12], kul_bakuteh: [8, 12],
+      kul_littleindia: [-8, 8], kul_nationalmuseum: [-12, 10],
     };
 
     let DAYS = [
@@ -2081,6 +2093,55 @@
         { name:'圣水洞咖啡街', cat:'玩乐', type:'relax', addr:'首尔城东区圣水洞 (Seongdong-gu, Seongsu)', note:'网红咖啡 + 圣诞限定饮品' },
         { name:'奖忠洞韩式烤肉', cat:'美食', type:'food', addr:'首尔中区奖忠洞 (Jung-gu, Jangchung)', note:'首尔老牌烤肉一条街' },
         { name:'鹭梁津水产市场', cat:'美食', type:'food', addr:'首尔铜雀区鹭梁津路 (Dongjak-gu, Noryangjin)', note:'活海鲜现吃' }
+      ],
+      '槟城': [
+        { name:'乔治市世界遗产街头壁画', cat:'景点', type:'sight', addr:'马来西亚槟城乔治市 (George Town, Penang)', note:'散落在老街的 Ernest Zacharevic 壁画，华人南洋生活场景' },
+        { name:'姓氏桥 Clan Jetties', cat:'景点', type:'sight', addr:'Weld Quay, George Town, Penang', note:'华人宗族海上聚落，周姓桥最出名，南洋移民史缩影' },
+        { name:'侨生博物馆 Pinang Peranakan Mansion', cat:'景点', type:'sight', addr:'29 Church St, George Town, Penang', note:'娘惹峇峇文化豪宅，金漆木雕与晚清瓷器' },
+        { name:'张弼士故居(蓝屋) Cheong Fatt Tze Mansion', cat:'景点', type:'sight', addr:'14 Leith St, George Town, Penang', note:'南洋首富蓝屋，导览制，了解闽粤华人下南洋史' },
+        { name:'龙山堂邱公司 Khoo Kongsi', cat:'景点', type:'sight', addr:'18 Cannon Square, George Town, Penang', note:'槟城最华丽华人宗祠，闽南建筑巅峰' },
+        { name:'槟城小印度 Little India', cat:'景点', type:'sight', addr:'Lebuh Pasar, George Town, Penang', note:'印度庙、香料铺、纱丽店与印度音乐' },
+        { name:'槟城州博物馆', cat:'景点', type:'sight', addr:'Dewan Sri Pinang, George Town, Penang', note:'英国殖民建筑，了解槟城多元族群史' },
+        { name:'汕头街夜市 Kimberley Street', cat:'美食', type:'food', addr:'Kimberley St, George Town, Penang', note:'鸭粥粿汁、四果汤、炒粿条，华人夜市' },
+        { name:'槟城潮州煎蕊 Penang Road Famous Teochew Chendul', cat:'美食', type:'food', addr:'Lebuh Keng Kwee, George Town, Penang', note:'红豆椰浆冰，槟城招牌甜品' },
+        { name:'伍秀泽海南鸡饭', cat:'美食', type:'food', addr:'Chulia St, George Town, Penang', note:'槟城最出名鸡饭之一' },
+        { name:'槟城亚参叻沙 Air Itam Laksa', cat:'美食', type:'food', addr:'Air Itam, Penang', note:'酸辣鱼汤底，全球十大美食之一' },
+        { name:'愉园茶室 Joo Hooi', cat:'美食', type:'food', addr:'475 Jalan Penang, George Town, Penang', note:'炒粿条、煎蕊、叻沙一站式' },
+        { name:'升旗山 Penang Hill', cat:'玩乐', type:'activity', addr:'Penang Hill, Air Itam, Penang', note:'英式山顶避暑地，缆车与全景' },
+        { name:'极乐寺 Kek Lok Si', cat:'景点', type:'sight', addr:'Air Itam, Penang', note:'东南亚最大华人佛寺，万佛宝塔' }
+      ],
+      '古晋': [
+        { name:'砂拉越文化村 Sarawak Cultural Village', cat:'景点', type:'activity', addr:'Pantai Damai, Santubong, Sarawak', note:'伊班、比达友、马来等原住民长屋与舞蹈表演' },
+        { name:'亚答街(老街) Main Bazaar', cat:'景点', type:'sight', addr:'Main Bazaar, Kuching, Sarawak', note:'百年白屋店屋，华人进出口贸易史' },
+        { name:'华族历史文物馆 Chinese History Museum', cat:'景点', type:'sight', addr:'1 Main Bazaar, Kuching, Sarawak', note:'闽粤华人来砂拉越垦荒史' },
+        { name:'大伯公庙 Tua Pek Kong Temple', cat:'景点', type:'sight', addr:'Jalan Tunku Abdul Rahman, Kuching, Sarawak', note:'古晋最古老华人庙宇，河边红墙' },
+        { name:'古晋河滨公园 Waterfront', cat:'景点', type:'sight', addr:'Jalan Main Bazaar, Kuching, Sarawak', note:'砂拉越河沿岸，阿斯塔纳与玛格丽特城堡对望' },
+        { name:'猫博物馆 Cat Museum', cat:'景点', type:'sight', addr:'Bukit Siol, Petra Jaya, Kuching, Sarawak', note:'猫城标志，各式猫主题收藏' },
+        { name:'砂拉越博物馆', cat:'景点', type:'sight', addr:'Jalan Tun Abang Haji Openg, Kuching, Sarawak', note:'殖民时期博物馆，婆罗洲自然与人文' },
+        { name:'实蒙古野生动物保育中心 Semenggoh', cat:'景点', type:'activity', addr:'Jalan Puncak Borneo, Kuching, Sarawak', note:'红毛猩猩康复中心，半野外观察' },
+        { name:'达迈海滩 Damai Beach', cat:'玩乐', type:'relax', addr:'Santubong, Kuching, Sarawak', note:'南中国海日落，近文化村' },
+        { name:'古晋叻沙 Kuching Laksa', cat:'美食', type:'food', addr:'Chong Choon Cafe, Jalan Abell, Kuching', note:'砂拉越版叻沙，椰浆咖喱虾汤底' },
+        { name:'哥罗面 Kolo Mee', cat:'美食', type:'food', addr:'Spring Garden 美食中心, Kuching', note:'干捞 egg 面配叉烧与猪油渣' },
+        { name:'烧包 Kompia', cat:'美食', type:'food', addr:'永安亭大伯公庙前, Kuching', note:'福州光饼夹肉，古晋街头小吃' },
+        { name:'三层茶 Teh C Peng Special', cat:'美食', type:'food', addr:'古晋茶室普遍有售', note:'砂拉越特色三层奶茶' }
+      ],
+      '吉隆坡': [
+        { name:'独立广场 Dataran Merdeka', cat:'景点', type:'sight', addr:'Jalan Raja, Kuala Lumpur', note:'1957年独立宣言地，殖民建筑群' },
+        { name:'苏丹阿都沙末大厦 Sultan Abdul Samad Building', cat:'景点', type:'sight', addr:'Jalan Raja, Kuala Lumpur', note:'摩尔风格钟楼，吉隆坡地标' },
+        { name:'国家清真寺 National Mosque', cat:'景点', type:'sight', addr:'Jalan Perdana, Kuala Lumpur', note:'现代伊斯兰建筑，蓝色星形屋顶' },
+        { name:'伊斯兰艺术博物馆 IAMM', cat:'景点', type:'sight', addr:'Jalan Lembah Perdana, Kuala Lumpur', note:'全球顶级伊斯兰文物与建筑模型' },
+        { name:'国家博物馆 National Museum', cat:'景点', type:'sight', addr:'Jalan Damansara, Kuala Lumpur', note:'马来历史与原住民文化' },
+        { name:'茨厂街(唐人街) Petaling Street', cat:'景点', type:'sight', addr:'Jalan Petaling, Kuala Lumpur', note:'华人老字号、药材铺、假冒名牌街' },
+        { name:'鬼仔巷 Kwai Chai Hong', cat:'景点', type:'sight', addr:'Lorong Panggung, Kuala Lumpur', note:'活化巷弄，壁画讲述早期华人生活' },
+        { name:'中央市场 Central Market', cat:'景点', type:'shop', addr:'Jalan Hang Kasturi, Kuala Lumpur', note:'艺术手作与马来蜡染' },
+        { name:'马里安曼印度庙 Sri Mahamariamman', cat:'景点', type:'sight', addr:'Jalan Bandar, Kuala Lumpur', note:'吉隆坡最古老印度庙，塔门雕刻华丽' },
+        { name:'小印度 Brickfields', cat:'景点', type:'sight', addr:'Brickfields, Kuala Lumpur', note:'纱丽、香料、香蕉叶饭与印度庙' },
+        { name:'黑风洞 Batu Caves', cat:'景点', type:'activity', addr:'Gombak, Kuala Lumpur', note:'印度教圣地，272级彩色阶梯与石灰岩洞' },
+        { name:'双子塔 Petronas Towers', cat:'景点', type:'sight', addr:'KLCC, Kuala Lumpur', note:'城市天际线，底层阳光广场' },
+        { name:'新峰肉骨茶 Sun Fong Bak Kut Teh', cat:'美食', type:'food', addr:'Jalan Bulan 1, Bukit Bintang, Kuala Lumpur', note:'吉隆坡名店，汤头浓郁' },
+        { name:'Village Park 椰浆饭 Nasi Lemak', cat:'美食', type:'food', addr:'5 Jalan SS21/37, Damansara Utama', note:'被誉为 KL 最好吃椰浆饭' },
+        { name:'Jalan Alor 夜市', cat:'美食', type:'food', addr:'Jalan Alor, Bukit Bintang, Kuala Lumpur', note:'华人海鲜大排档与榴莲' },
+        { name:'印度煎饼 Roti Canai', cat:'美食', type:'food', addr:'Mamak 档口遍布 KL', note:'配 dal 或咖喱，国民早餐' }
       ]
     };
 
@@ -2131,6 +2192,99 @@
       try { persistAll(); } catch(e){}
     }
 
+    // ===== 种子行程：马来西亚 · 槟城/古晋/吉隆坡人文线（南京出发，2026.10.2-10.8）=====
+    const SEED_MALAYSIA_ID = 'seed_malaysia_2026';
+    const MALAYSIA_DAYS = [
+      { id: 'm1', date: '10.2', weekday: '周五', title: '南京→厦门→槟城 · 南洋初夜', city: 'penang', color: '#f59e0b',
+        weather: { icon: '🌦️', high: 31, low: 24, desc: '热带阵雨', tip: '夏装+薄外套；厦门转机约3小时，可 airport walk' },
+        spots: [
+          { id: 'm1_f1', name: '南京禄口 T1 出发', time: '08:30 起飞', type: 'flight', loc: null, checked: false, addr: '南京市江宁区禄口街道（南京禄口国际机场 T1）', hours: '值机 06:30 起', duration: '飞行约 1h50m', notes: '厦航 MF8530，08:30 起飞，10:20 抵达厦门高崎 T3。', ticket: '', tips: '带好护照、马来西亚入境卡（MDAC）打印、往返机票/酒店单', boarding: '提前 2 小时', warning: null, flightNo: 'MF8530' },
+          { id: 'm1_t1', name: '厦门高崎 T3 中转', time: '10:20-13:45', type: 'transit', loc: null, checked: false, addr: '厦门高崎国际机场 T3', hours: '约 3.5 小时', duration: '中转候机', notes: 'T3 航站楼内中转，时间充裕可吃碗沙茶面或逛伴手礼店。', ticket: '', tips: '国际出发区在 T3，无需换航站楼；留意登机口变更', warning: null },
+          { id: 'm1_f2', name: '厦门高崎 T3 → 槟城国际', time: '13:45 起飞', type: 'flight', loc: null, checked: false, addr: '厦门高崎国际机场 T3 → 槟城国际机场 PEN', hours: '13:45 起飞', duration: '飞行约 4h', notes: '厦航 MF8705，13:45 起飞，17:50 抵达槟城。', ticket: '', tips: '机上填好入境卡；槟城与国内无时差', boarding: '提前 1 小时', warning: null, flightNo: 'MF8705' },
+          { id: 'm1_f3', name: '槟城国际机场 落地 + 入境', time: '17:50', type: 'flight', loc: 'pen_airport', checked: false, addr: 'Penang International Airport, Bayan Lepas, Penang', hours: '24h', duration: '入境+打车约 1 小时', notes: '落地槟城，Grab 打车到乔治市约 45 分钟。', ticket: '', tips: '机场 ATM 取现/换汇；购买当地 SIM 卡或开漫游', warning: null },
+          { id: 'm1_h1', name: '乔治市酒店 入住（建议遗产区）', time: '约 19:30', type: 'hotel', loc: 'pen_hotel', checked: false, addr: '乔治市世界遗产区（Love Lane / Chulia St 一带）', hours: '入住 15:00 后', duration: '放行李', notes: '建议住乔治市老街，步行可达壁画、姓氏桥与夜市。酒店待订。', ticket: '', tips: '选有风扇/空调的殖民风民宿或精品酒店，体验更佳', warning: 'info' },
+          { id: 'm1_r1', name: '汕头街夜市（鸭粥粿汁·四果汤）', time: '20:00-22:00', type: 'food', loc: 'pen_kimberley', checked: false, recommended: true, addr: 'Kimberley Street, George Town, Penang', hours: '傍晚-深夜', duration: '约 1.5 小时', notes: '槟城华人夜市代表作：鸭粥粿汁、四果汤、炒粿条。', ticket: '', tips: '现金为主；人均 15-30 马币吃到撑', warning: null },
+          { id: 'm1_r2', name: '爱情巷小酌 / 夜游', time: '21:00-22:30', type: 'relax', loc: 'pen_lovelane', checked: false, recommended: true, addr: 'Love Lane, George Town, Penang', hours: '晚间', duration: '约 1 小时', notes: '背包客老街，小酒吧与旧洋楼，感受乔治市夜晚。', ticket: '免费', tips: '注意安全；早班机+长途飞行，别太晚', warning: null }
+        ] },
+      { id: 'm2', date: '10.3', weekday: '周六', title: '乔治市 · 华人南洋与娘惹记忆', city: 'penang', color: '#ec4899',
+        weather: { icon: '⛅', high: 32, low: 25, desc: '晴间多云', tip: ' walking tour 需防晒；寺庙需穿过膝裤裙' },
+        spots: [
+          { id: 'm2_1', name: '多春茶室 Roti Bakar', time: '08:00-09:30', type: 'food', loc: 'pen_tohsoon', checked: false, addr: '184 Campbell Street, George Town, Penang', hours: '约 8:00-17:00（周一休）', duration: '约 1 小时', notes: '槟城老字号茶室，炭烤面包、半熟蛋、海南咖啡。', ticket: '', tips: '需排队；10点后可能卖完', warning: null },
+          { id: 'm2_2', name: '乔治市街头壁画', time: '09:00-11:00', type: 'sight', loc: 'pen_mural', checked: false, addr: 'George Town 老街巷（Armenian St / Ah Quee St 等）', hours: '全天', duration: '约 2 小时', notes: 'Ernest Zacharevic 壁画与本地创作，骑楼老街本身就是南洋生活博物馆。', ticket: '免费', tips: '早去避热避人；可租自行车或随地图寻宝', warning: null },
+          { id: 'm2_3', name: '姓氏桥 Clan Jetties', time: '11:00-12:00', type: 'sight', loc: 'pen_jetties', checked: false, addr: 'Weld Quay, George Town, Penang', hours: '约 9:00-21:00', duration: '约 1 小时', notes: '华人宗族海上聚落，周姓桥规模最大。木板栈道、妈祖庙、渔家生活，是下南洋最直接的现场。', ticket: '免费', tips: '尊重居民；清晨或傍晚光线最好', warning: null },
+          { id: 'm2_food1', name: '伍秀泽海南鸡饭 / 潮州煎蕊', time: '12:30-14:00', type: 'food', loc: 'pen_chickenrice', checked: false, addr: 'Chulia St / Penang Road, George Town', hours: '午市为主', duration: '约 1 小时', notes: '海南鸡饭配鸡油饭，饭后一碗潮州煎蕊，槟城式午餐。', ticket: '', tips: '煎蕊认准 Penang Road Famous Teochew Chendul', warning: null },
+          { id: 'm2_4', name: '侨生博物馆 Pinang Peranakan Mansion', time: '14:00-15:30', type: 'sight', loc: 'peranakan', checked: false, addr: '29 Church St, George Town, Penang', hours: '9:30-17:00', duration: '约 1.5 小时', notes: '娘惹峇峇豪宅，金漆屏风、珠绣拖鞋、晚清瓷器。了解闽粤移民与马来女子通婚后形成的独特文化。', ticket: '成人 RM25', tips: '有中文导览场次；馆内可拍照', warning: null },
+          { id: 'm2_5', name: '张弼士故居(蓝屋)', time: '15:30-16:30', type: 'sight', loc: 'pen_blue', checked: false, addr: '14 Leith St, George Town, Penang', hours: '导览 11:00/14:00/15:30', duration: '约 1 小时', notes: '南洋首富张弼士故居，靛蓝外墙、风水天井。听导览讲华人移民、锡矿与清朝领事的故事。', ticket: 'RM25', tips: '必须跟导览；英语为主，部分时段中文', warning: null },
+          { id: 'm2_6', name: '龙山堂邱公司', time: '16:30-17:30', type: 'sight', loc: 'pen_khoo', checked: false, addr: '18 Cannon Square, George Town, Penang', hours: '9:00-17:00', duration: '约 1 小时', notes: '槟城最华丽华人宗祠，闽南匠艺、琉璃剪粘、戏台。体现宗族移民社会的凝聚力。', ticket: 'RM10', tips: '傍晚光影最佳；戏台有时有木偶戏', warning: null },
+          { id: 'm2_7', name: '槟城小印度', time: '17:30-18:30', type: 'sight', loc: 'pen_littleindia', checked: false, addr: 'Lebuh Pasar / Queen St, George Town, Penang', hours: '全天', duration: '约 1 小时', notes: '印度香料、纱丽、花环、印度庙，多元文化交叠。', ticket: '免费', tips: '可在这里吃印度煎饼当下午茶', warning: null },
+          { id: 'm2_r1', name: '升旗山日落（可选）', time: '18:00-20:00', type: 'sight', loc: 'pen_hill', checked: false, recommended: true, addr: 'Penang Hill, Air Itam, Penang', hours: '缆车 6:30-22:00', duration: '约 2 小时', notes: '英式山顶避暑地，俯瞰乔治市与海峡。人文路线之外的风景收尾。', ticket: '缆车往返约 RM30', tips: '傍晚上山人多，预留排队；打车到山脚', warning: null },
+          { id: 'm2_food2', name: '亚参叻沙 / 福建面', time: '20:00-21:30', type: 'food', loc: 'pen_laksa', checked: false, recommended: true, addr: 'Air Itam / Kimberly Street, Penang', hours: '傍晚', duration: '约 1 小时', notes: '酸辣鱼汤底的亚参叻沙曾被 CNN 评为全球十大美食；福建面虾汤浓香。', ticket: '', tips: 'Air Itam 叻沙最出名，但较远；乔治市也有名店', warning: null }
+        ] },
+      { id: 'm3', date: '10.4', weekday: '周日', title: '槟城半日 → 古晋 · 河城初印象', city: 'penang', color: '#8b5cf6',
+        weather: { icon: '⛅', high: 32, low: 25, desc: '晴间多云', tip: '上午紧凑逛，中午后前往机场' },
+        spots: [
+          { id: 'm3_1', name: '观音亭 / 槟城州博物馆一带', time: '08:30-10:00', type: 'sight', loc: 'pen_museum', checked: false, addr: 'George Town 教堂街 / Dewan Sri Pinang, Penang', hours: '博物馆约 9:00-17:00（周一闭馆）', duration: '约 1.5 小时', notes: '殖民建筑与华人庙宇并置，清晨走一圈感受城市肌理。', ticket: '博物馆免费', tips: '如博物馆闭馆，就在周边街巷闲逛', warning: null },
+          { id: 'm3_2', name: '愉园茶室（炒粿条·煎蕊）', time: '10:00-11:30', type: 'food', loc: 'pen_joohooi', checked: false, addr: '475 Jalan Penang, George Town, Penang', hours: '约 11:00-17:00', duration: '约 1 小时', notes: '槟城茶室文化代表：一个铺位多家档口，炒粿条、煎蕊、叻沙一次吃齐。', ticket: '', tips: '现金；中午后排队', warning: null },
+          { id: 'm3_f1', name: '槟城机场 出发', time: '约 13:00 到机场', type: 'flight', loc: 'pen_airport', checked: false, addr: 'Penang International Airport, Bayan Lepas, Penang', hours: '14:55 起飞', duration: '候机', notes: '亚航 AK5432 槟城→古晋，14:55 起飞，16:55 抵达。', ticket: '', tips: '亚航为廉航，行李额度提前买；提前 2 小时到', boarding: '提前 2 小时', warning: null, flightNo: 'AK5432' },
+          { id: 'm3_f2', name: '古晋国际 落地', time: '16:55', type: 'flight', loc: 'kch_airport', checked: false, addr: 'Kuching International Airport, Sarawak', hours: '24h', duration: '入境+打车约 30 分钟', notes: '东马砂拉越入境需再盖一次章；Grab 到市区约 20 分钟。', ticket: '', tips: '保留登机牌备查；东马海关会检查', warning: null },
+          { id: 'm3_h1', name: '古晋河滨酒店 入住', time: '约 18:00', type: 'hotel', loc: 'kch_hotel', checked: false, addr: '古晋河滨 / Main Bazaar 一带', hours: '入住 15:00 后', duration: '放行李', notes: '建议住砂拉越河沿岸，方便散步与去亚答街。酒店待订。', ticket: '', tips: '可订 Hilton / Pullman 或精品民宿', warning: 'info' },
+          { id: 'm3_r1', name: '古晋河滨公园日落', time: '18:00-19:30', type: 'sight', loc: 'kch_waterfront', checked: false, recommended: true, addr: 'Jalan Main Bazaar, Kuching, Sarawak', hours: '全天', duration: '约 1 小时', notes: '砂拉越河穿城而过，对岸是阿斯塔纳（白人拉惹宫）与玛格丽特城堡。河滨公园是看日落与当地人生活的好地方。', ticket: '免费', tips: '傍晚有街头表演；可乘小船到对岸', warning: null },
+          { id: 'm3_food1', name: '古晋河滨叻沙 / 哥罗面', time: '19:30-21:00', type: 'food', loc: 'kch_laksa', checked: false, recommended: true, addr: 'Chong Choon Cafe / 河滨茶室, Kuching', hours: '早餐/午市为主，部分晚间也开', duration: '约 1 小时', notes: '砂拉越叻沙椰浆咖喱虾汤；哥罗面干捞配叉烧猪油渣。', ticket: '', tips: '哥罗面加红醋是本地吃法', warning: null }
+        ] },
+      { id: 'm4', date: '10.5', weekday: '周一', title: '古晋 · 原住民长屋与河城人文', city: 'kuching', color: '#10b981',
+        weather: { icon: '🌦️', high: 33, low: 24, desc: '热带雨林', tip: '文化村需半天；带防蚊液与雨具' },
+        spots: [
+          { id: 'm4_1', name: '砂拉越文化村（伊班/比达友长屋）', time: '09:00-13:00', type: 'activity', loc: 'kch_scv', checked: false, addr: 'Pantai Damai, Santubong, Sarawak', hours: '9:00-17:00', duration: '约 4 小时（含往返）', notes: '马来西亚最佳民族博物馆：伊班、比达友、马来、华人的传统长屋与日常演示，每天两场文化表演。了解婆罗洲多元族群最直接的窗口。', ticket: '成人 RM60', tips: '市区打车约 40 分钟；表演 11:30/16:00；穿轻便鞋', warning: null },
+          { id: 'm4_2', name: '达迈海滩午餐与放空', time: '13:00-15:00', type: 'relax', loc: 'kch_damai', checked: false, addr: 'Santubong, Kuching, Sarawak', hours: '全天', duration: '约 2 小时', notes: '南中国海边的 quiet time，文化村后顺便看海。', ticket: '免费', tips: ' beachfront resort 餐厅可用餐；回市区约 40 分钟', warning: null },
+          { id: 'm4_3', name: '亚答街 Main Bazaar', time: '16:00-17:30', type: 'sight', loc: 'kch_bazaar', checked: false, addr: 'Main Bazaar, Kuching, Sarawak', hours: '约 9:00-18:00', duration: '约 1.5 小时', notes: '百年白屋店屋，曾是华人进出口商行与胡椒贸易据点。现在仍有古董店、手工艺品店。', ticket: '免费', tips: '华族历史文物馆就在街上', warning: null },
+          { id: 'm4_4', name: '华族历史文物馆', time: '17:00-18:00', type: 'sight', loc: 'kch_chmuseum', checked: false, addr: '1 Main Bazaar, Kuching, Sarawak', hours: '约 9:00-16:30（周一闭馆）', duration: '约 1 小时', notes: '闽粤华人来砂拉越开垦、经商、落地生根的史料。', ticket: '免费', tips: '周一闭馆请改去大伯公庙', warning: null },
+          { id: 'm4_5', name: '大伯公庙 Tua Pek Kong', time: '18:00-18:30', type: 'sight', loc: 'kch_tua', checked: false, addr: 'Jalan Tunku Abdul Rahman, Kuching, Sarawak', hours: '全天', duration: '约 30 分钟', notes: '古晋最古老华人庙宇，河边红墙，见证了 19 世纪华人移民史。', ticket: '免费', tips: '傍晚亮灯后很美', warning: null },
+          { id: 'm4_food1', name: 'Topspot 海鲜大排档', time: '19:00-21:00', type: 'food', loc: 'kch_topspot', checked: false, addr: 'Jalan Bukit Mata, Kuching', hours: '约 17:00-22:00', duration: '约 2 小时', notes: '本地人气海鲜楼，奶油虾、黑胡椒蟹、蒸鱼。', ticket: '', tips: '人多可点多种；提前定位', warning: null }
+        ] },
+      { id: 'm5', date: '10.6', weekday: '周二', title: '古晋半日 → 吉隆坡 · 首都夜色', city: 'kuching', color: '#0ea5e9',
+        weather: { icon: '⛅', high: 33, low: 24, desc: '多云', tip: '上午市区人文，傍晚飞吉隆坡' },
+        spots: [
+          { id: 'm5_1', name: '古晋中央市场 + 印度街', time: '08:30-10:30', type: 'market', loc: 'kch_market', checked: false, addr: 'Jalan Satok / India Street, Kuching', hours: '约 6:00-17:00', duration: '约 2 小时', notes: '本地人的菜市场、印度街布料与香料，感受日常马来西亚。', ticket: '免费', tips: '可买手工编织品与胡椒当手信', warning: null },
+          { id: 'm5_2', name: '砂拉越博物馆', time: '10:30-12:00', type: 'sight', loc: 'kch_museum', checked: false, addr: 'Jalan Tun Abang Haji Openg, Kuching, Sarawak', hours: '约 9:00-16:45（周一闭馆）', duration: '约 1.5 小时', notes: '殖民时期建筑，婆罗洲自然史与原住民文物。', ticket: '免费', tips: '周一闭馆可改去猫博物馆', warning: null },
+          { id: 'm5_3', name: '猫博物馆', time: '12:00-13:00', type: 'sight', loc: 'kch_cat', checked: false, addr: 'Bukit Siol, Petra Jaya, Kuching, Sarawak', hours: '9:00-16:45', duration: '约 1 小时', notes: 'Kuching 在马来语中就是「猫」，猫城标志博物馆，轻松有趣。', ticket: '免费（相机费另计）', tips: '打车到山上；可与博物馆二选一', warning: null },
+          { id: 'm5_f1', name: '古晋机场 出发', time: '约 17:00 到机场', type: 'flight', loc: 'kch_airport', checked: false, addr: 'Kuching International Airport, Sarawak', hours: '19:00 起飞', duration: '候机', notes: '亚航 AK5213 古晋→吉隆坡，19:00 起飞，20:45 抵达。', ticket: '', tips: '东马出州需再盖章；提前 2 小时到', boarding: '提前 2 小时', warning: null, flightNo: 'AK5213' },
+          { id: 'm5_f2', name: '吉隆坡国际 T2 落地', time: '20:45', type: 'flight', loc: 'kul_airport', checked: false, addr: 'Kuala Lumpur International Airport T2', hours: '24h', duration: '入境+打车约 1 小时', notes: '吉隆坡与国内无时差，Grab 到市区约 50 分钟。', ticket: '', tips: 'KLIA T2 是亚航大本营； ATM 取现方便', warning: null },
+          { id: 'm5_h1', name: '吉隆坡酒店 入住（建议茨厂街/武吉免登）', time: '约 22:00', type: 'hotel', loc: 'kul_hotel', checked: false, addr: '茨厂街 / 武吉免登 / 中央市场一带', hours: '入住 15:00 后', duration: '放行李', notes: '人文路线建议住茨厂街或中央市场附近，去哪都近。', ticket: '', tips: '酒店待订', warning: 'info' }
+        ] },
+      { id: 'm6', date: '10.7', weekday: '周三', title: '吉隆坡 · 独立广场、清真寺与唐人街', city: 'kualalumpur', color: '#6366f1',
+        weather: { icon: '⛅', high: 33, low: 24, desc: '多云偶阵雨', tip: '清真寺需长袖长裤；博物馆周一闭馆注意' },
+        spots: [
+          { id: 'm6_1', name: '独立广场 + 苏丹阿都沙末大厦', time: '08:30-10:00', type: 'sight', loc: 'kul_merdeka', checked: false, addr: 'Jalan Raja, Kuala Lumpur', hours: '全天', duration: '约 1.5 小时', notes: '1957 年马来亚独立宣言地，周围是英国殖民建筑群。广场辽阔，钟楼是 KL 明信片角度。', ticket: '免费', tips: '清晨人少、光线好；顺路去城市画廊', warning: null },
+          { id: 'm6_2', name: '吉隆坡城市画廊', time: '10:00-11:00', type: 'sight', loc: 'kul_gallery', checked: false, addr: '27 Jalan Raja, Kuala Lumpur', hours: '9:00-18:00', duration: '约 1 小时', notes: '独立广场旁，了解 KL 从锡矿小镇到首都的历程。', ticket: '免费（部分展览收费）', tips: 'I ❤️ KL 标志在这里', warning: null },
+          { id: 'm6_3', name: '国家清真寺', time: '11:00-12:30', type: 'sight', loc: 'kul_mosque', checked: false, addr: 'Jalan Perdana, Kuala Lumpur', hours: '9:00-18:00（周五礼拜时间限制）', duration: '约 1.5 小时', notes: '现代伊斯兰建筑，蓝色星形屋顶与 73 米高尖塔。非穆斯林可入内参观，需穿紫色长袍。', ticket: '免费', tips: '穿长袖长裤；女性需包头；周五 12-15 点不对游客开放', warning: null },
+          { id: 'm6_4', name: '伊斯兰艺术博物馆 IAMM', time: '13:30-15:30', type: 'sight', loc: 'kul_iamm', checked: false, addr: 'Jalan Lembah Perdana, Kuala Lumpur', hours: '9:30-18:00', duration: '约 2 小时', notes: '全球顶尖伊斯兰艺术收藏，展厅设计与藏品都极具水准，是 KL 最被低估的人文景点。', ticket: '成人 RM20', tips: '周二闭馆；馆内有咖啡厅', warning: null },
+          { id: 'm6_food1', name: 'Village Park 椰浆饭（午餐）', time: '12:00-13:30', type: 'food', loc: 'kul_nasilemak', checked: false, recommended: true, addr: '5 Jalan SS21/37, Damansara Utama', hours: '约 7:00-17:30', duration: '约 1 小时', notes: 'KL 最著名的椰浆饭，配炸鸡、江鱼仔、参巴酱。', ticket: '', tips: '从清真寺打车约 20 分钟；排队是常态', warning: null },
+          { id: 'm6_5', name: '茨厂街(唐人街) + 鬼仔巷', time: '16:00-18:00', type: 'sight', loc: 'kul_chinatown', checked: false, addr: 'Jalan Petaling / Lorong Panggung, Kuala Lumpur', hours: '约 10:00-22:00', duration: '约 2 小时', notes: '华人老字号、药材铺、茶餐室；鬼仔巷活化后保留旧招牌与壁画，讲述早期华人生活。', ticket: '免费', tips: '马里安曼印度庙在街口，可顺路', warning: null },
+          { id: 'm6_6', name: '中央市场 + 马里安曼印度庙', time: '18:00-19:30', type: 'sight', loc: 'kul_centralmarket', checked: false, addr: 'Jalan Hang Kasturi / Jalan Bandar, Kuala Lumpur', hours: '约 10:00-21:00', duration: '约 1.5 小时', notes: '中央市场买蜡染、手作；印度庙塔门雕刻华丽，是唐人街多元一景。', ticket: '免费', tips: '进入印度庙需脱鞋', warning: null },
+          { id: 'm6_food2', name: '新峰肉骨茶 / Jalan Alor 夜市', time: '19:30-21:30', type: 'food', loc: 'kul_bakuteh', checked: false, recommended: true, addr: 'Jalan Bulan 1, Bukit Bintang / Jalan Alor, Kuala Lumpur', hours: '约 17:00-凌晨', duration: '约 2 小时', notes: '肉骨茶药膳汤或 Jalan Alor 海鲜大排档，都是 KL 夜晚的地道选择。', ticket: '', tips: 'Jalan Alor 游客多但热闹；肉骨茶推荐加油条', warning: null }
+        ] },
+      { id: 'm7', date: '10.8', weekday: '周四', title: '吉隆坡 → 南京 · 返程', city: 'kualalumpur', color: '#94a3b8',
+        weather: { icon: '⛅', high: 33, low: 24, desc: '返程日', tip: '下午航班，上午从容收尾' },
+        spots: [
+          { id: 'm7_1', name: '小印度 Brickfields', time: '08:30-10:30', type: 'sight', loc: 'kul_littleindia', checked: false, addr: 'Brickfields, Kuala Lumpur', hours: '全天', duration: '约 2 小时', notes: 'KL Sentral 旁的小印度，纱丽店、香料铺、香蕉叶饭、印度庙，多元文化最后一站。', ticket: '免费', tips: '可在这里吃印度煎饼早餐', warning: null },
+          { id: 'm7_2', name: '国家博物馆（或湖滨公园）', time: '10:30-12:00', type: 'sight', loc: 'kul_nationalmuseum', checked: false, addr: 'Jalan Damansara, Kuala Lumpur', hours: '9:00-17:00', duration: '约 1.5 小时', notes: '马来历史、原住民文化与王室器物，建筑本身也是传统马来风格。', ticket: 'RM5', tips: '周一闭馆；如时间紧可跳过', warning: null },
+          { id: 'm7_food1', name: '茨厂街/中央市场最后午餐', time: '12:00-13:30', type: 'food', loc: 'kul_chinatown', checked: false, addr: 'Petaling Street / Central Market, Kuala Lumpur', hours: '午市', duration: '约 1.5 小时', notes: 'last meal：云吞面、海南鸡饭或印度煎饼。', ticket: '', tips: '预留去机场时间', warning: null },
+          { id: 'm7_t1', name: '前往吉隆坡国际机场', time: '约 13:30', type: 'transit', loc: 'kul_airport', checked: false, addr: 'KLIA / KLIA2, Kuala Lumpur', hours: '约 1 小时车程', duration: '去机场', notes: 'Grab 或 KLIA Ekspres 到机场，国际航班提前 3 小时。', ticket: '', tips: '厦航在 KLIA T1，别跑错 T2', warning: null },
+          { id: 'm7_f1', name: '吉隆坡国际 T1 出发', time: '16:00 起飞', type: 'flight', loc: null, checked: false, addr: 'Kuala Lumpur International Airport T1', hours: '16:00 起飞', duration: '飞行约 5.5 小时', notes: '厦航 MF8716，16:00 起飞，21:30 抵达南京禄口 T2。', ticket: '', tips: '长途飞行备颈枕；机上用餐', boarding: '提前 3 小时', warning: null, flightNo: 'MF8716' },
+          { id: 'm7_f2', name: '南京禄口 T2 抵达', time: '21:30', type: 'flight', loc: null, checked: false, addr: '南京市江宁区禄口街道（南京禄口国际机场 T2）', hours: '21:30 抵达', duration: '—', notes: '抵达南京，马来西亚人文之旅结束。', ticket: '', tips: '', warning: null }
+        ] }
+    ];
+    function buildMalaysiaTrip(){
+      return { id: SEED_MALAYSIA_ID, title: '马来西亚 · 槟城/古晋/吉隆坡人文线', city: '马来西亚', country: '马来西亚', start: '10.2', end: '10.8', year: 2026, status: 'active', days: MALAYSIA_DAYS, cities: seedCitiesFromText('马来西亚 槟城 古晋 吉隆坡') };
+    }
+    function ensureMalaysiaSeed(){
+      try { if (localStorage.getItem('malaysia_seed_v1')) return; } catch(e){}
+      if (!TRIPS) return;
+      if (TRIPS.some(function(t){ return t.id === SEED_MALAYSIA_ID; })) return;
+      TRIPS.push(buildMalaysiaTrip());
+      try { persistAll(); } catch(e){}
+    }
+
     // ===== 多行程库（一个网页管理多次出游）=====
     let TRIPS = null;
     let activeTripId = null;
@@ -2159,6 +2313,7 @@
       }
       if (!DAYS || !DAYS.some(d => d.id === currentDay)) currentDay = (DAYS && DAYS.length) ? DAYS[0].id : 'overview';
       ensureSeoulSeed();
+      ensureMalaysiaSeed();
     }
     function currentTrip(){ return (TRIPS && TRIPS.find(t=>t.id===activeTripId)) || (TRIPS && TRIPS[0]) || null; }
     // ===== 行程状态：按「实际时间」自动标注（待开始 / 进行中 / 已结束）=====
@@ -2264,6 +2419,7 @@
       if (!TRIPS || TRIPS.length<=1){ alert('至少保留一个行程'); return; }
       if (!confirm('确定删除该行程？此操作不可撤销。')) return;
       if (id===SEED_SEOUL_ID){ try{ localStorage.setItem('seoul_seed_v1','1'); }catch(e){} }
+      if (id===SEED_MALAYSIA_ID){ try{ localStorage.setItem('malaysia_seed_v1','1'); }catch(e){} }
       TRIPS = TRIPS.filter(t=>t.id!==id);
       if (activeTripId===id){ activeTripId = TRIPS[0].id; DAYS = TRIPS[0].days; }
       persistAll(); render();
@@ -4077,6 +4233,9 @@
       if (type === 'bangkok') return `<rect x="-52" y="-42" width="104" height="84" fill="var(--map-bg)"/><circle cx="-18" cy="0" r="22" class="map-land" opacity="0.5"/><circle cx="0" cy="-8" r="12" class="map-land" opacity="0.4"/><text x="-18" y="-14" class="svg-title">曼谷市区</text><text x="38" y="36" class="svg-title">素万那普</text><text x="-38" y="-28" class="svg-title">廊曼</text><line x1="-18" y1="0" x2="0" y2="-8" class="map-road" stroke-width="0.5"/><line x1="-18" y1="0" x2="38" y2="28" class="map-road" stroke-width="0.5"/><line x1="-18" y1="0" x2="-38" y2="-22" class="map-road" stroke-width="0.5"/>` + techDecor;
       if (type === 'chiangmai') return `<rect x="-52" y="-42" width="104" height="84" fill="var(--map-bg)"/><rect x="-8" y="-8" width="20" height="20" rx="2" class="map-land"/><text x="2" y="-12" class="svg-title">清迈古城</text><text x="-4" y="1" class="svg-label">塔佩门</text><line x1="0" y1="0" x2="6" y2="0" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="-4" y2="-4" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="0" y2="14" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="14" y2="-6" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="-18" y2="-22" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="28" y2="-22" class="map-road" stroke-width="0.5"/><line x1="28" y1="-22" x2="34" y2="-28" class="map-road" stroke-width="0.5"/><text x="-32" y="34" class="svg-title">清迈机场</text><text x="36" y="-34" class="svg-title">丛林飞跃</text><text x="30" y="-26" class="svg-label">JJ市集</text><text x="-22" y="-26" class="svg-label">宁曼路</text><text x="16" y="-12" class="svg-label">瓦洛洛</text>` + techDecor;
       if (type === 'seoul') return `<rect x="-52" y="-42" width="104" height="84" fill="var(--map-bg)"/><path d="M-52 5 Q-20 15 10 11 T52 19 L52 27 Q20 19 -10 23 T-52 12 Z" fill="#3a7bd5" fill-opacity="0.20"/><text x="-44" y="-26" class="svg-title">仁川机场</text><text x="-12" y="-11" class="svg-title">首尔站</text><text x="2" y="2" class="svg-label">明洞</text><text x="7" y="16" class="svg-label">N首尔塔</text><text x="-3" y="13" class="svg-label">南大门</text><text x="-6" y="-9" class="svg-title">市厅</text><text x="9" y="-2" class="svg-label">清溪川</text><text x="20" y="-1" class="svg-label">东大门</text><text x="20" y="5" class="svg-label">广藏</text><text x="-22" y="4" class="svg-label">弘大</text><text x="5" y="-3" class="svg-label">仁寺洞</text><text x="1" y="-20" class="svg-label">景福宫</text><text x="26" y="23" class="svg-label">圣水洞</text><text x="29" y="29" class="svg-label">乐天</text><text x="33" y="13" class="svg-label">COEX</text><text x="46" y="-32" class="svg-label">南怡岛</text><line x1="-8" y1="-2" x2="2" y2="4" class="map-road" stroke-width="0.5"/><line x1="2" y1="4" x2="7" y2="12" class="map-road" stroke-width="0.5"/><line x1="-2" y1="-8" x2="10" y2="-1" class="map-road" stroke-width="0.5"/><line x1="10" y1="-1" x2="22" y2="-4" class="map-road" stroke-width="0.5"/><line x1="-22" y1="4" x2="2" y2="4" class="map-road" stroke-width="0.5"/><line x1="2" y1="4" x2="5" y2="-4" class="map-road" stroke-width="0.5"/><line x1="5" y1="-4" x2="2" y2="-18" class="map-road" stroke-width="0.5"/><line x1="22" y1="-4" x2="22" y2="1" class="map-road" stroke-width="0.5"/><line x1="2" y1="4" x2="-8" y2="-2" class="map-road" stroke-width="0.5"/>` + techDecor;
+      if (type === 'penang') return `<rect x="-52" y="-42" width="104" height="84" fill="var(--map-bg)"/><path d="M-52 15 Q-10 28 30 8 T52 -2 L52 10 Q20 20 -20 36 T-52 26 Z" fill="#3a7bd5" fill-opacity="0.18"/><text x="-4" y="-4" class="svg-title">乔治市</text><text x="-8" y="2" class="svg-label">壁画街</text><text x="6" y="-6" class="svg-label">姓氏桥</text><text x="-6" y="8" class="svg-label">汕头街</text><text x="4" y="10" class="svg-label">爱情巷</text><text x="-30" y="-22" class="svg-label">升旗山</text><text x="20" y="32" class="svg-label">机场</text><line x1="-8" y1="0" x2="6" y2="-4" class="map-road" stroke-width="0.5"/><line x1="-8" y1="0" x2="4" y2="8" class="map-road" stroke-width="0.5"/><line x1="-8" y1="0" x2="-2" y2="-2" class="map-road" stroke-width="0.5"/><line x1="-8" y1="0" x2="-28" y2="-18" class="map-road" stroke-width="0.5"/>` + techDecor;
+      if (type === 'kuching') return `<rect x="-52" y="-42" width="104" height="84" fill="var(--map-bg)"/><path d="M-52 8 Q-20 6 10 10 T52 12 L52 18 Q10 16 -20 14 T-52 14 Z" fill="#3a7bd5" fill-opacity="0.18"/><text x="0" y="-2" class="svg-title">砂拉越河</text><text x="0" y="4" class="svg-label">河滨公园</text><text x="-4" y="-6" class="svg-label">亚答街</text><text x="4" y="0" class="svg-label">大伯公庙</text><text x="34" y="-24" class="svg-label">文化村</text><text x="38" y="6" class="svg-label">机场</text><text x="-8" y="4" class="svg-label">博物馆</text><line x1="0" y1="0" x2="-4" y2="-2" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="4" y2="0" class="map-road" stroke-width="0.5"/><line x1="0" y1="0" x2="34" y2="-24" class="map-road" stroke-width="0.5"/>` + techDecor;
+      if (type === 'kl') return `<rect x="-52" y="-42" width="104" height="84" fill="var(--map-bg)"/><circle cx="0" cy="2" r="16" class="map-land" opacity="0.35"/><text x="-6" y="2" class="svg-title">独立广场</text><text x="18" y="-16" class="svg-label">双子塔</text><text x="-10" y="6" class="svg-label">国家清真寺</text><text x="-14" y="10" class="svg-label">伊斯兰艺术博物馆</text><text x="-6" y="16" class="svg-label">茨厂街</text><text x="0" y="-36" class="svg-label">黑风洞</text><text x="-8" y="10" class="svg-label">小印度</text><text x="0" y="36" class="svg-label">机场</text><line x1="-2" y1="2" x2="18" y2="-14" class="map-road" stroke-width="0.5"/><line x1="-2" y1="2" x2="-10" y2="4" class="map-road" stroke-width="0.5"/><line x1="-2" y1="2" x2="-6" y2="14" class="map-road" stroke-width="0.5"/><line x1="-2" y1="2" x2="0" y2="-34" class="map-road" stroke-width="0.5"/>` + techDecor;
       return `<rect x="-52" y="-42" width="104" height="84" fill="var(--map-bg)"/><text x="-42" y="-8" class="svg-title">曼谷</text><text x="32" y="-8" class="svg-title">清迈</text><line x1="-40" y1="0" x2="40" y2="0" class="map-road" stroke-width="0.5"/><text x="0" y="6" class="svg-label">跨城飞行</text>` + techDecor;
     }
 
@@ -4101,7 +4260,11 @@
       }
       singleBox.style.display = '';
       transitPanel.style.display = 'none';
-      const type = day.city.includes('chiangmai') && !day.city.includes('bangkok') ? 'chiangmai' : (day.city.includes('首尔') ? 'seoul' : 'bangkok');
+      const type = day.city.includes('chiangmai') && !day.city.includes('bangkok') ? 'chiangmai' :
+                   day.city.includes('首尔') ? 'seoul' :
+                   day.city.includes('penang') ? 'penang' :
+                   day.city.includes('kuching') ? 'kuching' :
+                   day.city.includes('kualalumpur') || day.city.includes('kl') ? 'kl' : 'bangkok';
       let bg = drawBase(svg, type);
       const checked = getSortedChecked(day).filter(s => getMapCoord(day, s.loc));
       let routeSvg = '';
