@@ -782,36 +782,7 @@
       <p class="text-xs text-[var(--muted)] mt-3 w-full leading-relaxed">💡 行程按「国家」分组，先选国家大类、再选具体行程。所有行程（含「计划中 / 推荐」的）都会留在这个行程库里、都能评价——哪怕还没勾选或还没去，万一到时候去了就能直接补评价。实际出游走完后，点行程条上的 🔒 把它标记为「已结束」即可归档。</p>
     </div>
 
-    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 flight-grid">
-        <div class="rounded-xl p-3 border border-[var(--border)] bg-[var(--chip-bg)]">
-          <div class="text-xs text-[var(--muted)] mb-1">7月31日 周五</div>
-          <div class="font-bold text-sm">MU2803</div>
-          <div class="text-xs mt-1">22:10 南京禄口 T2</div>
-          <div class="text-xs text-[var(--muted)]">↓</div>
-          <div class="text-xs">01:10+1 曼谷素万那普</div>
-        </div>
-        <div class="rounded-xl p-3 border border-[var(--border)] bg-[var(--chip-bg)]">
-          <div class="text-xs text-[var(--muted)] mb-1">8月2日 周日</div>
-          <div class="font-bold text-sm">VZ106</div>
-          <div class="text-xs mt-1">13:50 曼谷素万那普 MAIN</div>
-          <div class="text-xs text-[var(--muted)]">↓</div>
-          <div class="text-xs">15:15 清迈国际 D</div>
-        </div>
-        <div class="rounded-xl p-3 border border-[var(--border)] bg-[var(--chip-bg)]">
-          <div class="text-xs text-[var(--muted)] mb-1">8月4日 周二</div>
-          <div class="font-bold text-sm">VZ2107</div>
-          <div class="text-xs mt-1">21:05 清迈国际 D</div>
-          <div class="text-xs text-[var(--muted)]">↓</div>
-          <div class="text-xs">22:25 曼谷素万那普 MAIN</div>
-        </div>
-        <div class="rounded-xl p-3 border border-[var(--border)] bg-[var(--chip-bg)]">
-          <div class="text-xs text-[var(--muted)] mb-1">8月5日 周三</div>
-          <div class="font-bold text-sm">MU2804</div>
-          <div class="text-xs mt-1">02:10 曼谷素万那普</div>
-          <div class="text-xs text-[var(--muted)]">↓</div>
-          <div class="text-xs">07:10 南京禄口 T2</div>
-        </div>
-      </div>
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 flight-grid" id="flightSummary"></div>
     </div>
 
     <div class="panel p-5 mb-6 relative overflow-hidden border-l-4 border-l-[var(--accent)]">
@@ -2579,6 +2550,37 @@
       activeTripId = id; DAYS = t.days;
       if (DAYS && DAYS.length) currentDay = DAYS[0].id;
       persistAll(); render();
+    }
+    // 航班总览：按「当前行程」(DAYS) 动态渲染，避免写死成泰国航班
+    function renderFlightSummary(){
+      const wrap = document.getElementById('flightSummary');
+      if (!wrap) return;
+      const flights = [];
+      (DAYS||[]).forEach(function(d){
+        (d.spots||[]).forEach(function(s){
+          if (s && s.type === 'flight') flights.push({ day: d, s: s });
+        });
+      });
+      if (!flights.length) {
+        wrap.innerHTML = '<div class="col-span-full rounded-xl p-4 border border-dashed border-[var(--border)] bg-[var(--chip-bg)] text-sm text-[var(--muted)]">✈️ 本行程暂无具体航班安排（可在「编辑行程点」里把某点类型设为「航班」并填写航班号）。</div>';
+        return;
+      }
+      const html = flights.map(function(f){
+        const s = f.s, d = f.day;
+        const fn = getFlightNo(s);
+        const dateLabel = (d.date||'') + (d.weekday ? ' ' + d.weekday : '');
+        const timeLine = s.time ? escHtml(s.time) : '';
+        const nameLine = s.name ? escHtml(s.name) : '';
+        const link = fn ? '<a class="flight-link mt-2 inline-block" href="'+escAttr(buildFlightUrl(fn))+'" target="_blank" rel="noopener noreferrer" title="在 FlightRadar24 查看实时航班状态">🔗 '+escHtml(fn)+'</a>' : '';
+        return '<div class="rounded-xl p-3 border border-[var(--border)] bg-[var(--chip-bg)]">'
+          + '<div class="text-xs text-[var(--muted)] mb-1">'+escHtml(dateLabel)+'</div>'
+          + '<div class="font-bold text-sm">'+(fn ? escHtml(fn) : '✈️ 航班')+'</div>'
+          + (timeLine ? '<div class="text-xs mt-1">'+timeLine+'</div>' : '')
+          + (nameLine ? '<div class="text-xs text-[var(--muted)]">'+nameLine+'</div>' : '')
+          + link
+          + '</div>';
+      }).join('');
+      wrap.innerHTML = html;
     }
     function createTrip(){
       const t = { id: genTripId(), title:'新行程', city:'', country:'', start:'', end:'', year:new Date().getFullYear(), status:'active', cities:[], days:[{ id:'d1', date:'', weekday:'', title:'第 1 天', city:'', color:'#0ea5e9', weather:null, spots:[] }] };
@@ -4916,7 +4918,7 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
           </div>
         </div>`).join('');
     }
-    function render() { closeMoveMenu(); renderTripBar(); setFlowTitle(currentFlow); renderTabs(); renderNowBanner(); renderSpotList(); renderMap(); renderBacklog(); renderCountryGuides(); syncSave(); if(currentFlow==='trip'){ /* 编辑器可见，无需额外渲染 */ } else if(currentFlow==='home'){ renderHome(); } else if(currentFlow==='cities'){ renderCities(); } else if(currentFlow==='points'){ renderPoints(pointsCity); } }
+    function render() { closeMoveMenu(); renderTripBar(); setFlowTitle(currentFlow); renderTabs(); renderNowBanner(); renderSpotList(); renderMap(); renderBacklog(); renderCountryGuides(); renderFlightSummary(); syncSave(); if(currentFlow==='trip'){ /* 编辑器可见，无需额外渲染 */ } else if(currentFlow==='home'){ renderHome(); } else if(currentFlow==='cities'){ renderCities(); } else if(currentFlow==='points'){ renderPoints(pointsCity); } }
     window.addEventListener('hashchange', () => { location.reload(); });
     // 统一启动入口：收敛所有初始化逻辑，确保所有 let/const 状态变量初始化后再 render，杜绝 TDZ
     function boot() {
