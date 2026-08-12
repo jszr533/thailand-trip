@@ -219,6 +219,13 @@
     .trip-group-body { display:flex; gap:8px; flex-wrap:wrap; padding-top:9px; margin-top:7px; border-top:1px dashed var(--border); }
     .trip-group-body .trip-chip { animation:tgIn .25s ease both; }
     @keyframes tgIn { from { opacity:0; transform:translateY(-3px); } to { opacity:1; transform:none; } }
+    /* 行程库：国家筛选 pills */
+    .trip-country-filter { display:flex; gap:6px; flex-wrap:wrap; width:100%; }
+    .cf-pill { border:1.5px solid var(--border); background:var(--chip-bg); color:var(--text); border-radius:999px; padding:4px 12px; font-size:12px; font-weight:600; cursor:pointer; transition:all .15s; white-space:nowrap; }
+    .cf-pill:hover { border-color:var(--accent); }
+    .cf-pill.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+    .trip-group-head.no-collapse { cursor:default; }
+    .trip-group-head.no-collapse:hover .tg-name { color:var(--text); }
     /* 行程状态下拉（弹窗内分段控件） */
     .status-opt { flex:1; font-size:12px; padding:7px 4px; border-radius:10px; border:1.5px solid var(--border); background:var(--chip-bg); cursor:pointer; transition:all .15s; color:var(--text); white-space:nowrap; }
     .status-opt:hover { border-color:var(--accent); }
@@ -778,8 +785,9 @@
         <button onclick="openWorldMap()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap hover:border-[var(--accent)] transition">🌍 我的足迹</button>
         <button onclick="createTrip()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap ml-auto">➕ 新建行程</button>
       </div>
+      <div id="tripCountryFilter" class="trip-country-filter"></div>
       <div id="tripChips" class="trip-groups"></div>
-      <p class="text-xs text-[var(--muted)] mt-3 w-full leading-relaxed">💡 行程按「国家」分组，先选国家大类、再选具体行程。所有行程（含「计划中 / 推荐」的）都会留在这个行程库里、都能评价——哪怕还没勾选或还没去，万一到时候去了就能直接补评价。实际出游走完后，点行程条上的 🔒 把它标记为「已结束」即可归档。</p>
+      <p class="text-xs text-[var(--muted)] mt-3 w-full leading-relaxed">💡 顶部可点国家（🌐 全部 / 🇹🇭 泰国 / 🇰🇷 韩国 / 🇲🇾 马来西亚）筛选，默认只显示当前行程所在国家的行程，点具体行程即可切换。所有行程（含「计划中 / 推荐」的）都会留在这个行程库里、都能评价——哪怕还没勾选或还没去，万一到时候去了就能直接补评价。实际出游走完后，点行程条上的 🔒 把它标记为「已结束」即可归档。</p>
     </div>
 
     <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 flight-grid" id="flightSummary"></div>
@@ -2585,6 +2593,7 @@
     function createTrip(){
       const t = { id: genTripId(), title:'新行程', city:'', country:'', start:'', end:'', year:new Date().getFullYear(), status:'active', cities:[], days:[{ id:'d1', date:'', weekday:'', title:'第 1 天', city:'', color:'#0ea5e9', weather:null, spots:[] }] };
       TRIPS.push(t); activeTripId = t.id; DAYS = t.days; currentDay = 'd1';
+      tripCountryFilter = null; // 新建后回到「全部」，确保新行程可见
       persistAll(); render();
     }
     function deleteTrip(id){
@@ -2789,14 +2798,19 @@
       const el = document.getElementById('rev-'+hk);
       if (el) el.classList.toggle('collapsed');
     }
-    var tripListExpanded = false;
+    var tripCountryFilter = null;  // null = 全部（按国家分组、可折叠）；'<国家名>' = 仅看该国行程
     // 国家 → 旗帜 emoji（用于行程库按国家分组的标题；未收录的国家回退到 🏳️）
     var COUNTRY_FLAG = { '泰国':'🇹🇭', '韩国':'🇰🇷', '马来西亚':'🇲🇾', '中国':'🇨🇳', '日本':'🇯🇵', '新加坡':'🇸🇬', '越南':'🇻🇳', '印度尼西亚':'🇮🇩', '柬埔寨':'🇰🇭', '老挝':'🇱🇦', '缅甸':'🇲🇲', '菲律宾':'🇵🇭', '文莱':'🇧🇳' };
-    var tripGroupCollapsed = {};   // 各国家分组是否收起（仅展开全部时生效）
+    var tripGroupCollapsed = {};   // 各国家分组是否收起（仅「全部」模式生效）
     function countryOfTrip(t){ return (t && t.country && t.country.trim()) ? t.country.trim() : '未分类'; }
     function toggleTripGroup(co){ tripGroupCollapsed[co] = !tripGroupCollapsed[co]; renderTripBar(); }
+    function setTripCountryFilter(co){
+      tripCountryFilter = (co === '__all__' || co == null) ? null : co;
+      renderTripBar();
+    }
     function renderTripBar(){
       const wrap = document.getElementById('tripChips'); if(!wrap) return;
+      const filterWrap = document.getElementById('tripCountryFilter');
       if (!TRIPS) return;
       const total = TRIPS.length;
       // 按国家分组（保持国家首次出现的顺序）
@@ -2809,10 +2823,10 @@
       });
       const activeTrip = currentTrip();
       const activeCo = countryOfTrip(activeTrip);
-      // 收起态：只展示「当前行程所在国家」分组，其余收进「按国家展开全部」
+      // 过滤：null=全部（分组可折叠），否则仅看某一国（该国不存在时回退到当前/首个国家）
       let showCountries;
-      if (tripListExpanded) showCountries = order;
-      else showCountries = (order.indexOf(activeCo) >= 0) ? [activeCo] : (order[0] ? [order[0]] : []);
+      if (tripCountryFilter == null) showCountries = order;
+      else showCountries = groups[tripCountryFilter] ? [tripCountryFilter] : (order.indexOf(activeCo) >= 0 ? [activeCo] : (order[0] ? [order[0]] : []));
       function chipHtml(t){
         const active = t.id===activeTripId ? ' active' : '';
         const st = tripTimeStatus(t);
@@ -2832,35 +2846,48 @@
           </span>
         </button>`;
       }
+      // —— 国家筛选 pills ——
+      if (filterWrap) {
+        if (total > 0) {
+          const pills = [`<button class="cf-pill${tripCountryFilter==null?' active':''}" onclick="setTripCountryFilter('__all__')">🌐 全部</button>`];
+          order.forEach(function(co){
+            const flag = COUNTRY_FLAG[co] || '🏳️';
+            pills.push(`<button class="cf-pill${tripCountryFilter===co?' active':''}" onclick="setTripCountryFilter('${escAttr(co)}')">${flag} ${escHtml(co)}</button>`);
+          });
+          filterWrap.innerHTML = pills.join('');
+          filterWrap.style.display = '';
+        } else {
+          filterWrap.style.display = 'none';
+        }
+      }
+      const singleMode = (tripCountryFilter != null);
       let html = '';
       showCountries.forEach(function(co){
         const list = groups[co];
         const flag = COUNTRY_FLAG[co] || '🏳️';
         const collapsed = !!tripGroupCollapsed[co];
-        html += `<div class="trip-group${collapsed?' collapsed':''}">`;
-        html += `<div class="trip-group-head" role="button" tabindex="0" onclick="toggleTripGroup('${escAttr(co)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleTripGroup('${escAttr(co)}');}" title="展开 / 收起该国家下的行程（回车 / 空格可切换）">`
-          + `<span class="tg-flag">${flag}</span>`
-          + `<span class="tg-name">${escHtml(co)}</span>`
-          + `<span class="tg-count">${list.length} 个行程</span>`
-          + `<span class="tg-caret">▾</span>`
-          + `</div>`;
-        if (!collapsed) html += `<div class="trip-group-body">${list.map(chipHtml).join('')}</div>`;
+        const isCollapsed = (!singleMode && collapsed);
+        html += `<div class="trip-group${isCollapsed?' collapsed':''}">`;
+        if (singleMode) {
+          // 单国模式：标题仅作分组标识，不可折叠
+          html += `<div class="trip-group-head no-collapse">`
+            + `<span class="tg-flag">${flag}</span>`
+            + `<span class="tg-name">${escHtml(co)}</span>`
+            + `<span class="tg-count">${list.length} 个行程</span>`
+            + `</div>`;
+        } else {
+          html += `<div class="trip-group-head" role="button" tabindex="0" onclick="toggleTripGroup('${escAttr(co)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleTripGroup('${escAttr(co)}');}" title="展开 / 收起该国家下的行程（回车 / 空格可切换）">`
+            + `<span class="tg-flag">${flag}</span>`
+            + `<span class="tg-name">${escHtml(co)}</span>`
+            + `<span class="tg-count">${list.length} 个行程</span>`
+            + `<span class="tg-caret">▾</span>`
+            + `</div>`;
+        }
+        if (singleMode || !isCollapsed) html += `<div class="trip-group-body">${list.map(chipHtml).join('')}</div>`;
         html += `</div>`;
       });
-      // 切换「仅看当前国家 / 按国家展开全部」
-      if (total > 1) {
-        if (tripListExpanded) {
-          html += `<button class="trip-chip tc-toggle" onclick="toggleTripList()" title="收起其它国家，仅保留当前行程所在国家">▴ 仅看当前国家</button>`;
-        } else {
-          const nCo = order.length;
-          html += `<button class="trip-chip tc-toggle" onclick="toggleTripList()" title="按国家展开全部行程">▾ 按国家展开全部（${nCo} 国 · ${total} 个行程）</button>`;
-        }
-      }
+      if (showCountries.length === 0) html = `<p class="text-xs text-[var(--muted)]">该国家下暂无行程。</p>`;
       wrap.innerHTML = html;
-    }
-    function toggleTripList(){
-      tripListExpanded = !tripListExpanded;
-      renderTripBar();
     }
     function editTripMeta(id){
       const t = TRIPS.find(x=>x.id===id); if(!t) return;
@@ -4922,6 +4949,7 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
     window.addEventListener('hashchange', () => { location.reload(); });
     // 统一启动入口：收敛所有初始化逻辑，确保所有 let/const 状态变量初始化后再 render，杜绝 TDZ
     function boot() {
+      try { tripCountryFilter = countryOfTrip(currentTrip()); } catch(e){} // 默认仅显示当前行程所在国家
       render(); // 先渲染本地数据
       if (typeof tripCode !== 'undefined') {
         if (tripCode) {
