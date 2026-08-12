@@ -800,74 +800,12 @@
 
     <div class="panel p-5 mb-6 relative overflow-hidden border-l-4 border-l-[var(--accent)]">
       <h2 class="cute-font font-semibold text-base mb-3 flex items-center gap-2 text-[var(--accent)]">📋 入境须知 · 必带清单</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-        <div>
-          <div class="font-bold mb-2 flex items-center gap-1">🛂 入境要求</div>
-          <ul class="space-y-1.5 text-[var(--muted)] list-disc list-inside">
-            <li>中泰<b>永久互免签证</b>，单次可停留 ≤30 天</li>
-            <li>护照有效期须 <b>≥6 个月</b>，至少 1 页空白页</li>
-            <li>须持<b>返程/续程机票</b>备查（离境凭证）</li>
-            <li>建议备<b>酒店预订单</b>；可能抽查现金（个人≥2万 / 家庭≥4万泰铢，或等值外币；部分使馆提示个人≥1万亦可作为参考，建议就高携带）</li>
-          </ul>
-        </div>
-        <div>
-          <div class="font-bold mb-2 flex items-center gap-1">🎒 必带物品</div>
-          <div class="flex flex-wrap gap-2">
-            <span class="must-chip">🛂 护照（≥6个月）</span>
-            <span class="must-chip">💵 现金（个人≥2万铢）</span>
-            <span class="must-chip">✈️ 往返机票单</span>
-            <span class="must-chip">🏨 酒店预订单</span>
-            <span class="must-chip">🔌 转换插头</span>
-            <span class="must-chip">☂️ 折叠伞</span>
-            <span class="must-chip">🧴 防晒/驱蚊</span>
-            <span class="must-chip">💊 常用药</span>
-            <span class="must-chip">🩴 拖鞋（涉水/酒店）</span>
-            <span class="must-chip">🧥 一次性雨衣</span>
-            <span class="must-chip">🎒 防水袋（护手机）</span>
-            <span class="must-chip">👕 换洗衣物</span>
-            <span class="must-chip">📱 流量卡（泰国 eSIM/本地 SIM）</span>
-          </div>
-        </div>
-      </div>
+      <div id="tripEntryBody" class="text-sm"></div>
     </div>
 
     <div class="panel p-5 mb-6 relative overflow-hidden border-l-4 border-l-[var(--accent-3)]">
-      <h2 class="cute-font font-semibold text-base mb-3 flex items-center gap-2 text-[var(--accent-3)]">🚇 曼谷/清迈 公共交通指南</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-        <div>
-          <div class="font-bold mb-2 flex items-center gap-1">🟩 BTS 轻轨（天铁）</div>
-          <ul class="space-y-1 text-[var(--muted)] list-disc list-inside">
-            <li>两条线：<b>素坤逸线</b>（Mo Chit ↔ Samrong）与<b>是隆线</b>（National Stadium ↔ Bang Wa），覆盖暹罗/素坤逸/是隆等主要商圈</li>
-            <li>自助售票机<b>收纸币+硬币</b>（部分机型可能只收硬币，但多数新机型已支持纸币）；也有人工售票窗口</li>
-            <li>推荐办 <b>Rabbit Card</b>（兔子卡）— 储值卡，刷卡进站免排队，余额可退；也有<b> BTS 一日通票</b>（One Day Pass），当日无限次乘坐，约 150 泰铢</li>
-            <li>BTS 与 MRT <b>不同公司运营</b>，票不互通，换乘需出站再进站另买票</li>
-            <li>车厢内<b>禁止饮食</b>（含喝水、吃口香糖），违者罚款</li>
-          </ul>
-        </div>
-        <div>
-          <div class="font-bold mb-2 flex items-center gap-1">🟦 MRT 地铁</div>
-          <ul class="space-y-1 text-[var(--muted)] list-disc list-inside">
-            <li>蓝线主线：Hua Lamphong（华南蓬·唐人街/大皇宫） ↔ 乍都乍周末市集 ↔ Bang Sue</li>
-            <li>单程票为<b>圆形塑料代币</b>，进站刷卡、出站投币回收</li>
-            <li>可直接刷 <b>Visa/Mastercard 信用卡</b>（contactless）进站，免购票</li>
-            <li>黄线 &amp; 粉线新线到东/北郊区，日常游客用得少</li>
-            <li>车厢内也<b>禁止饮食</b>，空调很足建议带薄外套</li>
-          </ul>
-        </div>
-        <div>
-          <div class="font-bold mb-2 flex items-center gap-1">🚄 Airport Rail Link 机场快线</div>
-          <ul class="space-y-1 text-[var(--muted)] list-disc list-inside">
-            <li><b>素万那普机场 → 市区</b>（Makkasan / Phaya Thai），约 25-30 分钟，45 泰铢起</li>
-            <li>到 Phaya Thai 可换乘 BTS 素坤逸线，到 Makkasan 可换乘 MRT 蓝线</li>
-            <li>运营时间 <b>约 06:00–24:00</b>，红眼航班落地只能打车</li>
-            <li><b>廊曼机场没有机场快线</b>，到市区可坐 SRTC 红线火车（约 1 小时）或 Grab 打车</li>
-            <li>夜间落地推荐 Grab：清迈机场到古城约 <b>40-60 泰铢</b>，曼谷素万那普到市区约 <b>300-380 泰铢</b></li>
-          </ul>
-        </div>
-      </div>
-      <div class="mt-2 text-xs text-[var(--muted)] pt-2 border-t border-[var(--border)]">
-        💡 <b>通用提醒：</b>所有泰国公共交通<b>禁止携带榴莲</b>（气味重）；高峰时段（7:00-9:00 / 17:00-19:00）BTS/MRT 极挤；Grab 打车注意堵车，加价（surge pricing）时段可达 2-3 倍；清迈市内无 BTS/MRT，主要靠 Grab / 双条车（红顶，古城内约 30 泰铢/人） / 租摩托车。
-      </div>
+      <h2 class="cute-font font-semibold text-base mb-3 flex items-center gap-2 text-[var(--accent-3)]">🚇 <span id="tripTransitTitle">公共交通指南</span></h2>
+      <div id="tripTransitBody" class="text-sm"></div>
     </div>
       <h2 class="cute-font font-semibold text-base mb-2 flex items-center gap-2 text-[var(--danger)]">🐻 时间小提醒 · 营业异常提示</h2>
       <div class="urg-legend">
@@ -875,28 +813,7 @@
         <span><span class="urg-tag urg-warn">🟠 注意</span> 时间点敏感，需提前安排</span>
         <span><span class="urg-tag urg-normal">🟢 没那么紧急</span> 行前确认即可</span>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-        <div class="danger-badge rounded-lg p-3 urg-jump" role="button" tabindex="0" title="点击跳到 8.4 丛林飞跃去修改" onclick="jumpToUrgent('d5','d5_2')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToUrgent('d5','d5_2')}">
-          <div class="font-bold mb-1">8.4 当天行程偏紧<span class="urg-tag urg-urgent">🔴 紧急</span></div>
-          <div>丛林飞跃约 11:30 结束 → 12:00 退房寄存 → 13:00 瓦洛洛采购。建议行李随车或先寄存前台，别卡点；若加射击场需顺延瓦洛洛。</div>
-          <div class="jump-hint">✏️ 点我去改 · 跳到 8.4 丛林飞跃</div>
-        </div>
-        <div class="warning-badge rounded-lg p-3 urg-jump" role="button" tabindex="0" title="点击跳到 8.3 椰林市集去修改" onclick="jumpToUrgent('d4','d4_5')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToUrgent('d4','d4_5')}">
-          <div class="font-bold mb-1">8.3 椰林/JJ 市集（周一不开）<span class="urg-tag urg-warn">🟠 注意</span></div>
-          <div>8.3 实际是周一，椰林市集、JJ 市集仅周末开放，当日不开。已在本点标注⚠️；建议改到 8.2（周日）或用 🔀 移动，否则放弃这两项。</div>
-          <div class="jump-hint">✏️ 点我去改 · 跳到 8.3 椰林市集</div>
-        </div>
-        <div class="warning-badge rounded-lg p-3 urg-jump" role="button" tabindex="0" title="点击跳到 8.3 女子监狱按摩去修改" onclick="jumpToUrgent('d4','d4_3')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToUrgent('d4','d4_3')}">
-          <div class="font-bold mb-1">8.3 女子监狱按摩需早到排队<span class="urg-tag urg-warn">🟠 注意</span></div>
-          <div>周末 9:00-16:30 营业，不接受预约，仅现场取号。9:00 到可能仍要排队，建议 8:30 前到店取号。</div>
-          <div class="jump-hint">✏️ 点我去改 · 跳到 8.3 女子监狱按摩</div>
-        </div>
-        <div class="warning-badge rounded-lg p-3 urg-jump" role="button" tabindex="0" title="点击跳到 8.4 丛林飞跃去修改" onclick="jumpToUrgent('d5','d5_2')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToUrgent('d5','d5_2')}">
-          <div class="font-bold mb-1">8.4 丛林飞跃场次接人时间<span class="urg-tag urg-normal">🟢 没那么紧急</span></div>
-          <div>官网早鸟场为 7:00-7:30 接人、8:30 开始；8:00-8:30 接人对应 8:30 后场次。需与供应商确认准确接人时间。</div>
-          <div class="jump-hint">✏️ 点我去改 · 跳到 8.4 丛林飞跃</div>
-        </div>
-      </div>
+      <div id="tripTimeBody" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm"></div>
       <span class="deco text-2xl" style="top:8px; right:6%; animation-delay:-3.1s;">🐻</span>
     </div>
 
@@ -2409,6 +2326,218 @@
       try { localStorage.setItem(LS_TRIPS, JSON.stringify({ trips: TRIPS, active: activeTripId })); } catch(e){}
       try { localStorage.setItem('days', JSON.stringify(DAYS)); } catch(e){}
       try { persistReviews(); } catch(e){}
+    }
+
+    /* ============================================================
+       国家化指南数据：入境须知 / 公共交通 / 时间提醒
+       按 currentTrip().country 切换，三套行程各一套
+       ============================================================ */
+    const COUNTRY_GUIDES = {
+      '泰国': {
+        entry: {
+          requirements: [
+            '中泰<b>永久互免签证</b>，单次可停留 ≤30 天',
+            '护照有效期须 <b>≥6 个月</b>，至少 1 页空白页',
+            '须持<b>返程/续程机票</b>备查（离境凭证）',
+            '建议备<b>酒店预订单</b>；可能抽查现金（个人≥2万 / 家庭≥4万泰铢，或等值外币；部分使馆提示个人≥1万亦可作为参考，建议就高携带）'
+          ],
+          mustBring: [
+            '🛂 护照（≥6个月）', '💵 现金（个人≥2万铢）', '✈️ 往返机票单', '🏨 酒店预订单',
+            '🔌 转换插头', '☂️ 折叠伞', '🧴 防晒/驱蚊', '💊 常用药',
+            '🩴 拖鞋（涉水/酒店）', '🧥 一次性雨衣', '🎒 防水袋（护手机）', '👕 换洗衣物',
+            '📱 流量卡（泰国 eSIM/本地 SIM）'
+          ]
+        },
+        transit: {
+          title: '曼谷/清迈 公共交通指南',
+          sections: [
+            { icon: '🟩', name: 'BTS 轻轨（天铁）', items: [
+              '两条线：<b>素坤逸线</b>（Mo Chit ↔ Samrong）与<b>是隆线</b>（National Stadium ↔ Bang Wa），覆盖暹罗/素坤逸/是隆等主要商圈',
+              '自助售票机<b>收纸币+硬币</b>（部分机型可能只收硬币，但多数新机型已支持纸币）；也有人工售票窗口',
+              '推荐办 <b>Rabbit Card</b>（兔子卡）— 储值卡，刷卡进站免排队，余额可退；也有<b> BTS 一日通票</b>（One Day Pass），当日无限次乘坐，约 150 泰铢',
+              'BTS 与 MRT <b>不同公司运营</b>，票不互通，换乘需出站再进站另买票',
+              '车厢内<b>禁止饮食</b>（含喝水、吃口香糖），违者罚款'
+            ]},
+            { icon: '🟦', name: 'MRT 地铁', items: [
+              '蓝线主线：Hua Lamphong（华南蓬·唐人街/大皇宫） ↔ 乍都乍周末市集 ↔ Bang Sue',
+              '单程票为<b>圆形塑料代币</b>，进站刷卡、出站投币回收',
+              '可直接刷 <b>Visa/Mastercard 信用卡</b>（contactless）进站，免购票',
+              '黄线 &amp; 粉线新线到东/北郊区，日常游客用得少',
+              '车厢内也<b>禁止饮食</b>，空调很足建议带薄外套'
+            ]},
+            { icon: '🚄', name: 'Airport Rail Link 机场快线', items: [
+              '<b>素万那普机场 → 市区</b>（Makkasan / Phaya Thai），约 25-30 分钟，45 泰铢起',
+              '到 Phaya Thai 可换乘 BTS 素坤逸线，到 Makkasan 可换乘 MRT 蓝线',
+              '运营时间 <b>约 06:00–24:00</b>，红眼航班落地只能打车',
+              '<b>廊曼机场没有机场快线</b>，到市区可坐 SRTC 红线火车（约 1 小时）或 Grab 打车',
+              '夜间落地推荐 Grab：清迈机场到古城约 <b>40-60 泰铢</b>，曼谷素万那普到市区约 <b>300-380 泰铢</b>'
+            ]}
+          ],
+          tip: '所有泰国公共交通<b>禁止携带榴莲</b>（气味重）；高峰时段（7:00-9:00 / 17:00-19:00）BTS/MRT 极挤；Grab 打车注意堵车，加价（surge pricing）时段可达 2-3 倍；清迈市内无 BTS/MRT，主要靠 Grab / 双条车（红顶，古城内约 30 泰铢/人） / 租摩托车。'
+        },
+        time: [
+          { day: 'd5', spot: 'd5_2', level: 'urgent', title: '8.4 当天行程偏紧', desc: '丛林飞跃约 11:30 结束 → 12:00 退房寄存 → 13:00 瓦洛洛采购。建议行李随车或先寄存前台，别卡点；若加射击场需顺延瓦洛洛。' },
+          { day: 'd4', spot: 'd4_5', level: 'warn', title: '8.3 椰林/JJ 市集（周一不开）', desc: '8.3 实际是周一，椰林市集、JJ 市集仅周末开放，当日不开。已在本点标注⚠️；建议改到 8.2（周日）或用 🔀 移动，否则放弃。' },
+          { day: 'd4', spot: 'd4_3', level: 'warn', title: '8.3 女子监狱按摩需早到排队', desc: '周末 9:00-16:30 营业，不接受预约，仅现场取号。9:00 到可能仍要排队，建议 8:30 前到店取号。' },
+          { day: 'd5', spot: 'd5_2', level: 'normal', title: '8.4 丛林飞跃场次接人时间', desc: '官网早鸟场为 7:00-7:30 接人、8:30 开始；8:00-8:30 接人对应 8:30 后场次。需与供应商确认准确接人时间。' }
+        ]
+      },
+      '韩国': {
+        entry: {
+          requirements: [
+            '中国护照赴韩短期旅游<b>免签（K-ETA 试点豁免）</b>：2024 年起暂免 K-ETA，仍建议出行前在官网确认最新政策；如要求则提前在线申请（约 72 小时出签）',
+            '护照有效期须 <b>≥6 个月</b>',
+            '须持<b>往返机票</b>与<b>住宿预订单</b>备查',
+            '入境登记：可提前填 <b>Q-CODE</b>（检疫信息预填报）加速通关',
+            '现金/支付：韩元现金备少量（小吃/市场），大多刷卡；建议带<b>银联卡</b>（ATM 直取韩元）'
+          ],
+          mustBring: [
+            '🛂 护照（≥6个月）', '✈️ 往返机票单', '🏨 酒店预订单', '📝 Q-CODE/入境登记',
+            '💴 韩元现金（少量）', '💳 银联卡/信用卡', '🔌 转换插头（⚠️ 韩标 圆脚两插/三脚·欧标 F 型）', '🚇 T-money 交通卡（机场买）',
+            '🧥 保暖衣物（12月寒冷+雪）', '💧 保湿/护唇（冬季干冷）', '💊 常用药', '🔋 充电宝', '📱 流量（eSIM/漫游）'
+          ]
+        },
+        transit: {
+          title: '首尔 公共交通指南',
+          sections: [
+            { icon: '🚇', name: '首尔地铁 Metro', items: [
+              '最便宜最准时，<b>9 条线</b>覆盖全城（1-9 号线 + 机场线 + 京义中央线等）',
+              '买 <b>T-money 卡</b>（便利店有售）刷卡进出，换乘有优惠；也可用 <b>Climate Card</b> 一日/多日无限乘',
+              '查路线用 <b>Naver Map / KakaoMap</b>（Google Map 在韩偏弱）；站内韩英双语标识清晰',
+              '车厢内<b>禁止饮食</b>，末班车约 <b>23:30–00:00</b>，错过只能打车'
+            ]},
+            { icon: '🚄', name: 'AREX 机场快线', items: [
+              '<b>仁川 ICN ↔ 首尔站</b>：直达列车 Express（约 43 分钟，₩9000+）或普通 All Stop（约 58 分钟，₩4150）',
+              '到首尔站可换乘地铁去明洞 / 东大门 / 市厅',
+              '推荐提前网订 Express 票，圣诞旺季人潮大',
+              '金浦 GMP 国内线则坐地铁 5/9 号线或机场大巴更近'
+            ]},
+            { icon: '🚕', name: '巴士 & 出租车', items: [
+              '市内巴士便宜但站名多为韩文，建议用地图 App 确认',
+              '<b>KakaoTaxi / Tada</b> 打车方便、可绑卡；跨区与深夜加价',
+              '<b>南山缆车</b>圣诞排队久，可错峰或步行上山',
+              '深夜靠打车 / 夜巴士（N 开头）'
+            ]}
+          ],
+          tip: '圣诞期间明洞 / 东大门 / 市厅一带人潮极多，预留排队与步行时间；地铁内禁止饮食；南山缆车与市厅溜冰场为圣诞热门，建议提前或错峰。'
+        },
+        time: [
+          { day: 's1', spot: 's1_f2', level: 'normal', title: '仁川入境+进市区约 1.5 小时', desc: '圣诞旺季机场人多，AREX/大巴预留时间；先买 T-money、租 WiFi egg，再进市区。' },
+          { day: 's1', spot: 's1_r2', level: 'warn', title: 'N 首尔塔圣诞夜人很多', desc: '圣诞夜南山缆车排队久，建议 19:00 前或 21:30 后错峰；登塔票可提前网订。' },
+          { day: 's2', spot: 's2_4', level: 'warn', title: '市厅广场溜冰场圣诞排队久', desc: '首尔最大圣诞树+室外滑冰，圣诞期间人潮汹涌，带手套袜子，预留 1 小时+排队。' },
+          { day: 's3', spot: 's3_t1', level: 'urgent', title: '返程 12:15 起飞需提前 3 小时', desc: 'AREX 到仁川约 1 小时，圣诞出境排队长，最晚 09:00 前从酒店出发；备选晚班 MU2922 20:15。' },
+          { day: 's2', spot: 's2_r3', level: 'normal', title: '南怡岛为近郊一日，雪天路滑', desc: '距市区约 1.5 小时，需整段安排；穿防滑鞋，轮渡末班 21:40。' }
+        ]
+      },
+      '马来西亚': {
+        entry: {
+          requirements: [
+            '中国护照赴马短期旅游<b>免签（30 天）</b>，但须提前填 <b>MDAC 入境卡</b>（出发前 3 天内线上提交，保存二维码）',
+            '护照有效期须 <b>≥6 个月</b>，至少 2 页空白',
+            '须持<b>往返机票</b>与<b>酒店预订单</b>备查',
+            '⚠️ <b>东马（砂拉越/沙巴）需单独入境盖章</b>：古晋（砂拉越）入境会再盖一次章，保留登机牌备查',
+            '现金/支付：马币现金备一些（夜市/小摊），大城市刷卡 / 电子钱包（Touch \'n Go / GrabPay）方便'
+          ],
+          mustBring: [
+            '🛂 护照（≥6个月）', '✈️ 往返机票单', '🏨 酒店预订单', '📝 MDAC 入境卡二维码',
+            '💵 马币现金（少量）', '💳 信用卡/电子钱包', '🔌 转换插头（⚠️ 英标 BS 1363 三脚扁插）', '☂️ 防晒/雨具（热带）',
+            '💊 常用药', '🔋 充电宝', '📱 流量（本地 SIM/漫游）'
+          ]
+        },
+        transit: {
+          title: '槟城/古晋/吉隆坡 公共交通指南',
+          sections: [
+            { icon: '🚆', name: '吉隆坡 LRT/MRT/Monorail + KLIA Ekspres', items: [
+              'KL 轨道网发达（LRT / MRT / Monorail / KTM），进城与跨区都方便；买 <b>Touch \'n Go</b> 卡',
+              '<b>KLIA Ekspres</b> 机场快线到 KL Sentral 约 28 分钟，是最快进城方式',
+              '市区短途用 <b>Grab</b> 比出租便宜规范，堵车加价有限',
+              '注意 <b>KLIA T1（亚航在 T2）</b>别跑错航站楼'
+            ]},
+            { icon: '⛴️', name: '槟城（无地铁）', items: [
+              '靠 <b>Grab</b> + <b>渡轮</b>（槟城 ↔ 北海）+ 步行逛乔治市',
+              '机场到市区 Grab 约 45 分钟',
+              '乔治市老城紧凑，壁画/姓氏桥/小印度多可步行串联'
+            ]},
+            { icon: '🚕', name: '古晋（无轨道交）', items: [
+              '全靠 <b>Grab</b> + 步行；机场到市区 Grab 约 20-30 分钟',
+              '东马打车用 Grab；河滨一带步行可达',
+              '三城之间靠<b>飞机</b>（亚航廉航），行李额度提前买'
+            ]}
+          ],
+          tip: '三大城市都靠 Grab（比出租便宜规范）；廉航（亚航）行李额提前买；东马与西马之间飞行算国内但需出入境盖章；清真寺/印度庙入内需脱鞋、着装得体。'
+        },
+        time: [
+          { day: 'm1', spot: 'm1_f2', level: 'warn', title: '厦门中转 3.5 小时，留意登机口', desc: 'MF8530 到厦门 T3，转 MF8705 同楼中转，国际出发区在 T3；圣诞出行留意登机口变更广播。' },
+          { day: 'm3', spot: 'm3_f1', level: 'normal', title: '槟城→古晋 14:55 起飞提前到', desc: '亚航廉航，行李额度提前买；东马入境古晋会再盖一次章，保留登机牌。' },
+          { day: 'm4', spot: 'm4_4', level: 'warn', title: '10.5 周一 华族历史文物馆闭馆', desc: '10.5 实际是周一，文物馆闭馆，已在本点标注⚠️；建议改去大伯公庙或砂拉越博物馆（也周一闭，可改去猫博物馆）。' },
+          { day: 'm5', spot: 'm5_f1', level: 'normal', title: '古晋→吉隆坡 19:00 起飞', desc: '东马出州再盖章；KLIA T2 是亚航大本营，Grab 到市区约 50 分钟。' },
+          { day: 'm7', spot: 'm7_f1', level: 'urgent', title: '返程 16:00 起飞需提前 3 小时', desc: '厦航在 KLIA T1（别跑错 T2）；Grab 或 KLIA Ekspres 到机场，国际航班提前 3 小时到。' }
+        ]
+      }
+    };
+
+    function renderCountryGuides(){
+      const t = currentTrip();
+      const country = (t && t.country) || '';
+      const g = COUNTRY_GUIDES[country] || null;
+      // —— 入境须知 ——
+      const eb = document.getElementById('tripEntryBody');
+      if (eb) {
+        if (g) {
+          const req = (g.entry.requirements||[]).map(function(x){ return '<li>'+x+'</li>'; }).join('');
+          const chips = (g.entry.mustBring||[]).map(function(x){ return '<span class="must-chip">'+x+'</span>'; }).join('');
+          eb.innerHTML =
+            '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">'
+            + '<div><div class="font-bold mb-2 flex items-center gap-1">🛂 入境要求</div>'
+            + '<ul class="space-y-1.5 text-[var(--muted)] list-disc list-inside">'+req+'</ul></div>'
+            + '<div><div class="font-bold mb-2 flex items-center gap-1">🎒 必带物品</div>'
+            + '<div class="flex flex-wrap gap-2">'+chips+'</div></div></div>';
+        } else {
+          eb.innerHTML = '<div class="text-[var(--muted)]">未找到「'+(country||'该')+'」的入境须知。可在行程设置里填写 country 后自动匹配（目前支持：泰国 / 韩国 / 马来西亚）。</div>';
+        }
+      }
+      // —— 公共交通 ——
+      const tt = document.getElementById('tripTransitTitle');
+      const tb = document.getElementById('tripTransitBody');
+      if (tt && tb) {
+        if (g) {
+          tt.textContent = g.transit.title;
+          const secs = (g.transit.sections||[]).map(function(s){
+            const items = (s.items||[]).map(function(it){ return '<li>'+it+'</li>'; }).join('');
+            return '<div><div class="font-bold mb-2 flex items-center gap-1">'+s.icon+' '+s.name+'</div>'
+              + '<ul class="space-y-1 text-[var(--muted)] list-disc list-inside">'+items+'</ul></div>';
+          }).join('');
+          const tip = g.transit.tip ? ('<div class="mt-2 text-xs text-[var(--muted)] pt-2 border-t border-[var(--border)]">💡 <b>通用提醒：</b>'+g.transit.tip+'</div>') : '';
+          tb.innerHTML = '<div class="grid grid-cols-1 md:grid-cols-3 gap-4">'+secs+'</div>'+tip;
+        } else {
+          tt.textContent = '公共交通指南';
+          tb.innerHTML = '<div class="text-[var(--muted)]">未找到「'+(country||'该')+'」的公共交通指南。</div>';
+        }
+      }
+      // —— 时间小提醒 ——
+      const tmb = document.getElementById('tripTimeBody');
+      if (tmb) {
+        if (g && g.time && g.time.length) {
+          const trip = currentTrip();
+          const html = g.time.map(function(r){
+            const lvl = r.level==='urgent' ? 'urg-urgent' : (r.level==='warn' ? 'urg-warn' : 'urg-normal');
+            const badge = r.level==='urgent' ? '🔴 紧急' : (r.level==='warn' ? '🟠 注意' : '🟢 没那么紧急');
+            const hasJump = !!(r.day && r.spot && trip && trip.days && trip.days.some(function(d){ return d.id===r.day && d.spots && d.spots.some(function(s){ return s.id===r.spot; }); }));
+            const cls = (r.level==='urgent' ? 'danger-badge' : 'warning-badge') + (hasJump ? ' urg-jump' : '');
+            const hint = hasJump ? '<div class="jump-hint">✏️ 点我去改</div>' : '';
+            const attrs = hasJump
+              ? ' role="button" tabindex="0" title="点击跳到对应行程点去修改" onclick="jumpToUrgent(\''+r.day+'\',\''+r.spot+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();jumpToUrgent(\''+r.day+'\',\''+r.spot+'\')}"'
+              : '';
+            const body =
+              '<div class="font-bold mb-1">'+r.title+'<span class="urg-tag '+lvl+'">'+badge+'</span></div>'
+              + '<div>'+r.desc+'</div>';
+            return '<div class="'+cls+'"'+attrs+'>'+body+hint+'</div>';
+          }).join('');
+          tmb.innerHTML = html;
+        } else {
+          tmb.innerHTML = '<div class="text-[var(--muted)]">暂无针对「'+(country||'该')+'」的特别时间提醒。</div>';
+        }
+      }
     }
     function setActiveTrip(id){
       const t = TRIPS.find(x=>x.id===id); if(!t) return;
@@ -4658,7 +4787,7 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
           </div>
         </div>`).join('');
     }
-    function render() { closeMoveMenu(); renderTripBar(); setFlowTitle(currentFlow); renderTabs(); renderNowBanner(); renderSpotList(); renderMap(); renderBacklog(); syncSave(); if(currentFlow==='trip'){ /* 编辑器可见，无需额外渲染 */ } else if(currentFlow==='home'){ renderHome(); } else if(currentFlow==='cities'){ renderCities(); } else if(currentFlow==='points'){ renderPoints(pointsCity); } }
+    function render() { closeMoveMenu(); renderTripBar(); setFlowTitle(currentFlow); renderTabs(); renderNowBanner(); renderSpotList(); renderMap(); renderBacklog(); renderCountryGuides(); syncSave(); if(currentFlow==='trip'){ /* 编辑器可见，无需额外渲染 */ } else if(currentFlow==='home'){ renderHome(); } else if(currentFlow==='cities'){ renderCities(); } else if(currentFlow==='points'){ renderPoints(pointsCity); } }
     window.addEventListener('hashchange', () => { location.reload(); });
     // 统一启动入口：收敛所有初始化逻辑，确保所有 let/const 状态变量初始化后再 render，杜绝 TDZ
     function boot() {
