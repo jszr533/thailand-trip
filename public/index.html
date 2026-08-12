@@ -205,6 +205,20 @@
     .trip-chip.active .tc-badge { background:rgba(255,255,255,.24); color:#fff; }
     .trip-chip.tc-toggle { border-style:dashed; color:var(--muted); background:transparent; font-weight:600; }
     .trip-chip.tc-toggle:hover { color:var(--accent); border-color:var(--accent); transform:translateY(-1px); }
+    /* 行程库：按「国家」分组（先大类，再具体行程） */
+    .trip-groups { display:flex; flex-direction:column; gap:8px; width:100%; }
+    .trip-group { border:1px solid var(--border); border-radius:14px; background:var(--chip-bg); padding:9px 11px; transition:border-color .2s, box-shadow .2s; }
+    .trip-group:hover { border-color:var(--accent); box-shadow:0 4px 16px -8px rgba(0,0,0,.25); }
+    .trip-group-head { display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; padding:1px 2px; }
+    .trip-group-head:hover .tg-name { color:var(--accent); }
+    .tg-flag { font-size:17px; line-height:1; filter:drop-shadow(0 1px 1px rgba(0,0,0,.12)); }
+    .tg-name { font-weight:700; font-size:13.5px; color:var(--text); letter-spacing:.3px; }
+    .tg-count { font-size:11px; color:var(--muted); background:var(--panel); border:1px solid var(--border); border-radius:999px; padding:1px 8px; }
+    .tg-caret { margin-left:auto; font-size:11px; color:var(--muted); transition:transform .2s; }
+    .trip-group.collapsed .tg-caret { transform:rotate(-90deg); }
+    .trip-group-body { display:flex; gap:8px; flex-wrap:wrap; padding-top:9px; margin-top:7px; border-top:1px dashed var(--border); }
+    .trip-group-body .trip-chip { animation:tgIn .25s ease both; }
+    @keyframes tgIn { from { opacity:0; transform:translateY(-3px); } to { opacity:1; transform:none; } }
     /* 行程状态下拉（弹窗内分段控件） */
     .status-opt { flex:1; font-size:12px; padding:7px 4px; border-radius:10px; border:1.5px solid var(--border); background:var(--chip-bg); cursor:pointer; transition:all .15s; color:var(--text); white-space:nowrap; }
     .status-opt:hover { border-color:var(--accent); }
@@ -757,13 +771,13 @@
     <div id="tripContentView">
 
     <div class="panel p-4 mb-6" id="tripBarPanel">
-      <div class="flex items-center gap-3 flex-wrap">
+      <div class="flex items-center gap-3 flex-wrap mb-3">
         <span class="text-sm font-bold cute-font text-[var(--accent)] whitespace-nowrap">🗂 我的行程库</span>
         <button onclick="openWorldMap()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap hover:border-[var(--accent)] transition">🌍 我的足迹</button>
-        <div id="tripChips" class="flex gap-2 flex-wrap flex-1"></div>
-        <button onclick="createTrip()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap">➕ 新建行程</button>
+        <button onclick="createTrip()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap ml-auto">➕ 新建行程</button>
       </div>
-      <p class="text-xs text-[var(--muted)] mt-3 w-full leading-relaxed">💡 所有行程（含「计划中 / 推荐」的）都会留在这个行程库里、都能评价——哪怕还没勾选或还没去，万一到时候去了就能直接补评价。实际出游走完后，点行程条上的 🔒 把它标记为「已结束」即可归档。</p>
+      <div id="tripChips" class="trip-groups"></div>
+      <p class="text-xs text-[var(--muted)] mt-3 w-full leading-relaxed">💡 行程按「国家」分组，先选国家大类、再选具体行程。所有行程（含「计划中 / 推荐」的）都会留在这个行程库里、都能评价——哪怕还没勾选或还没去，万一到时候去了就能直接补评价。实际出游走完后，点行程条上的 🔒 把它标记为「已结束」即可归档。</p>
     </div>
 
     <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 flight-grid">
@@ -2752,19 +2766,30 @@
       if (el) el.classList.toggle('collapsed');
     }
     var tripListExpanded = false;
+    // 国家 → 旗帜 emoji（用于行程库按国家分组的标题；未收录的国家回退到 🏳️）
+    var COUNTRY_FLAG = { '泰国':'🇹🇭', '韩国':'🇰🇷', '马来西亚':'🇲🇾', '中国':'🇨🇳', '日本':'🇯🇵', '新加坡':'🇸🇬', '越南':'🇻🇳', '印度尼西亚':'🇮🇩', '柬埔寨':'🇰🇭', '老挝':'🇱🇦', '缅甸':'🇲🇲', '菲律宾':'🇵🇭', '文莱':'🇧🇳' };
+    var tripGroupCollapsed = {};   // 各国家分组是否收起（仅展开全部时生效）
+    function countryOfTrip(t){ return (t && t.country && t.country.trim()) ? t.country.trim() : '未分类'; }
+    function toggleTripGroup(co){ tripGroupCollapsed[co] = !tripGroupCollapsed[co]; renderTripBar(); }
     function renderTripBar(){
       const wrap = document.getElementById('tripChips'); if(!wrap) return;
       if (!TRIPS) return;
       const total = TRIPS.length;
-      const hasActive = TRIPS.some(t=>t.id===activeTripId);
-      let list;
-      if (tripListExpanded) {
-        list = TRIPS;
-      } else {
-        // 收起态：只显示当前行程（无则第一个），其余收进「展开全部」
-        list = hasActive ? TRIPS.filter(t=>t.id===activeTripId) : (total ? [TRIPS[0]] : []);
-      }
-      let html = list.map(t=>{
+      // 按国家分组（保持国家首次出现的顺序）
+      const order = [];
+      const groups = {};
+      TRIPS.forEach(function(t){
+        const co = countryOfTrip(t);
+        if (!groups[co]) { groups[co] = []; order.push(co); }
+        groups[co].push(t);
+      });
+      const activeTrip = currentTrip();
+      const activeCo = countryOfTrip(activeTrip);
+      // 收起态：只展示「当前行程所在国家」分组，其余收进「按国家展开全部」
+      let showCountries;
+      if (tripListExpanded) showCountries = order;
+      else showCountries = (order.indexOf(activeCo) >= 0) ? [activeCo] : (order[0] ? [order[0]] : []);
+      function chipHtml(t){
         const active = t.id===activeTripId ? ' active' : '';
         const st = tripTimeStatus(t);
         const badge = `<span class="tc-badge ${st}">${ST_LABEL[st]||'进行中'}</span>`;
@@ -2782,12 +2807,29 @@
             <span onclick="event.stopPropagation();deleteTrip('${t.id}')" title="删除行程">🗑️</span>
           </span>
         </button>`;
-      }).join('');
+      }
+      let html = '';
+      showCountries.forEach(function(co){
+        const list = groups[co];
+        const flag = COUNTRY_FLAG[co] || '🏳️';
+        const collapsed = !!tripGroupCollapsed[co];
+        html += `<div class="trip-group${collapsed?' collapsed':''}">`;
+        html += `<div class="trip-group-head" onclick="toggleTripGroup('${escAttr(co)}')" title="展开 / 收起该国家下的行程">`
+          + `<span class="tg-flag">${flag}</span>`
+          + `<span class="tg-name">${escHtml(co)}</span>`
+          + `<span class="tg-count">${list.length} 个行程</span>`
+          + `<span class="tg-caret">▾</span>`
+          + `</div>`;
+        if (!collapsed) html += `<div class="trip-group-body">${list.map(chipHtml).join('')}</div>`;
+        html += `</div>`;
+      });
+      // 切换「仅看当前国家 / 按国家展开全部」
       if (total > 1) {
         if (tripListExpanded) {
-          html += `<button class="trip-chip tc-toggle" onclick="toggleTripList()" title="收起行程列表">▴ 收起</button>`;
+          html += `<button class="trip-chip tc-toggle" onclick="toggleTripList()" title="收起其它国家，仅保留当前行程所在国家">▴ 仅看当前国家</button>`;
         } else {
-          html += `<button class="trip-chip tc-toggle" onclick="toggleTripList()" title="展开全部行程">▾ 全部 ${total} 个行程</button>`;
+          const nCo = order.length;
+          html += `<button class="trip-chip tc-toggle" onclick="toggleTripList()" title="按国家展开全部行程">▾ 按国家展开全部（${nCo} 国 · ${total} 个行程）</button>`;
         }
       }
       wrap.innerHTML = html;
