@@ -1184,7 +1184,7 @@
       "厦门":[24.48,118.09,"中国"],"昆明":[25.04,102.71,"中国"],"三亚":[18.25,109.51,"中国"],"香港":[22.32,114.17,"中国"],"台北":[25.03,121.56,"中国"],
       "东京":[35.68,139.69,"日本"],"大阪":[34.69,135.50,"日本"],"京都":[35.01,135.77,"日本"],"首尔":[37.57,126.98,"韩国"],
       "曼谷":[13.75,100.50,"泰国"],"清迈":[18.79,98.98,"泰国"],"普吉岛":[7.88,98.42,"泰国"],"新加坡":[1.35,103.82,"新加坡"],
-      "吉隆坡":[3.14,101.69,"马来西亚"],"巴厘岛":[-8.34,115.09,"印度尼西亚"],"雅加达":[-6.21,106.85,"印度尼西亚"],
+      "吉隆坡":[3.14,101.69,"马来西亚"],"槟城":[5.41,100.33,"马来西亚"],"古晋":[1.55,110.36,"马来西亚"],"巴厘岛":[-8.34,115.09,"印度尼西亚"],"雅加达":[-6.21,106.85,"印度尼西亚"],
       "河内":[21.03,105.85,"越南"],"胡志明市":[10.82,106.63,"越南"],"金边":[11.56,104.92,"柬埔寨"],"万象":[17.97,102.61,"老挝"],
       "仰光":[16.80,96.17,"缅甸"],"马尼拉":[14.60,120.98,"菲律宾"],"新德里":[28.61,77.21,"印度"],"孟买":[19.08,72.88,"印度"],
       "加德满都":[27.72,85.32,"尼泊尔"],"迪拜":[25.20,55.27,"阿联酋"],"伊斯坦布尔":[41.01,28.98,"土耳其"],"莫斯科":[55.75,37.62,"俄罗斯"],
@@ -1212,7 +1212,8 @@
     var CITY_SLUG = {
       'bangkok':'曼谷','bkk':'曼谷','bangkok_suvarnabhumi':'曼谷','suvarnabhumi':'曼谷',
       'chiangmai':'清迈','cnx':'清迈','chiang-mai':'清迈',
-      'phuket':'普吉岛','chiangrai':'清莱','chiang-rai':'清莱'
+      'phuket':'普吉岛','chiangrai':'清莱','chiang-rai':'清莱',
+      'penang':'槟城','georgetown':'槟城','kuching':'古晋','kuala_lumpur':'吉隆坡','kl':'吉隆坡','seoul':'首尔'
     };
     var editingCities = [];
 
@@ -1473,102 +1474,45 @@
       return '#';
     }
 
-    // ===== 入境须知（国家级，通用）+ 按城市交通须知（用于城市指南） =====
-    var ENTRY_NOTES = {
-      require: [
-        '中泰<b>永久互免签证</b>，单次可停留 ≤30 天',
-        '护照有效期须 <b>≥6 个月</b>，至少 1 页空白页',
-        '须持<b>返程/续程机票</b>备查（离境凭证）',
-        '建议备<b>酒店预订单</b>；可能抽查现金（个人≥2万 / 家庭≥4万泰铢，或等值外币；部分使馆提示个人≥1万亦可作为参考，建议就高携带）'
-      ],
-      must: ['🛂 护照（≥6个月）','💵 现金（个人≥2万铢）','✈️ 往返机票单','🏨 酒店预订单','🔌 转换插头','☂️ 折叠伞','🧴 防晒/驱蚊','💊 常用药','🩴 拖鞋（涉水/酒店）','🧥 一次性雨衣','🎒 防水袋（护手机）','👕 换洗衣物','📱 流量卡（泰国 eSIM/本地 SIM）']
-    };
+    // ===== 城市指南（入境须知/交通）改为按城市所属国家查 COUNTRY_GUIDES（见 renderCityEntry / renderCityTransit），与行程页保持一致 =====
     // 按城市给出专属交通指南（其他城市走兜底提示）
-    var CITY_TRANSIT = {
-      '曼谷': {
-        sections: [
-          { icon:'🟩', title:'BTS 轻轨（天铁）', bullets:[
-            '两条线：<b>素坤逸线</b>（Mo Chit ↔ Samrong）与<b>是隆线</b>（National Stadium ↔ Bang Wa），覆盖暹罗/素坤逸/是隆等主要商圈',
-            '自助售票机<b>收纸币+硬币</b>；也有人工窗口',
-            '推荐办 <b>Rabbit Card</b>（兔子卡）储值卡刷卡进站，或买 BTS 一日通票（约 150 泰铢）',
-            'BTS 与 MRT <b>不同公司运营</b>，票不互通，换乘需出站再进站另买',
-            '车厢内<b>禁止饮食</b>（含喝水、吃口香糖），违者罚款'
-          ]},
-          { icon:'🟦', title:'MRT 地铁', bullets:[
-            '蓝线主线：Hua Lamphong（华南蓬·唐人街/大皇宫） ↔ 乍都乍周末市集 ↔ Bang Sue',
-            '单程票为<b>圆形塑料代币</b>，进站刷卡、出站投币回收',
-            '可直接刷 <b>Visa/Mastercard 信用卡</b>（contactless）进站，免购票',
-            '黄线 & 粉线到东/北郊区，游客用得少',
-            '车厢内也<b>禁止饮食</b>，空调很足建议带薄外套'
-          ]},
-          { icon:'🚄', title:'Airport Rail Link 机场快线', bullets:[
-            '<b>素万那普机场 → 市区</b>（Makkasan / Phaya Thai），约 25-30 分钟，45 泰铢起',
-            '到 Phaya Thai 换 BTS 素坤逸线，到 Makkasan 换 MRT 蓝线',
-            '运营约 06:00–24:00，红眼航班落地只能打车',
-            '<b>廊曼机场没有机场快线</b>，可坐 SRTC 红线火车或 Grab 打车'
-          ]},
-          { icon:'🚤', title:'湄南河公交船', bullets:[
-            'Chao Phraya Express Boat 沿河停靠，去大皇宫/卧佛寺/郑王庙最方便',
-            '橙旗快船（Orange Flag）性价比最高，约 16 泰铢/程',
-            '避开高峰，河上风景好又避堵'
-          ]},
-          { icon:'🚕', title:'Grab / 打车', bullets:[
-            'Grab 最省心，落地先绑定信用卡/钱包',
-            '高峰（7:00-9:00 / 17:00-19:00）BTS/MRT 极挤，打车也堵',
-            '加价（surge）时段可达 2-3 倍，留意预估价格',
-            '素万那普机场到市区约 300-380 泰铢'
-          ]}
-        ],
-        tip:'💡 <b>通用提醒：</b>所有泰国公共交通<b>禁止携带榴莲</b>（气味重）；高峰时段（7:00-9:00 / 17:00-19:00）BTS/MRT 极挤；Grab 打车注意堵车，加价（surge pricing）时段可达 2-3 倍。'
-      },
-      '清迈': {
-        sections: [
-          { icon:'🚕', title:'Grab / 打车', bullets:[
-            '清迈主要靠 Grab，古城内到周边景点约 60-120 泰铢',
-            '机场到古城 Grab 约 <b>40-60 泰铢</b>，很便宜',
-            '高峰也会堵，但整体比曼谷好很多'
-          ]},
-          { icon:'🚐', title:'双条车（红顶 Songthaew）', bullets:[
-            '清迈特色，红顶车随招随停，<b>古城内约 30 泰铢/人</b>',
-            '招手即停，告诉司机目的地，到地儿给钱',
-            '包车游周边（素贴山/因他暖山）可谈价，约 1000-1500 泰铢/天'
-          ]},
-          { icon:'🛵', title:'租摩托车 / 自行车', bullets:[
-            '古城内平地多，租自行车约 50-100 泰铢/天，骑行舒服',
-            '摩托出租约 200-300 泰铢/天，需国际驾照/谨慎驾驶',
-            '务必戴头盔，注意靠左行驶'
-          ]},
-          { icon:'🚶', title:'古城内步行', bullets:[
-            '古城范围不大，塔佩门/三王纪念碑/契迪龙寺步行可达',
-            '夜市（周六/周日夜市、长康路夜市）步行或短打车即可'
-          ]}
-        ],
-        tip:'💡 <b>通用提醒：</b>清迈<b>无 BTS/MRT</b>，主要靠 Grab 与双条车；公共交通<b>禁止携带榴莲</b>；租摩托注意安全与靠左行驶。'
-      }
-    };
+    // （交通指南原 CITY_TRANSIT 已并入 COUNTRY_GUIDES[country].transit，由 renderCityTransit 按城市所属国家读取，见上方 renderCityEntry / renderCityTransit）
+
+    // 城市 → 所属国家（用于城市指南按国家匹配 COUNTRY_GUIDES，与行程页保持一致）
+    function cityCountryOf(city){
+      var c = CITY_DB[(city||'').trim()];
+      return c ? c[2] : '';
+    }
     function renderCityEntry(){
       var b=document.getElementById('cityEntryBody'); if(!b) return;
-      var req=(ENTRY_NOTES.require||[]).map(function(t){return '<li>'+t+'</li>';}).join('');
-      var must=(ENTRY_NOTES.must||[]).map(function(t){return '<span class="must-chip">'+t+'</span>';}).join('');
-      b.innerHTML='<div class="grid grid-cols-1 md:grid-cols-2 gap-4">'
-        +'<div><div class="font-bold mb-2 flex items-center gap-1">🛂 入境要求</div><ul class="space-y-1.5 text-[var(--muted)] list-disc list-inside">'+req+'</ul></div>'
-        +'<div><div class="font-bold mb-2 flex items-center gap-1">🎒 必带物品</div><div class="flex flex-wrap gap-2">'+must+'</div></div>'
-        +'</div>';
+      var country = cityCountryOf(pointsCity);
+      var g = country ? COUNTRY_GUIDES[country] : null;
+      if(g && g.entry){
+        var req=(g.entry.requirements||[]).map(function(t){return '<li>'+t+'</li>';}).join('');
+        var must=(g.entry.mustBring||[]).map(function(t){return '<span class="must-chip">'+t+'</span>';}).join('');
+        b.innerHTML='<div class="grid grid-cols-1 md:grid-cols-2 gap-4">'
+          +'<div><div class="font-bold mb-2 flex items-center gap-1">🛂 入境要求（'+escHtml(country)+'）</div><ul class="space-y-1.5 text-[var(--muted)] list-disc list-inside">'+req+'</ul></div>'
+          +'<div><div class="font-bold mb-2 flex items-center gap-1">🎒 必带物品</div><div class="flex flex-wrap gap-2">'+must+'</div></div>'
+          +'</div>';
+      } else {
+        b.innerHTML='<div class="text-[var(--muted)]">「'+(escHtml(country||'该')+'')+'」暂未收录专属入境须知。通用提醒：护照有效期 ≥6 个月、备<b>往返机票</b>与<b>酒店预订单</b>、按目的地准备对应插头与现金/支付。</div>';
+      }
     }
     function renderCityTransit(city){
       var b=document.getElementById('cityTransitBody'); if(!b) return;
       var tt=document.getElementById('cityTransitTitle'); if(tt) tt.textContent=(city||'该城市')+' 交通须知';
-      var data=CITY_TRANSIT[(city||'').trim()];
-      if(!data){
-        b.innerHTML='<div class="text-[var(--muted)]">暂无「'+(escHtml(city||'')+'')+'」的专属交通指南。通用提醒：泰国公共交通<b>禁止携带榴莲</b>；打车注意高峰与加价时段。</div>';
-        return;
+      var country = cityCountryOf(city);
+      var g = country ? COUNTRY_GUIDES[country] : null;
+      if(g && g.transit){
+        var secs=(g.transit.sections||[]).map(function(s){
+          var items=(s.items||[]).map(function(t){return '<li>'+t+'</li>';}).join('');
+          return '<div><div class="font-bold mb-2 flex items-center gap-1">'+s.icon+' '+escHtml(s.name)+'</div><ul class="space-y-1 text-[var(--muted)] list-disc list-inside">'+items+'</ul></div>';
+        }).join('');
+        b.innerHTML='<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">'+secs+'</div>'
+          +(g.transit.tip?'<div class="mt-2 text-xs text-[var(--muted)] pt-2 border-t border-[var(--border)]">💡 <b>通用提醒：</b>'+g.transit.tip+'</div>':'');
+      } else {
+        b.innerHTML='<div class="text-[var(--muted)]">暂无「'+(escHtml(country||city||'')+'')+'」的专属交通指南。通用提醒：出行前查好该城市的地铁/公交/打车 App，备好当地交通卡。</div>';
       }
-      var secs=(data.sections||[]).map(function(s){
-        var items=(s.bullets||[]).map(function(t){return '<li>'+t+'</li>';}).join('');
-        return '<div><div class="font-bold mb-2 flex items-center gap-1">'+s.icon+' '+escHtml(s.title)+'</div><ul class="space-y-1 text-[var(--muted)] list-disc list-inside">'+items+'</ul></div>';
-      }).join('');
-      b.innerHTML='<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">'+secs+'</div>'
-        +(data.tip?'<div class="mt-2 text-xs text-[var(--muted)] pt-2 border-t border-[var(--border)]">'+data.tip+'</div>':'');
     }
 
     var pointsSpots = [];   // 当前城市去重后的行程点（仅含具体地址）
