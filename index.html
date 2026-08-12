@@ -1426,7 +1426,7 @@
         gp.addEventListener('mouseenter',function(){ tip.innerHTML='<div class="wm-tip-name">'+gp.dataset.name+'</div>'+(gp.dataset.country?'<div class="wm-tip-sub">'+gp.dataset.country+'</div>':''); tip.classList.remove('hidden'); });
         gp.addEventListener('mousemove',function(ev){ var wr=wrap.getBoundingClientRect(); tip.style.left=(ev.clientX-wr.left+12)+'px'; tip.style.top=(ev.clientY-wr.top+12)+'px'; });
         gp.addEventListener('mouseleave',function(){ tip.classList.add('hidden'); });
-        gp.addEventListener('click',function(){ openFlowCity(gp.dataset.name); });
+        gp.addEventListener('click',function(){ jumpToCityTrip(gp.dataset.name); });
       });
       var conts={}; cities.forEach(function(c){var k=CONTINENT_OF[(c.country||'').trim()]||'其他'; conts[k]=(conts[k]||0)+1;});
       var contStr=Object.keys(conts).map(function(k){return k+' '+conts[k];}).join(' · ');
@@ -1453,7 +1453,7 @@
       });
       var htree=document.getElementById('worldHierarchy');
       htree.innerHTML=ht||'<div class="text-xs text-[var(--muted)] p-3">还没有点亮任何城市。去「编辑行程信息 → 添加城市」填一下坐标吧。</div>';
-      htree.querySelectorAll('.wm-city').forEach(function(el){ el.addEventListener('click',function(){ openFlowCity(el.dataset.name); }); });
+      htree.querySelectorAll('.wm-city').forEach(function(el){ el.addEventListener('click',function(){ jumpToCityTrip(el.dataset.name); }); });
     }
 
     function openWorldMap(){ document.getElementById('worldMapModal').classList.add('show'); renderWorldMap(); }
@@ -1755,7 +1755,7 @@
         gp.addEventListener('mouseenter',function(){ tip.innerHTML='<div class="wm-tip-name">'+gp.dataset.name+'</div>'+(gp.dataset.country?'<div class="wm-tip-sub">'+gp.dataset.country+'</div>':''); tip.classList.remove('hidden'); });
         gp.addEventListener('mousemove',function(ev){ var wr=wrap.getBoundingClientRect(); tip.style.left=(ev.clientX-wr.left+12)+'px'; tip.style.top=(ev.clientY-wr.top+12)+'px'; });
         gp.addEventListener('mouseleave',function(){ tip.classList.add('hidden'); });
-        gp.addEventListener('click',function(){ openFlowCity(gp.dataset.name); });
+        gp.addEventListener('click',function(){ jumpToCityTrip(gp.dataset.name); });
       });
     }
     function renderVisited(){
@@ -1868,7 +1868,7 @@
       name=(name||'').trim();
       var t=(TRIPS||[]).find(function(x){return (x.cities||[]).some(function(c){return (c.name||'').trim()===name;});});
       if(t){ setActiveTrip(t.id); closeWorldMap(); setFlow('trip'); }
-      else alert('未找到包含该城市的行程');
+      else { closeWorldMap(); openCity(name); } // 无对应行程（如想去清单城市）→ 打开城市指南
     }
 
     function renderCityEditor(){
