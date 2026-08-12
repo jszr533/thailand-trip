@@ -202,6 +202,9 @@
     .trip-chip .tc-badge.active { background:rgba(34,197,94,.18); color:#16a34a; }
     .trip-chip .tc-badge.closed { background:rgba(140,140,140,.18); color:#8a8a8a; }
     .trip-chip .tc-badge.upcoming { background:rgba(245,158,11,.18); color:#d97706; }
+    .trip-chip .tc-badge.archived { background:rgba(120,120,120,.16); color:#8a8a8a; }
+    .trip-chip .tc-year { font-size:10px; padding:1px 6px; border-radius:999px; line-height:1.5; white-space:nowrap; font-weight:600; background:rgba(99,102,241,.14); color:#6366f1; }
+    .trip-chip.archived { opacity:.62; }
     .trip-chip.active .tc-badge { background:rgba(255,255,255,.24); color:#fff; }
     .trip-chip.tc-toggle { border-style:dashed; color:var(--muted); background:transparent; font-weight:600; }
     .trip-chip.tc-toggle:hover { color:var(--accent); border-color:var(--accent); transform:translateY(-1px); }
@@ -221,6 +224,12 @@
     @keyframes tgIn { from { opacity:0; transform:translateY(-3px); } to { opacity:1; transform:none; } }
     /* 行程库：国家筛选 pills */
     .trip-country-filter { display:flex; gap:6px; flex-wrap:wrap; width:100%; }
+    .ys-card { display:flex; flex-direction:column; gap:4px; border:1.5px solid var(--border); border-left-width:4px; background:var(--chip-bg); border-radius:12px; padding:8px 12px; cursor:pointer; transition:all .15s; text-align:left; }
+    .ys-card:hover { box-shadow:0 4px 16px -8px rgba(0,0,0,.25); transform:translateY(-1px); }
+    .ys-year { font-size:18px; font-weight:600; line-height:1.1; }
+    .ys-count { font-size:11px; color:var(--muted); }
+    .ys-chips { display:flex; flex-wrap:wrap; gap:4px; margin-top:2px; }
+    .ys-chip { font-size:11px; padding:1px 7px; border-radius:999px; background:rgba(99,102,241,.12); color:#6366f1; white-space:nowrap; }
     .cf-pill { border:1.5px solid var(--border); background:var(--chip-bg); color:var(--text); border-radius:999px; padding:4px 12px; font-size:12px; font-weight:600; cursor:pointer; transition:all .15s; white-space:nowrap; }
     .cf-pill:hover { border-color:var(--accent); }
     .cf-pill.active { background:var(--accent); border-color:var(--accent); color:#fff; }
@@ -722,6 +731,11 @@
           <div id="homeSearchResults" class="mt-2 flex flex-wrap gap-2"></div>
         </div>
       </div>
+
+      <div class="panel p-5">
+        <div class="home-h mb-3">📆 历年旅行</div>
+        <div id="homeYearStrip" class="flex flex-wrap gap-3"></div>
+      </div>
     </div>
 
     <!-- ===== 页面 2：城市（大洲→国家→城市） ===== -->
@@ -784,9 +798,10 @@
         <button onclick="openWorldMap()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap hover:border-[var(--accent)] transition">🌍 我的足迹</button>
         <button onclick="createTrip()" class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)] whitespace-nowrap ml-auto">➕ 新建行程</button>
       </div>
+      <div id="tripYearFilter" class="trip-country-filter"></div>
       <div id="tripCountryFilter" class="trip-country-filter"></div>
       <div id="tripChips" class="trip-groups"></div>
-      <p class="text-xs text-[var(--muted)] mt-3 w-full leading-relaxed">💡 顶部可点国家（🌐 全部 / 🇹🇭 泰国 / 🇰🇷 韩国 / 🇲🇾 马来西亚）筛选，默认只显示当前行程所在国家的行程，点具体行程即可切换。所有行程（含「计划中 / 推荐」的）都会留在这个行程库里、都能评价——哪怕还没勾选或还没去，万一到时候去了就能直接补评价。实际出游走完后，点行程条上的 🔒 把它标记为「已结束」即可归档。</p>
+      <p class="text-xs text-[var(--muted)] mt-3 w-full leading-relaxed">💡 顶部可先按<b>年份</b>（📅 全部 / 2026 / 2027…）再按<b>国家</b>（🌐 全部 / 🇹🇭 泰国 / 🇰🇷 韩国 / 🇲🇾 马来西亚）筛选，默认只显示当前行程所在国家与年份。每个行程 chip 上的灰色小数字是<b>年份</b>。过去年份的行程会在每年翻篇时自动标记为「已归档」（淡化显示），需要时仍可查看与编辑；点行程条上的 🔒 也可手动归档、↩️ 取消归档。</p>
     </div>
 
     <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 flight-grid" id="flightSummary"></div>
@@ -1397,7 +1412,7 @@
         }
       } else {
         var tr=(typeof currentTrip==='function')?currentTrip():null;
-        t=(tr&&tr.title)||'我的行程';
+        t=(tr&&tr.title)?((tr.title) + (tr.year!=null?(' · '+tr.year):'')):'我的行程';
         s='可勾选生成路线 · 可编辑 · 总览图 · 点地图小点看攻略';
       }
       if(h1) h1.textContent=t;
@@ -1428,6 +1443,28 @@
           legend+='</span>';
         }
         hs.innerHTML='已点亮 '+v.length+' 个城市'+(contStr?(' · '+contStr):'')+legend;
+      }
+      // —— 历年旅行条 ——
+      var ysEl = document.getElementById('homeYearStrip');
+      if (ysEl) {
+        if (!TRIPS || !TRIPS.length) {
+          ysEl.innerHTML = '<p class="text-xs text-[var(--muted)]">还没有行程，先去「我的行程」新建一个吧。</p>';
+        } else {
+          var byYear = {};
+          TRIPS.forEach(function(t){ var y = tripPrimaryYear(t); (byYear[y] = byYear[y] || []).push(t); });
+          var yrs = Object.keys(byYear).map(Number).sort(function(a,b){ return b-a; });
+          ysEl.innerHTML = yrs.map(function(y){
+            var trips = byYear[y], col = yearColor(y);
+            var chips = trips.map(function(t){
+              return '<span class="ys-chip">'+escHtml((COUNTRY_FLAG[t.country]||'🏳️')+' '+(t.title||'未命名行程'))+'</span>';
+            }).join('');
+            return '<button class="ys-card" style="border-color:'+col+'" onclick="setTripCountryFilter(\'__all__\');setTripYearFilter('+y+');setFlow(\'trip\')">'
+              + '<span class="ys-year" style="color:'+col+'">'+y+'</span>'
+              + '<span class="ys-count">'+trips.length+' 个行程</span>'
+              + '<span class="ys-chips">'+chips+'</span>'
+              + '</button>';
+          }).join('');
+        }
       }
     }
     function renderHomeHero(){
@@ -2260,7 +2297,7 @@
     function currentTrip(){ return (TRIPS && TRIPS.find(t=>t.id===activeTripId)) || (TRIPS && TRIPS[0]) || null; }
     // ===== 行程状态：按「实际时间」自动标注（待开始 / 进行中 / 已结束）=====
     // 日期格式为 M.D（如 7.31）；按当前年份比较。手动「🔒 结束并归档」(status='closed') 视为已结束（可提前归档）。
-    var ST_LABEL = { upcoming:'待开始', plan:'计划中', active:'进行中', closed:'已结束' };
+    var ST_LABEL = { upcoming:'待开始', plan:'计划中', active:'进行中', closed:'已结束', archived:'已归档' };
     function parseMD(s){
       if(!s) return null;
       var m = String(s).match(/(\d{1,2})\.(\d{1,2})/);
@@ -2279,6 +2316,7 @@
     function tripTimeStatus(t){
       if(!t) return 'active';
       if(t.status==='closed') return 'closed'; // 手动归档 → 已结束
+      if(t.status==='archived') return 'archived'; // 过去年份自动归档
       // 年份明确时先做年份层面判断，支持历史/未来跨年行程（更准确）
       var yr = (t.year!=null && !isNaN(t.year)) ? Number(t.year) : null;
       var curY = new Date().getFullYear();
@@ -2314,6 +2352,16 @@
       if(!ys.length) ys=[curY];
       var uniq = ys.filter(function(y,i){ return ys.indexOf(y)===i; }).sort(function(a,b){ return a-b; });
       return { rep: uniq[uniq.length-1], years: uniq };
+    }
+    // 自动归档：年份 < 今年的 active 行程，标记为 archived（区别于手动 closed）。
+    // 让行程库随年份翻篇自动清爽，但仍可查看/编辑；reopenTrip 可取消归档。
+    function autoArchivePastYears(){
+      if (!TRIPS || !TRIPS.length) return;
+      var curY = new Date().getFullYear(), changed = false;
+      TRIPS.forEach(function(t){
+        if (t && t.status === 'active' && tripPrimaryYear(t) < curY) { t.status = 'archived'; changed = true; }
+      });
+      if (changed) { try { persistAll(); } catch(e){} }
     }
     // ===== 行程点评价 + 去过次数（旅游日志）=====
     // SPOT_REVIEWS: { "城市:::行程点名": [ { date:'YYYY-MM-DD', rating:1-5, text:'' } ] }，可多次评价
@@ -2586,10 +2634,12 @@
         wrap.innerHTML = '<div class="col-span-full rounded-xl p-4 border border-dashed border-[var(--border)] bg-[var(--chip-bg)] text-sm text-[var(--muted)]">✈️ 本行程暂无具体航班安排（可在「编辑行程点」里把某点类型设为「航班」并填写航班号）。</div>';
         return;
       }
+      const tr = currentTrip();
       const html = flights.map(function(f){
         const s = f.s, d = f.day;
         const fn = getFlightNo(s);
-        const dateLabel = (d.date||'') + (d.weekday ? ' ' + d.weekday : '');
+        const fY = dayYear(tr, d), fCurY = new Date().getFullYear();
+        const dateLabel = (fY !== fCurY ? (fY + '·') : '') + (d.date||'') + (d.weekday ? ' ' + d.weekday : '');
         const timeLine = s.time ? escHtml(s.time) : '';
         const nameLine = s.name ? escHtml(s.name) : '';
         const link = fn ? '<a class="flight-link mt-2 inline-block" href="'+escAttr(buildFlightUrl(fn))+'" target="_blank" rel="noopener noreferrer" title="在 FlightRadar24 查看实时航班状态">🔗 '+escHtml(fn)+'</a>' : '';
@@ -2812,6 +2862,7 @@
       if (el) el.classList.toggle('collapsed');
     }
     var tripCountryFilter = null;  // null = 全部（按国家分组、可折叠）；'<国家名>' = 仅看该国行程
+    var tripYearFilter = null;     // null = 全部年份；数字 = 仅看该年份行程（与国家筛选 AND）
     // 国家 → 旗帜 emoji（用于行程库按国家分组的标题；未收录的国家回退到 🏳️）
     var COUNTRY_FLAG = { '泰国':'🇹🇭', '韩国':'🇰🇷', '马来西亚':'🇲🇾', '中国':'🇨🇳', '日本':'🇯🇵', '新加坡':'🇸🇬', '越南':'🇻🇳', '印度尼西亚':'🇮🇩', '柬埔寨':'🇰🇭', '老挝':'🇱🇦', '缅甸':'🇲🇲', '菲律宾':'🇵🇭', '文莱':'🇧🇳' };
     var tripGroupCollapsed = {};   // 各国家分组是否收起（仅「全部」模式生效）
@@ -2821,15 +2872,39 @@
       tripCountryFilter = (co === '__all__' || co == null) ? null : co;
       renderTripBar();
     }
+    function setTripYearFilter(y){
+      tripYearFilter = (y == null) ? null : Number(y);
+      renderTripBar();
+    }
     function renderTripBar(){
       const wrap = document.getElementById('tripChips'); if(!wrap) return;
       const filterWrap = document.getElementById('tripCountryFilter');
+      const yearWrap = document.getElementById('tripYearFilter');
       if (!TRIPS) return;
       const total = TRIPS.length;
+      const curY = new Date().getFullYear();
+      // —— 年份筛选 pills（全部 + 各出现过的年份，降序）——
+      const yearsPresent = Array.from(new Set(TRIPS.map(function(t){ return tripPrimaryYear(t); }))).sort(function(a,b){ return b-a; });
+      if (yearWrap) {
+        if (total > 0) {
+          const yp = [`<button class="cf-pill${tripYearFilter==null?' active':''}" onclick="setTripYearFilter(null)">📅 全部</button>`];
+          yearsPresent.forEach(function(y){
+            yp.push(`<button class="cf-pill${tripYearFilter===y?' active':''}" onclick="setTripYearFilter(${y})">${y}</button>`);
+          });
+          yearWrap.innerHTML = yp.join('');
+          yearWrap.style.display = '';
+        } else { yearWrap.style.display = 'none'; }
+      }
+      // 先按 年份 + 国家 过滤
+      const filtered = TRIPS.filter(function(t){
+        if (tripYearFilter != null && tripPrimaryYear(t) !== tripYearFilter) return false;
+        if (tripCountryFilter != null && countryOfTrip(t) !== tripCountryFilter) return false;
+        return true;
+      });
       // 按国家分组（保持国家首次出现的顺序）
       const order = [];
       const groups = {};
-      TRIPS.forEach(function(t){
+      filtered.forEach(function(t){
         const co = countryOfTrip(t);
         if (!groups[co]) { groups[co] = []; order.push(co); }
         groups[co].push(t);
@@ -2843,14 +2918,16 @@
       function chipHtml(t){
         const active = t.id===activeTripId ? ' active' : '';
         const st = tripTimeStatus(t);
+        const archived = (t.status==='archived') ? ' archived' : '';
         const badge = `<span class="tc-badge ${st}">${ST_LABEL[st]||'进行中'}</span>`;
+        const yearBadge = `<span class="tc-year" title="行程年份">${tripPrimaryYear(t)}</span>`;
         const meta = [t.city, (t.start?(t.end? (t.start+'→'+t.end):t.start):'')].filter(Boolean).join(' · ');
-        const closeBtn = (t.status==='closed')
+        const closeBtn = (t.status==='closed' || t.status==='archived')
           ? `<span onclick="event.stopPropagation();reopenTrip('${t.id}')" title="取消归档（改回按实际时间标注）">↩️</span>`
           : `<span onclick="event.stopPropagation();closeTrip('${t.id}')" title="结束并归档此行程（标记已结束）">🔒</span>`;
-        return `<button class="trip-chip${active}" onclick="setActiveTrip('${t.id}')" title="点击切换到该行程">
+        return `<button class="trip-chip${active}${archived}" onclick="setActiveTrip('${t.id}')" title="点击切换到该行程">
           <span class="tc-title">${escHtml(t.title||'未命名行程')}</span>
-          ${badge}
+          ${badge}${yearBadge}
           ${meta?`<span class="tc-meta">${escHtml(meta)}</span>`:''}
           <span class="tc-actions">
             ${closeBtn}
@@ -2859,7 +2936,7 @@
           </span>
         </button>`;
       }
-      // —— 国家筛选 pills ——
+      // —— 国家筛选 pills（基于过滤后的年份范围）——
       if (filterWrap) {
         if (total > 0) {
           const pills = [`<button class="cf-pill${tripCountryFilter==null?' active':''}" onclick="setTripCountryFilter('__all__')">🌐 全部</button>`];
@@ -2899,7 +2976,7 @@
         if (singleMode || !isCollapsed) html += `<div class="trip-group-body">${list.map(chipHtml).join('')}</div>`;
         html += `</div>`;
       });
-      if (showCountries.length === 0) html = `<p class="text-xs text-[var(--muted)]">该国家下暂无行程。</p>`;
+      if (showCountries.length === 0) html = `<p class="text-xs text-[var(--muted)]">该筛选条件下暂无行程。</p>`;
       wrap.innerHTML = html;
     }
     function editTripMeta(id){
@@ -3369,6 +3446,37 @@
       return new Date(yr, md.m-1, md.d);
     }
 
+    // ===== 年份区间 / 某天所属年份（支持跨年行程）=====
+    // trip.year 为基准；若 start/end 的 M.D 出现跨年（end<start，如 12.30→1.5）则 endYear=year+1；
+    // 显式 startYear/endYear 优先。dayYear 通过遍历 days、遇 M.D 月份回退则 +1 推算当年所属年份。
+    function tripYearRange(t){
+      if(!t) return { startYear: new Date().getFullYear(), endYear: new Date().getFullYear() };
+      var y = (t.year!=null && !isNaN(t.year)) ? Number(t.year) : new Date().getFullYear();
+      if(t.startYear!=null && !isNaN(t.startYear)) y = Number(t.startYear);
+      var sy = y;
+      var ey = (t.endYear!=null && !isNaN(t.endYear)) ? Number(t.endYear) : y;
+      if(ey < sy) ey = sy; // 防御
+      if(t.endYear==null){
+        var s=parseMD(t.start), e=parseMD(t.end);
+        if(s && e && cmpMD(e,s) < 0) ey = sy + 1; // 跨年推导
+      }
+      return { startYear: sy, endYear: ey };
+    }
+    // 行程在「年份筛选/分组」里归属的主年份（默认 startYear）
+    function tripPrimaryYear(t){ return tripYearRange(t).startYear; }
+    function dayYear(t, day){
+      if(!t || !t.days || !t.days.length) return (t && t.year!=null && !isNaN(t.year)) ? Number(t.year) : new Date().getFullYear();
+      var range = tripYearRange(t);
+      var cur = range.startYear, prev = null;
+      for(var i=0;i<t.days.length;i++){
+        var d = t.days[i];
+        var md = parseMD(d.date);
+        if(prev && md && cmpMD(md, prev) < 0) cur++; // 月份回退 = 跨年，先 +1
+        if(d === day || (day && d.id && d.id === day.id)) return cur;
+        prev = md || prev;
+      }
+      return cur;
+    }
     function getSortedChecked(day) {
       return day.spots.filter(s => s.checked && s.loc).sort((a, b) => timeToMin(a.time) - timeToMin(b.time));
     }
@@ -3432,7 +3540,7 @@
         return;
       }
       // 已结束 / 已归档的行程
-      if (status === 'closed') {
+      if (status === 'closed' || status === 'archived') {
         const nowStr = minToTime(Math.round(getNowMin()));
         bn.className = 'now-banner show';
         bt.textContent = '🎉 旅行已结束！';
@@ -3446,7 +3554,9 @@
       if (ns.dayIdx === -1) { bn.classList.remove('show'); bt.textContent = '📅 旅行尚未开始'; bt2.textContent = ''; return; }
       if (ns.dayIdx === -2) { bn.className = 'now-banner show'; bt.textContent = '🎉 旅行已结束！'; bt2.textContent = nowStr; return; }
       const day = DAYS[ns.dayIdx];
-      const label = `Day${ns.dayIdx + 1}·${day.date} ${day.weekday}`;
+      const dr = tripYearRange(t);
+      const dY = dayYear(t, day);
+      const label = `Day${ns.dayIdx + 1}·${dr.startYear!==dr.endYear ? dY+'·' : ''}${day.date} ${day.weekday}`;
       if (ns.spot) {
         bn.className = 'now-banner show';
         bt.textContent = (ns.state === 'current' ? `🟢 ${label} · 进行中：` : `⏩ ${label} · 下一站：`) + escHtml(ns.spot.name);
@@ -3825,7 +3935,9 @@
       document.getElementById('leftCol').style.display = isOverview ? 'none' : 'block';
       if (isOverview) return;
       const day = DAYS.find(d => d.id === currentDay);
-      document.getElementById('dayTitle').textContent = `${day.date} ${day.weekday} · 行程点`;
+      const dY = dayYear(currentTrip(), day);
+      const dCurY = new Date().getFullYear();
+      document.getElementById('dayTitle').textContent = (dY !== dCurY ? (dY + '·') : '') + `${day.date} ${day.weekday} · 行程点`;
       const wEl = document.getElementById('dayWeather');
       if (day.weather) {
         wEl.innerHTML = day.weather.icon + ' ' + day.weather.low + '–' + day.weather.high + '°C<span class="w-desc"> · ' + day.weather.desc + '</span>';
@@ -4989,7 +5101,9 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
     window.addEventListener('hashchange', () => { location.reload(); });
     // 统一启动入口：收敛所有初始化逻辑，确保所有 let/const 状态变量初始化后再 render，杜绝 TDZ
     function boot() {
+      autoArchivePastYears(); // 过去年份 active → archived
       try { tripCountryFilter = countryOfTrip(currentTrip()); } catch(e){} // 默认仅显示当前行程所在国家
+      try { tripYearFilter = tripPrimaryYear(currentTrip()); } catch(e){}   // 默认仅显示当前行程所在年份
       render(); // 先渲染本地数据
       if (typeof tripCode !== 'undefined') {
         if (tripCode) {
