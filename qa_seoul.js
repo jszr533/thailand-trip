@@ -33,29 +33,29 @@ function run(){
     if(!(total>=2)) throw new Error('行程数不足: '+total);
   });
 
-  // 折叠默认收起
+  // 行程库：默认仅显示当前行程所在国家分组（国家筛选 pills 设计）
   if (window.renderTripBar) window.renderTripBar();
-  step('折叠列表默认收起：仅 active 行程 + 「全部N个」按钮，非 active 不渲染', ()=>{
-    const activeCollapsed = D.querySelectorAll('#tripChips .trip-chip.active');
-    const toggleCollapsed = D.querySelector('#tripChips .tc-toggle');
-    if(activeCollapsed.length!==1) throw new Error('active chip 数='+activeCollapsed.length);
-    if(!toggleCollapsed) throw new Error('缺少展开按钮');
-    if(!/全部/.test(toggleCollapsed.textContent)) throw new Error('展开按钮文案异常: '+toggleCollapsed.textContent);
-    if(!new RegExp(total).test(toggleCollapsed.textContent)) throw new Error('展开按钮数字不对: '+toggleCollapsed.textContent+' total='+total);
-    const html = D.getElementById('tripChips').innerHTML;
-    const nonActiveTitles = window.eval('TRIPS.filter(t=>t.id!==activeTripId).map(t=>t.title)');
-    nonActiveTitles.forEach(t=>{ if(html.includes(t)) throw new Error('收起态不应显示非active行程: '+t); });
+  step('默认仅显示当前行程所在国家分组（1 组）', ()=>{
+    const chips = D.getElementById('tripChips');
+    const filter = D.getElementById('tripCountryFilter');
+    const groups = chips.querySelectorAll('.trip-group');
+    if(groups.length!==1) throw new Error('默认分组数='+groups.length+'（应为1）');
+    const pills = filter ? [...filter.querySelectorAll('.cf-pill')] : [];
+    if(pills.length!==4) throw new Error('筛选 pills 数='+pills.length+'（应为4：全部+3国）');
+    const defName = chips.querySelector('.tg-name');
+    if(!defName || !/泰国/.test(defName.textContent)) throw new Error('默认显示国家应为泰国: '+(defName?defName.textContent:'无'));
   });
-  step('toggleTripList 展开(全部显示)→再收起', ()=>{
-    window.toggleTripList();
-    const t2 = D.querySelector('#tripChips .tc-toggle');
-    if(!/仅看当前国家/.test(t2.textContent)) throw new Error('展开后按钮文案异常: '+t2.textContent);
-    const html = D.getElementById('tripChips').innerHTML;
-    const allTitles = window.eval('TRIPS.map(t=>t.title)');
-    allTitles.forEach(t=>{ if(!html.includes(t)) throw new Error('展开态未显示: '+t); });
-    window.toggleTripList();
-    const t3 = D.querySelector('#tripChips .tc-toggle');
-    if(!/全部/.test(t3.textContent)) throw new Error('二次收起文案异常');
+  step('国家筛选：点全部显示全部分组 → 点具体国家只显该国', ()=>{
+    window.setTripCountryFilter('__all__');
+    const chips = D.getElementById('tripChips');
+    if(chips.querySelectorAll('.trip-group').length!==3) throw new Error('选全部后分组数='+chips.querySelectorAll('.trip-group').length+'（应为3）');
+    window.setTripCountryFilter('韩国');
+    const g2 = chips.querySelectorAll('.trip-group');
+    const n2 = chips.querySelector('.tg-name');
+    if(g2.length!==1) throw new Error('选韩国后分组数='+g2.length+'（应为1）');
+    if(!n2 || !/韩国/.test(n2.textContent)) throw new Error('选韩国后显示国家异常: '+(n2?n2.textContent:'?'));
+    window.setTripCountryFilter(window.countryOfTrip(window.currentTrip()));
+    if(chips.querySelectorAll('.trip-group').length!==1) throw new Error('恢复默认后分组数异常');
   });
 
   // 首尔地图底图

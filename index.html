@@ -582,10 +582,9 @@
       .log-row { font-size:11px; padding:6px 8px; }
     }
     .pt-rec { margin-top:18px; border-top:1.5px dashed var(--border); padding-top:14px; }
-    #tripContentView, #pageHome, #pageCities, #pagePoints { display:none; }
+    #tripContentView, #pageHome, #pageCities { display:none; }
     body.flow-home #pageHome { display:block; }
     body.flow-cities #pageCities { display:block; }
-    body.flow-points #pagePoints { display:block; }
     body.flow-trip #tripContentView { display:block; }
     .home-h { font-family:var(--font-cute); font-weight:800; font-size:18px; display:flex; align-items:center; gap:8px; }
     .home-city-card { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:16px; background:var(--chip-bg); border:1.5px solid var(--border); cursor:pointer; transition:all .15s; }
@@ -674,9 +673,7 @@
     <div id="flowNav">
       <button class="flow-step active" id="navHome" onclick="setFlow('home')">🌍 首页</button>
       <span class="flow-sep">›</span>
-      <button class="flow-step" id="navCities" onclick="setFlow('cities')">🏙️ 城市</button>
-      <span class="flow-sep">›</span>
-      <button class="flow-step" id="navPoints" onclick="setFlow('points')">📍 行程点</button>
+      <button class="flow-step" id="navCities" onclick="backToCityHub()">🏙️ 城市</button>
       <span class="flow-sep">›</span>
       <button class="flow-step trip-step" id="navTrip" onclick="setFlow('trip')">✏️ 我的行程</button>
     </div>
@@ -729,51 +726,53 @@
 
     <!-- ===== 页面 2：城市（大洲→国家→城市） ===== -->
     <div id="pageCities" class="flow-page space-y-6">
-      <div class="panel p-5">
-        <div class="home-h mb-1">🌏 按大洲逛 · 我去过的城市</div>
-        <div class="text-xs text-[var(--muted)] mb-3">手机上懒得戳地图小点？先选<b>大洲</b> → <b>国家</b> → <b>城市</b>，点城市直达对应行程点。</div>
-        <div id="homeDrillCrumbs" class="home-drill-crumbs"></div>
-        <div id="homeDrillBody" class="home-drill-body"></div>
+      <!-- ===== 城市库 / 发现器（未选城市时显示） ===== -->
+      <div id="cityHub">
+        <div class="panel p-5">
+          <div class="home-h mb-1">🌏 按大洲逛 · 我去过的城市</div>
+          <div class="text-xs text-[var(--muted)] mb-3">手机上懒得戳地图小点？先选<b>大洲</b> → <b>国家</b> → <b>城市</b>，点城市看它的城市指南与推荐点。</div>
+          <div id="homeDrillCrumbs" class="home-drill-crumbs"></div>
+          <div id="homeDrillBody" class="home-drill-body"></div>
+        </div>
+
+        <div class="panel p-5">
+          <div class="home-h mb-1">📚 我去过的城市 · 我的城市库</div>
+          <div class="text-xs text-[var(--muted)] mb-3">每个城市都是一座「库」——点开任意城市，进去看它的<b>城市指南</b>：📋 入境须知 + 🚇 该城市交通须知 + 🗺️ 推荐点库（去过几次 + 评价）。</div>
+          <div id="homeVisited" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+        </div>
+
+        <div class="panel p-5">
+          <div class="home-h mb-3">🗺️ 我还想去 / 没去过（点开看推荐）</div>
+          <div id="homeWish" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+        </div>
       </div>
 
-      <div class="panel p-5">
-        <div class="home-h mb-1">📚 我去过的城市 · 我的城市库</div>
-        <div class="text-xs text-[var(--muted)] mb-3">每个城市都是一座「库」——点开任意城市，进去看它的<b>城市指南</b>：📋 入境须知 + 🚇 该城市交通须知 + 🗺️ 行程点库（推荐去处 + 去过几次 + 评价）。</div>
-        <div id="homeVisited" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
-      </div>
+      <!-- ===== 城市详情：指南 + 推荐点（点开城市后显示） ===== -->
+      <div id="cityDetail" style="display:none">
+        <div class="flex items-center justify-between flex-wrap gap-2 mb-1">
+          <div class="home-h">📍 <span id="pointsCityName"></span> · 城市指南</div>
+          <button class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)]" onclick="backToCityHub()">← 返回城市列表</button>
+        </div>
 
-      <div class="panel p-5">
-        <div class="home-h mb-3">🗺️ 我还想去 / 没去过（点开看推荐）</div>
-        <div id="homeWish" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
-      </div>
+        <!-- 入境须知（国家级，通用） -->
+        <div class="panel p-5 relative overflow-hidden border-l-4 border-l-[var(--accent)]">
+          <h2 class="cute-font font-semibold text-base mb-3 flex items-center gap-2 text-[var(--accent)]">📋 入境须知 · 必带清单</h2>
+          <div id="cityEntryBody" class="text-sm"></div>
+        </div>
 
-    </div>
+        <!-- 交通须知（按城市） -->
+        <div class="panel p-5 relative overflow-hidden border-l-4 border-l-[var(--accent-3)]">
+          <h2 class="cute-font font-semibold text-base mb-3 flex items-center gap-2 text-[var(--accent-3)]">🚇 <span id="cityTransitTitle">交通须知</span></h2>
+          <div id="cityTransitBody" class="text-sm"></div>
+        </div>
 
-    <!-- ===== 页面 3：城市指南（入境须知 + 该城市交通须知 + 行程点库） ===== -->
-    <div id="pagePoints" class="flow-page space-y-6">
-      <div class="flex items-center justify-between flex-wrap gap-2 mb-1">
-        <div class="home-h">📍 <span id="pointsCityName"></span> · 城市指南</div>
-        <button class="btn-cute px-3 py-1.5 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)]" onclick="setFlow('cities')">← 返回城市</button>
-      </div>
-
-      <!-- 入境须知（国家级，通用） -->
-      <div class="panel p-5 relative overflow-hidden border-l-4 border-l-[var(--accent)]">
-        <h2 class="cute-font font-semibold text-base mb-3 flex items-center gap-2 text-[var(--accent)]">📋 入境须知 · 必带清单</h2>
-        <div id="cityEntryBody" class="text-sm"></div>
-      </div>
-
-      <!-- 交通须知（按城市） -->
-      <div class="panel p-5 relative overflow-hidden border-l-4 border-l-[var(--accent-3)]">
-        <h2 class="cute-font font-semibold text-base mb-3 flex items-center gap-2 text-[var(--accent-3)]">🚇 <span id="cityTransitTitle">交通须知</span></h2>
-        <div id="cityTransitBody" class="text-sm"></div>
-      </div>
-
-      <!-- 行程点库（最下方，保留上轮成果） -->
-      <div class="panel p-5">
-        <div class="home-h mb-1">🗺️ <span id="pointsCityName2"></span> 的行程点库</div>
-        <div class="text-xs text-[var(--muted)] mb-3">这是「<span id="pointsCityName2"></span>」的<b>城市行程点总库</b>——只收录有<b>具体地址</b>的地点，按<b>首字母排序</b>，可<b>搜索</b>或按<b>首字母筛选</b>。这里是城市通用地点库，与「我的行程」解耦、不含任何行程安排。✅你评价过的点会显示<b>去过几次 + 年份</b>，每个点可<b>多次评价</b>。</div>
-        <input id="pointsSearch" class="input-field mb-3" placeholder="🔍 搜索地点或地址…" oninput="pointsQuery=this.value;renderPointsList()">
-        <div id="pointsBody" class="space-y-4"></div>
+        <!-- 推荐点库 -->
+        <div class="panel p-5">
+          <div class="home-h mb-1">🗺️ <span id="pointsCityName2"></span> 的推荐点库</div>
+          <div class="text-xs text-[var(--muted)] mb-3">这是「<span id="pointsCityName2"></span>」的<b>城市推荐点总库</b>——只收录有<b>具体地址</b>的地点，按<b>首字母排序</b>，可<b>搜索</b>或按<b>首字母筛选</b>。这里是城市通用地点库，与「我的行程」解耦、不含任何行程安排。✅你评价过的点会显示<b>去过几次 + 年份</b>，每个点可<b>多次评价</b>。</div>
+          <input id="pointsSearch" class="input-field mb-3" placeholder="🔍 搜索地点或地址…" oninput="pointsQuery=this.value;renderPointsList()">
+          <div id="pointsBody" class="space-y-4"></div>
+        </div>
       </div>
     </div>
 
@@ -1375,7 +1374,7 @@
     // ===== 足迹首页（默认落地页）=====
     var currentFlow = 'home';
     function setNavActive(f){
-      ['home','cities','points','trip'].forEach(function(x){
+      ['home','cities','trip'].forEach(function(x){
         var el=document.getElementById('nav'+x.charAt(0).toUpperCase()+x.slice(1));
         if(el) el.classList.toggle('active', x===f);
       });
@@ -1389,12 +1388,13 @@
         t='🌍 我的世界足迹';
         s='走过的城市在地图上亮起，没去过的在下面等你。点开地图上的点，或从「城市」一路走到每一处行程点。';
       } else if(f==='cities'){
-        t='🏙️ 我的城市库';
-        s='每个城市都是一座「库」——点开任意城市，进去看它的城市指南。';
-      } else if(f==='points'){
-        var c=(typeof pointsCity==='string'?pointsCity:'').trim();
-        t='📍 '+(c||'城市指南')+(c?' · 城市指南':'');
-        s='当地入境须知 + 该城市交通须知 + 行程点库，点开任意行程点看详情。';
+        if(pointsCity){
+          t='📍 '+pointsCity+' · 城市指南';
+          s='「'+pointsCity+'」的入境须知、交通须知与推荐点库。';
+        } else {
+          t='🏙️ 我的城市库';
+          s='每个城市都是一座「库」——点开任意城市，进去看它的城市指南与推荐点。';
+        }
       } else {
         var tr=(typeof currentTrip==='function')?currentTrip():null;
         t=(tr&&tr.title)||'我的行程';
@@ -1404,11 +1404,10 @@
       if(sub) sub.textContent=s;
     }
     function setFlow(f){
-      // 入境须知/交通须知（城市指南）只允许通过「城市页 → 点城市」进入；
-      // 顶部「📍 行程点」导航在尚未选城市时，改去城市页让用户先选，避免直接暴露默认城市的指南。
-      if(f==='points' && !pointsCity){ f='cities'; }
+      // 城市指南（入境/交通/推荐点）通过「城市页 → 点城市」进入；未选城市时停留在城市库列表。
+      if(f==='points'){ f='cities'; } // 兼容旧调用，统一回城市页
       currentFlow = f;
-      ['home','cities','points','trip'].forEach(function(x){ document.body.classList.toggle('flow-'+x, x===f); });
+      ['home','cities','trip'].forEach(function(x){ document.body.classList.toggle('flow-'+x, x===f); });
       setNavActive(f);
       setFlowTitle(f);
       if(f==='trip'){ if(!DAYS || !DAYS.some(function(d){return d.id===currentDay;})) currentDay=(DAYS&&DAYS.length)?DAYS[0].id:'overview'; }
@@ -1447,14 +1446,21 @@
       if(foot) foot.innerHTML='已经点亮 <b>'+v.length+'</b> 个城市，跨越 <b>'+nCont+'</b> 大洲 · 还有 <b>'+nWish+'</b> 个城市在想去清单里。';
     }
     function renderCities(){
-      renderHomeDrill(); renderVisited(); renderWish();
+      var hub=document.getElementById('cityHub'), det=document.getElementById('cityDetail');
+      if(pointsCity){
+        if(hub) hub.style.display='none';
+        if(det) det.style.display='';
+        renderPoints(pointsCity);
+      } else {
+        if(hub) hub.style.display='';
+        if(det) det.style.display='none';
+        renderHomeDrill(); renderVisited(); renderWish();
+      }
     }
     var pointsCity = '';
     function openFlowCity(name){
-      name=(name||'').trim();
-      var c=aggregateCities().find(function(x){return x.name===name;});
-      if(c){ homeDrill.cont=CONTINENT_OF[(c.country||'').trim()]||'其他'; homeDrill.country=c.country||null; }
-      setFlow('cities');
+      // 从搜索结果点城市：直接进入该城市的指南+推荐点详情
+      openCity(name);
     }
     // ===== 拼音首字母（用于城市库按首字母排序 + 首字母筛选）=====
     // 覆盖当前数据里出现的中文首字；未收录的中文首字统一归入「#」
@@ -1517,7 +1523,11 @@
       pointsCity=(name||'').trim();
       pointsQuery=''; pointsLetter='';
       var si=document.getElementById('pointsSearch'); if(si) si.value='';
-      setFlow('points');
+      setFlow('cities');
+    }
+    function backToCityHub(){
+      pointsCity='';
+      setFlow('cities');
     }
     function renderPoints(city){
       var box=document.getElementById('pointsBody'); if(!box) return;
@@ -2791,7 +2801,7 @@
     }
     function refreshReviewHost(){
       if (document.getElementById('recModal') && document.getElementById('recModal').classList.contains('show') && typeof recCity !== 'undefined' && recCity) { openRecs(recCity); return; }
-      if (currentFlow === 'points') { renderPoints(pointsCity); return; }
+      if (currentFlow === 'cities' && pointsCity) { renderPoints(pointsCity); return; }
       render();
     }
     function toggleReviews(hk){
@@ -4972,7 +4982,7 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
           </div>
         </div>`).join('');
     }
-    function render() { closeMoveMenu(); renderTripBar(); setFlowTitle(currentFlow); renderTabs(); renderNowBanner(); renderSpotList(); renderMap(); renderBacklog(); renderCountryGuides(); renderFlightSummary(); syncSave(); if(currentFlow==='trip'){ /* 编辑器可见，无需额外渲染 */ } else if(currentFlow==='home'){ renderHome(); } else if(currentFlow==='cities'){ renderCities(); } else if(currentFlow==='points'){ renderPoints(pointsCity); } }
+    function render() { closeMoveMenu(); renderTripBar(); setFlowTitle(currentFlow); renderTabs(); renderNowBanner(); renderSpotList(); renderMap(); renderBacklog(); renderCountryGuides(); renderFlightSummary(); syncSave(); if(currentFlow==='trip'){ /* 编辑器可见，无需额外渲染 */ } else if(currentFlow==='home'){ renderHome(); } else { renderCities(); } }
     window.addEventListener('hashchange', () => { location.reload(); });
     // 统一启动入口：收敛所有初始化逻辑，确保所有 let/const 状态变量初始化后再 render，杜绝 TDZ
     function boot() {

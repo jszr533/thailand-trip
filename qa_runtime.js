@@ -82,19 +82,23 @@ function run() {
     const sub = window.document.getElementById('tripSubtitle');
     if (!h1 || !sub) throw new Error('标题元素缺失');
     window.setFlow('home');   if (!/世界足迹/.test(h1.textContent)) throw new Error('home 标题错: ' + h1.textContent);
-    window.setFlow('cities'); if (!/城市库/.test(h1.textContent)) throw new Error('cities 标题错: ' + h1.textContent);
-    if (window.openCity) window.openCity('曼谷'); window.setFlow('points'); if (!/曼谷/.test(h1.textContent)) throw new Error('points 标题错: ' + h1.textContent);
+    window.eval('pointsCity=""'); window.setFlow('cities'); if (!/城市库/.test(h1.textContent)) throw new Error('cities 标题错: ' + h1.textContent);
+    if (window.openCity) window.openCity('曼谷'); if (!/曼谷/.test(h1.textContent)) throw new Error('cities+城市 标题错: ' + h1.textContent);
     window.setFlow('trip');   if (!h1.textContent.trim()) throw new Error('trip 标题空');
     window.setFlow('home');
   });
-  step('导航📍行程点 无选中城市时改去城市页（不暴露默认城市指南）', () => {
+  step('合并后：openCity 在城市页内进详情，返回列表回 hub', () => {
     window.eval('pointsCity = ""');
-    window.setFlow('points');
-    if (!/flow-cities/.test(window.document.body.className)) throw new Error('setFlow(points) 无城市时未跳城市页, body=' + window.document.body.className);
-    if (/flow-points/.test(window.document.body.className)) throw new Error('setFlow(points) 无城市时错误进入了城市指南(入境须知/交通须知)');
-    window.eval('pointsCity = "曼谷"');
-    window.setFlow('points');
-    if (!/flow-points/.test(window.document.body.className)) throw new Error('setFlow(points) 已有选中城市时应进入城市指南');
+    window.setFlow('cities');
+    if (!/flow-cities/.test(window.document.body.className)) throw new Error('城市页未进入, body=' + window.document.body.className);
+    if (window.document.getElementById('cityDetail').style.display !== 'none') throw new Error('未选城市时详情不应显示');
+    window.openCity('曼谷');
+    if (window.document.getElementById('cityDetail').style.display === 'none') throw new Error('openCity 后详情应显示');
+    if (window.document.getElementById('cityHub').style.display !== 'none') throw new Error('openCity 后 hub 应隐藏');
+    // 顶部「城市」导航应回到列表（清除选中城市）
+    window.document.getElementById('navCities').click();
+    if (window.document.getElementById('cityDetail').style.display !== 'none') throw new Error('navCities 应回到列表(hub)');
+    if (window.document.getElementById('cityHub').style.display === 'none') throw new Error('navCities 回到列表后 hub 应可见');
     window.setFlow('home');
   });
 
