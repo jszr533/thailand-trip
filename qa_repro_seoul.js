@@ -99,7 +99,7 @@ if (wmDot) wmDot.dispatchEvent(new window.Event('click', { bubbles: true }));
 console.log('点击后 currentFlow =', window.eval('currentFlow'));
 console.log('点击后 标题 =', (D.getElementById('tripTitleH1')||{}).textContent, '| 副标 =', (D.getElementById('tripSubtitle')||{}).textContent);
 // 验证修复：现在应直接打开首尔「行程」而非城市库
-console.log('  → 修复判定(应打开首尔行程):', window.eval('currentFlow')==='trip' && /首尔/.test((document.getElementById("tripTitleH1")||{}).textContent||'') ? '✅ 已打开首尔行程' : '❌ 未打开首尔行程');
+console.log('  → 修复判定(应打开首尔行程):', window.eval('currentFlow')==='trip' && /首尔/.test((window.document.getElementById("tripTitleH1")||{}).textContent||'') ? '✅ 已打开首尔行程' : '❌ 未打开首尔行程');
 
 console.log('\n===== 路径C：世界地图层级列表点 首尔 =====');
 window.openWorldMap();

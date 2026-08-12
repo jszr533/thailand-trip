@@ -644,12 +644,14 @@
           <button onclick="copyShareLink()" class="btn-cute px-4 py-2.5 bg-[var(--accent)] text-white text-sm cute-font">🔗 复制分享</button>
           <button id="installBtn" onclick="installApp()" class="btn-cute px-4 py-2.5 bg-[var(--accent-deep)] text-white text-sm cute-font">📲 加桌面</button>
           <button onclick="toggleLayoutMode()" id="modeBtn" class="btn-cute px-4 py-2.5 border-2 border-[var(--border)] bg-[var(--panel)] text-sm cute-font text-[var(--text)]">📱 手机版</button>
-          <button onclick="toggleTheme()" class="btn-cute px-4 py-2.5 border-2 border-[var(--border)] bg-[var(--panel)] text-sm cute-font text-[var(--text)]">🌓 主题</button>
+          <button id="themeBtn" onclick="toggleTheme()" class="btn-cute px-4 py-2.5 border-2 border-[var(--border)] bg-[var(--panel)] text-sm cute-font text-[var(--text)]">🌓 主题</button>
           <button onclick="jumpToNow()" class="btn-cute px-4 py-2.5 border-2 border-[var(--border)] bg-[var(--panel)] text-sm cute-font text-[var(--text)]">📍 定位当前</button>
-          <span id="syncIndicator" style="display:none;" class="px-2 py-1 text-xs rounded-full border border-[var(--accent-3)]/40 bg-[var(--accent-3)]/5 text-[var(--accent-3)] whitespace-nowrap">
+          <span id="syncIndicator" style="display:none;cursor:pointer;" title="点击复制多人同步链接；右侧可停止" onclick="copySyncLink()" class="px-2 py-1 text-xs rounded-full border border-[var(--accent-3)]/40 bg-[var(--accent-3)]/5 text-[var(--accent-3)] whitespace-nowrap">
             <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent-3);animation:nbPulse 1.8s infinite;margin-right:4px;vertical-align:middle;"></span>
             <span id="syncStatusText" class="sync-text" style="vertical-align:middle;">多人同步中</span>
           </span>
+          <button id="syncStopBtn" onclick="stopSync()" style="display:none;" class="btn-cute px-2 py-1 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--muted)]" title="停止多人同步（本机数据保留）">⏹ 停止</button>
+          <button id="syncEnableBtn" onclick="createTripCode()" style="display:none;" class="btn-cute px-3 py-2 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)]" title="生成随机同步码，跨设备共享本行程（仅持有该码的人可同步）">👥 开启同步</button>
           <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importJSON(event)">
           <button onclick="exportJSON()" class="btn-cute px-3 py-2 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)]" title="导出行程备份">💾 导出</button>
           <button onclick="document.getElementById('importFileInput').click()" class="btn-cute px-3 py-2 border-2 border-[var(--border)] bg-[var(--panel)] text-xs cute-font text-[var(--text)]" title="导入行程备份">📂 导入</button>
@@ -1769,14 +1771,26 @@
     function addCityRow(){ editingCities.push({name:'',country:'',lat:'',lng:''}); renderCityEditor(); }
     function removeCityRow(i){ editingCities.splice(i,1); renderCityEditor(); }
     function lsSet(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+    let themeMode = (function(){ try { return lsGet('theme') || 'system'; } catch(e){ return 'system'; } })();
+    function applyTheme() {
+      let dark;
+      if (themeMode === 'dark') dark = true;
+      else if (themeMode === 'light') dark = false;
+      else dark = !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.classList.toggle('dark', dark);
+      const btn = document.getElementById('themeBtn');
+      if (btn) btn.innerHTML = (themeMode === 'dark' ? '🌑' : (themeMode === 'system' ? '🌗' : '☀️')) + ' 主题';
+    }
     function toggleTheme() {
-      document.documentElement.classList.toggle('dark');
-      lsSet('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+      themeMode = themeMode === 'light' ? 'dark' : (themeMode === 'dark' ? 'system' : 'light');
+      lsSet('theme', themeMode);
+      applyTheme();
       render();
     }
-    if (lsGet('theme') === 'dark' || (!lsGet('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-    }
+    applyTheme();
+    try {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(){ if (themeMode === 'system') applyTheme(); });
+    } catch(e){}
 
     const LOCATIONS = {
       bkk_airport_suvarnabhumi: [38, 28], bkk_airport_donmueang: [-38, -22],
@@ -2131,7 +2145,7 @@
           { id: 'm2_food1', name: '伍秀泽海南鸡饭 / 潮州煎蕊', time: '12:30-14:00', type: 'food', loc: 'pen_chickenrice', checked: false, addr: 'Chulia St / Penang Road, George Town', hours: '午市为主', duration: '约 1 小时', notes: '海南鸡饭配鸡油饭，饭后一碗潮州煎蕊，槟城式午餐。', ticket: '', tips: '煎蕊认准 Penang Road Famous Teochew Chendul', warning: null },
           { id: 'm2_4', name: '侨生博物馆 Pinang Peranakan Mansion', time: '14:00-15:30', type: 'sight', loc: 'peranakan', checked: false, addr: '29 Church St, George Town, Penang', hours: '9:30-17:00', duration: '约 1.5 小时', notes: '娘惹峇峇豪宅，金漆屏风、珠绣拖鞋、晚清瓷器。了解闽粤移民与马来女子通婚后形成的独特文化。', ticket: '成人 RM25', tips: '有中文导览场次；馆内可拍照', warning: null },
           { id: 'm2_5', name: '张弼士故居(蓝屋)', time: '15:30-16:30', type: 'sight', loc: 'pen_blue', checked: false, addr: '14 Leith St, George Town, Penang', hours: '导览 11:00/14:00/15:30', duration: '约 1 小时', notes: '南洋首富张弼士故居，靛蓝外墙、风水天井。听导览讲华人移民、锡矿与清朝领事的故事。', ticket: 'RM25', tips: '必须跟导览；英语为主，部分时段中文', warning: null },
-          { id: 'm2_6', name: '龙山堂邱公司', time: '16:30-17:30', type: 'sight', loc: 'pen_khoo', checked: false, addr: '18 Cannon Square, George Town, Penang', hours: '9:00-17:00', duration: '约 1 小时', notes: '槟城最华丽华人宗祠，闽南匠艺、琉璃剪粘、戏台。体现宗族移民社会的凝聚力。', ticket: 'RM10', tips: '傍晚光影最佳；戏台有时有木偶戏', warning: null },
+          { id: 'm2_6', name: '龙山堂邱公司', time: '15:30-16:30', type: 'sight', loc: 'pen_khoo', checked: false, addr: '18 Cannon Square, George Town, Penang', hours: '9:00-17:00', duration: '约 1 小时', notes: '槟城最华丽华人宗祠，闽南匠艺、琉璃剪粘、戏台。体现宗族移民社会的凝聚力。', ticket: 'RM10', tips: '傍晚光影最佳；戏台有时有木偶戏', warning: null },
           { id: 'm2_7', name: '槟城小印度', time: '17:30-18:30', type: 'sight', loc: 'pen_littleindia', checked: false, addr: 'Lebuh Pasar / Queen St, George Town, Penang', hours: '全天', duration: '约 1 小时', notes: '印度香料、纱丽、花环、印度庙，多元文化交叠。', ticket: '免费', tips: '可在这里吃印度煎饼当下午茶', warning: null },
           { id: 'm2_r1', name: '升旗山日落（可选）', time: '18:00-20:00', type: 'sight', loc: 'pen_hill', checked: false, recommended: true, addr: 'Penang Hill, Air Itam, Penang', hours: '缆车 6:30-22:00', duration: '约 2 小时', notes: '英式山顶避暑地，俯瞰乔治市与海峡。人文路线之外的风景收尾。', ticket: '缆车往返约 RM30', tips: '傍晚上山人多，预留排队；打车到山脚', warning: null },
           { id: 'm2_food2', name: '亚参叻沙 / 福建面', time: '20:00-21:30', type: 'food', loc: 'pen_laksa', checked: false, recommended: true, addr: 'Air Itam / Kimberly Street, Penang', hours: '傍晚', duration: '约 1 小时', notes: '酸辣鱼汤底的亚参叻沙曾被 CNN 评为全球十大美食；福建面虾汤浓香。', ticket: '', tips: 'Air Itam 叻沙最出名，但较远；乔治市也有名店', warning: null },
@@ -2142,8 +2156,8 @@
       { id: 'm3', date: '10.4', weekday: '周日', title: '槟城半日 → 古晋 · 河城初印象', city: 'penang', color: '#8b5cf6',
         weather: { icon: '⛅', high: 32, low: 25, desc: '晴间多云', tip: '上午紧凑逛，中午后前往机场' },
         spots: [
-          { id: 'm3_1', name: '观音亭 / 槟城州博物馆一带', time: '08:30-10:00', type: 'sight', loc: 'pen_museum', checked: false, addr: 'George Town 教堂街 / Dewan Sri Pinang, Penang', hours: '博物馆约 9:00-17:00（周一闭馆）', duration: '约 1.5 小时', notes: '殖民建筑与华人庙宇并置，清晨走一圈感受城市肌理。', ticket: '博物馆免费', tips: '如博物馆闭馆，就在周边街巷闲逛', warning: null },
-          { id: 'm3_2', name: '愉园茶室（炒粿条·煎蕊）', time: '10:00-11:30', type: 'food', loc: 'pen_joohooi', checked: false, addr: '475 Jalan Penang, George Town, Penang', hours: '约 11:00-17:00', duration: '约 1 小时', notes: '槟城茶室文化代表：一个铺位多家档口，炒粿条、煎蕊、叻沙一次吃齐。', ticket: '', tips: '现金；中午后排队', warning: null },
+          { id: 'm3_1', name: '观音亭 / 槟城州博物馆一带', time: '09:00-10:30', type: 'sight', loc: 'pen_museum', checked: false, addr: 'George Town 教堂街 / Dewan Sri Pinang, Penang', hours: '博物馆约 9:00-17:00（周一闭馆）', duration: '约 1.5 小时', notes: '殖民建筑与华人庙宇并置，清晨走一圈感受城市肌理。', ticket: '博物馆免费', tips: '如博物馆闭馆，就在周边街巷闲逛', warning: null },
+          { id: 'm3_2', name: '愉园茶室（炒粿条·煎蕊）', time: '11:00-12:30', type: 'food', loc: 'pen_joohooi', checked: false, addr: '475 Jalan Penang, George Town, Penang', hours: '约 11:00-17:00', duration: '约 1 小时', notes: '槟城茶室文化代表：一个铺位多家档口，炒粿条、煎蕊、叻沙一次吃齐。', ticket: '', tips: '现金；中午后排队', warning: null },
           { id: 'm3_f1', name: '槟城机场 出发', time: '约 13:00 到机场', type: 'flight', loc: 'pen_airport', checked: false, addr: 'Penang International Airport, Bayan Lepas, Penang', hours: '14:55 起飞', duration: '候机', notes: '亚航 AK5432 槟城→古晋，14:55 起飞，16:55 抵达。', ticket: '', tips: '亚航为廉航，行李额度提前买；提前 2 小时到', boarding: '提前 2 小时', warning: null, flightNo: 'AK5432' },
           { id: 'm3_f2', name: '古晋国际 落地', time: '16:55', type: 'flight', loc: 'kch_airport', checked: false, addr: 'Kuching International Airport, Sarawak', hours: '24h', duration: '入境+打车约 30 分钟', notes: '东马砂拉越入境需再盖一次章；Grab 到市区约 20 分钟。', ticket: '', tips: '保留登机牌备查；东马海关会检查', warning: null },
           { id: 'm3_h1', name: '古晋河滨酒店 入住', time: '约 18:00', type: 'hotel', loc: 'kch_hotel', checked: false, addr: '古晋河滨 / Main Bazaar 一带', hours: '入住 15:00 后', duration: '放行李', notes: '建议住砂拉越河沿岸，方便散步与去亚答街。酒店待订。', ticket: '', tips: '可订 Hilton / Pullman 或精品民宿', warning: 'info' },
@@ -2334,11 +2348,19 @@
       });
       return map;
     }
+    let storageWarned = false;
     function persistAll(){
       if (TRIPS && Array.isArray(TRIPS)) TRIPS.forEach(function(t){ syncCities(t); });
-      try { localStorage.setItem(LS_TRIPS, JSON.stringify({ trips: TRIPS, active: activeTripId })); } catch(e){}
-      try { localStorage.setItem('days', JSON.stringify(DAYS)); } catch(e){}
-      try { persistReviews(); } catch(e){}
+      try {
+        localStorage.setItem(LS_TRIPS, JSON.stringify({ version: DATA_VERSION, trips: TRIPS, active: activeTripId }));
+        localStorage.setItem('days', JSON.stringify(DAYS));
+        persistReviews();
+      } catch(e) {
+        if (!storageWarned) {
+          storageWarned = true;
+          toast('⚠️ 本地存储不可用（可能存储已满或处于隐私模式），本次修改可能不会保存。建议「导出」JSON 备份。');
+        }
+      }
     }
 
     /* ============================================================
@@ -2814,7 +2836,7 @@
         const flag = COUNTRY_FLAG[co] || '🏳️';
         const collapsed = !!tripGroupCollapsed[co];
         html += `<div class="trip-group${collapsed?' collapsed':''}">`;
-        html += `<div class="trip-group-head" onclick="toggleTripGroup('${escAttr(co)}')" title="展开 / 收起该国家下的行程">`
+        html += `<div class="trip-group-head" role="button" tabindex="0" onclick="toggleTripGroup('${escAttr(co)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleTripGroup('${escAttr(co)}');}" title="展开 / 收起该国家下的行程（回车 / 空格可切换）">`
           + `<span class="tg-flag">${flag}</span>`
           + `<span class="tg-name">${escHtml(co)}</span>`
           + `<span class="tg-count">${list.length} 个行程</span>`
@@ -3056,6 +3078,7 @@
 
     // ===== 多人实时同步（共享行程码）=====
     const DEBUG = false;
+    const DATA_VERSION = 3; // 数据结构版本，便于未来一次性迁移（loadAllTrips 读取时会忽略未知字段）
     // 同步服务器地址
     const SYNC_SERVER = (function(){
       try {
@@ -3071,8 +3094,8 @@
       try {
         const c = lsGet('sync_code') || location.search.match(/[?&]code=([^&]+)/)?.[1];
         if (c) return c;
-        // 自动启用同步：不在 localhost/file 环境时使用固定码
-        if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1' && location.hostname !== '') return 'TRIP01';
+        // 不再自动启用固定共享码（避免公开部署下跨访客数据污染）。
+        // 多设备同步需用户显式「开启多人同步」生成随机码，或带 ?code= 打开分享链接。
       } catch(e){}
       return null;
     })();
@@ -3087,9 +3110,20 @@
     function updateSyncStatus(text, ok) {
       const el = document.getElementById('syncIndicator');
       const st = document.getElementById('syncStatusText');
+      const enBtn = document.getElementById('syncEnableBtn');
+      const stopBtn = document.getElementById('syncStopBtn');
       if (!el || !st) return;
-      if (text) { el.style.display = ''; st.textContent = text; }
-      else { el.style.display = 'none'; return; }
+      if (text) {
+        el.style.display = '';
+        st.textContent = (tripCode ? ('同步码 ' + tripCode) : '多人同步中');
+        if (enBtn) enBtn.style.display = 'none';
+        if (stopBtn) stopBtn.style.display = '';
+      } else {
+        el.style.display = 'none';
+        if (enBtn) enBtn.style.display = '';
+        if (stopBtn) stopBtn.style.display = 'none';
+        return;
+      }
       el.style.opacity = ok !== false ? '1' : '0.5';
     }
     function saveTripCodeMeta(code) {
@@ -3097,6 +3131,25 @@
       if (code) { lsSet('sync_code', code); }
       else { try { localStorage.removeItem('sync_code'); } catch(e){} }
       updateSyncStatus(code ? '多人同步中' : null, true);
+    }
+    function createTripCode() {
+      const code = 'TRIP-' + Math.random().toString(36).slice(2, 8).toUpperCase();
+      saveTripCodeMeta(code);
+      autoInitSync().catch(function(e){ updateSyncStatus('同步不可用', false); });
+    }
+    function copySyncLink() {
+      if (!tripCode) return;
+      const url = location.origin + location.pathname + '?code=' + encodeURIComponent(tripCode);
+      try {
+        navigator.clipboard.writeText(url).then(function(){ alert('已复制多人同步链接！发给要共享的人，对方打开即可同步同一份行程：\n\n' + url); })
+          .catch(function(){ prompt('复制以下同步链接：', url); });
+      } catch(e) { prompt('复制以下同步链接：', url); }
+    }
+    function stopSync() {
+      saveTripCodeMeta(null);
+      stopSyncPoll();
+      try { localStorage.removeItem('sync_backup'); } catch(e){}
+      toast('已关闭多人同步（本机数据不受影响）。');
     }
     async function apiFetch(method, path, body) {
       const url = SYNC_SERVER + path;
@@ -3120,15 +3173,17 @@
       };
     }
     function importTripState(st) {
-      if (!st || !st.days || !st.days.length) return;
-      st.days.forEach(nd => {
-        const day = DAYS.find(d => d.id === nd.id);
-        if (!day) return;
-        nd.spots.forEach(ns => {
-          const spot = day.spots.find(s => s.id === ns.id);
-          if (spot) { spot.checked = ns.checked; spot.time = ns.time; }
+      if (!st) return;
+      if (st.days && st.days.length) {
+        st.days.forEach(nd => {
+          const day = DAYS.find(d => d.id === nd.id);
+          if (!day) return;
+          nd.spots.forEach(ns => {
+            const spot = day.spots.find(s => s.id === ns.id);
+            if (spot) { spot.checked = ns.checked; spot.time = ns.time; }
+          });
         });
-      });
+      }
       if (st.backlog) BACKLOG = st.backlog;
       if (st.deletedIds) deletedIds = st.deletedIds;
       if (st.addedSugSpots) addedSugSpots = st.addedSugSpots;
@@ -3138,7 +3193,17 @@
           const inc = st.reviews[k] || [];
           const cur = (SPOT_REVIEWS[k] || []).slice();
           const seen = new Set(cur.map(r => (r.date||'') + '|' + (r.rating||'') + '|' + (r.text||'')));
-          inc.forEach(function(r){ const sig = (r.date||'') + '|' + (r.rating||'') + '|' + (r.text||''); if(!seen.has(sig)){ cur.push(r); seen.add(sig); } });
+          inc.forEach(function(r){
+            // 远端数据为不可信输入：合并前净化，避免存储型 XSS / 脏数据
+            const rr = {
+              date: sanitizeStr(r.date, 20),
+              rating: Math.max(0, Math.min(5, Number(r.rating) || 0)),
+              text: sanitizeStr(r.text, 2000),
+              name: sanitizeStr(r.name, 60)
+            };
+            const sig = (rr.date||'') + '|' + (rr.rating||'') + '|' + (rr.text||'');
+            if(!seen.has(sig)){ cur.push(rr); seen.add(sig); }
+          });
           cur.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
           if (cur.length) SPOT_REVIEWS[k] = cur;
         }
@@ -4229,6 +4294,29 @@
 
     function escHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\\/g, '&#92;').replace(/'/g, '&#39;'); }
     function escAttr(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\\/g, '&#92;').replace(/'/g, '&#39;'); }
+    // 净化不可信输入（远端同步 / 外部数据）：去标签与不可见控制字符，限制长度
+    function sanitizeStr(s, max) {
+      if (s == null) return '';
+      let v = String(s).replace(/[<>]/g, '').replace(/[\u0000-\u001f\u007f]/g, '');
+      if (max) v = v.slice(0, max);
+      return v;
+    }
+    // 轻量提示条（存储失败 / 同步异常等），避免阻塞主流程
+    function toast(msg) {
+      try {
+        let t = document.getElementById('toastBox');
+        if (!t) {
+          t = document.createElement('div');
+          t.id = 'toastBox';
+          t.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;padding:10px 16px;border-radius:12px;font-size:13px;z-index:9999;max-width:90vw;box-shadow:0 6px 20px rgba(0,0,0,.25);line-height:1.5;';
+          document.body.appendChild(t);
+        }
+        t.textContent = msg;
+        t.style.display = 'block';
+        clearTimeout(t._timer);
+        t._timer = setTimeout(function(){ t.style.display = 'none'; }, 4200);
+      } catch(e){}
+    }
     // 生成每个行程点的外部攻略 / 导航链接
     function buildSpotLinks(spot) {
       const links = [];
@@ -4833,8 +4921,13 @@ h2{color:#3f6fd0;font-size:18px;margin-top:24px;background:#f0f4ff;padding:6px 1
     // 统一启动入口：收敛所有初始化逻辑，确保所有 let/const 状态变量初始化后再 render，杜绝 TDZ
     function boot() {
       render(); // 先渲染本地数据
-      if (typeof tripCode !== 'undefined' && tripCode) {
-        autoInitSync().catch(function(e){ /* 远程失败不影响本地 */ });
+      if (typeof tripCode !== 'undefined') {
+        if (tripCode) {
+          autoInitSync().catch(function(e){ /* 远程失败不影响本地 */ });
+        } else {
+          const en = document.getElementById('syncEnableBtn');
+          if (en) en.style.display = '';
+        }
       }
       initLayoutMode();
       registerSW();

@@ -49,7 +49,7 @@ function run(){
   step('toggleTripList 展开(全部显示)→再收起', ()=>{
     window.toggleTripList();
     const t2 = D.querySelector('#tripChips .tc-toggle');
-    if(!/收起/.test(t2.textContent)) throw new Error('展开后按钮文案异常: '+t2.textContent);
+    if(!/仅看当前国家/.test(t2.textContent)) throw new Error('展开后按钮文案异常: '+t2.textContent);
     const html = D.getElementById('tripChips').innerHTML;
     const allTitles = window.eval('TRIPS.map(t=>t.title)');
     allTitles.forEach(t=>{ if(!html.includes(t)) throw new Error('展开态未显示: '+t); });

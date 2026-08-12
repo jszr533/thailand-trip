@@ -13,7 +13,7 @@ const dom = new JSDOM(html, {
     window.requestAnimationFrame = (cb)=>setTimeout(cb,0);
     window.cancelAnimationFrame = ()=>{};
     if (window.navigator && window.navigator.serviceWorker) {} else {
-      Object.defineProperty(window.navigator, 'serviceWorker', { value: { register(){}, addEventListener(){} }, configurable:true });
+      Object.defineProperty(window.navigator, 'serviceWorker', { value: { register:()=>Promise.resolve({scope:''}), addEventListener(){} }, configurable:true });
     }
     window.HTMLCanvasElement.prototype.getContext = () => ({ fillRect(){}, clearRect(){}, getImageData(){return {data:[]};}, putImageData(){}, createImageData(){return [];}, setTransform(){}, drawImage(){}, save(){}, restore(){}, beginPath(){}, moveTo(){}, lineTo(){}, closePath(){}, stroke(){}, translate(){}, scale(){}, rotate(){}, arc(){}, fill(){}, measureText(){return {width:0};}, transform(){}, rect(){}, clip(){} });
     window.console.error = (...a)=>errors.push('console.error: '+a.join(' '));
