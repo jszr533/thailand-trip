@@ -83,10 +83,9 @@ function run(){
     if(/出现在/.test(b.innerHTML)) throw new Error('仍存在「出现在N个行程」字样(未解耦)');
   });
 
-  step('首尔航班字段完整 (去程MU579 / 返程MU580)', ()=>{
-    const fl = window.eval("(function(){var t=TRIPS.find(x=>/首尔/.test(x.title));var f={};t.days.forEach(function(d){d.spots.forEach(function(s){if(s.type==='flight'&&s.flightNo)f[s.id]=s.flightNo;});});return f;})()");
-    if(!fl['s1_f1'] || fl['s1_f1']!=='MU579') throw new Error('去程航班异常: '+JSON.stringify(fl));
-    if(!fl['s3_f1'] || fl['s3_f1']!=='MU580') throw new Error('返程航班异常: '+JSON.stringify(fl));
+  step('首尔航班已按用户要求移除（航班未购买）', ()=>{
+    const r = window.eval("(function(){var t=TRIPS.find(x=>/首尔/.test(x.title));var fl=[];var refs=[];t.days.forEach(function(d){d.spots.forEach(function(s){if(s.type==='flight')fl.push(s.id);});});return {count:fl.length, ids:fl};})()");
+    if(r.count!==0) throw new Error('首尔仍残留航班点: '+JSON.stringify(r));
   });
 
   step('setFlow(home) 收尾', ()=>{ window.setFlow('home'); });
