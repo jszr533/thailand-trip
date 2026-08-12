@@ -2217,7 +2217,9 @@
           const obj = JSON.parse(raw);
           if (obj && Array.isArray(obj.trips) && obj.trips.length) {
             TRIPS = obj.trips;
-            TRIPS.forEach(function(t){ if(!t.status) t.status='active'; if(!Array.isArray(t.days)) t.days=[]; if(t.year==null) t.year=new Date().getFullYear(); syncCities(t); });
+            TRIPS.forEach(function(t){ if(!t.status) t.status='active'; if(!Array.isArray(t.days)) t.days=[]; if(t.year==null) t.year=new Date().getFullYear(); syncCities(t);
+              // 国家化指南：老版本 localStorage 行程可能缺失 country，按城市反推补全，否则指南会落到「未找到」分支
+              if(!t.country || !COUNTRY_GUIDES[t.country]){ var _c=(t.cities&&t.cities[0]); if(_c&&_c.country&&COUNTRY_GUIDES[_c.country]) t.country=_c.country; } });
             activeTripId = (obj.active && TRIPS.some(t=>t.id===obj.active)) ? obj.active : TRIPS[0].id;
             DAYS = (TRIPS.find(t=>t.id===activeTripId) || TRIPS[0]).days;
           }
@@ -2473,7 +2475,9 @@
 
     function renderCountryGuides(){
       const t = currentTrip();
-      const country = (t && t.country) || '';
+      let country = (t && t.country) || '';
+      // 防御：国家字段缺失时按行程城市反推（老数据兼容）
+      if(!COUNTRY_GUIDES[country]){ const _c=(t&&t.cities&&t.cities[0]); if(_c&&_c.country&&COUNTRY_GUIDES[_c.country]) country=_c.country; }
       const g = COUNTRY_GUIDES[country] || null;
       // —— 入境须知 ——
       const eb = document.getElementById('tripEntryBody');
