@@ -1831,19 +1831,19 @@
       cnx_airport: [-32, 28], cnx_jungle: [36, -28],
       cnx_doisuthep: [-34, -28], cnx_phrasing: [10, -10], cnx_chiangman: [-10, -10],
       cnx_threekings: [-2, -10], cnx_maya: [-24, -26], cnx_shooting: [28, -34], cnx_akha: [-20, -18], cnx_khaosoi: [4, -6], cnx_lila: [-8, -2],
-      sel_icn: [-44, -22], sel_seoulstation: [-8, -2], sel_myeongdong: [2, 4], sel_namsan: [7, 12], sel_namdaemun: [0, 9], sel_cityhall: [-2, -8], sel_cheonggyecheon: [10, -1], sel_gwangjang: [22, 1], sel_ddp: [22, -4], sel_hongdae: [-22, 4], sel_insadong: [5, -4], sel_gyeongbokgung: [2, -18], sel_seongsu: [26, 20], sel_jamsil: [30, 24], sel_coex: [34, 14], sel_nami: [46, -30],
+      sel_icn: [-44, -22], sel_seoulstation: [-8, -2], sel_myeongdong: [2, 4], sel_namsan: [7, 12], sel_namdaemun: [0, 9], sel_cityhall: [-2, -8], sel_cheonggyecheon: [10, -1], sel_gwangjang: [22, 1], sel_ddp: [22, -4], sel_hongdae: [-22, 4], sel_insadong: [5, -4], sel_gyeongbokgung: [2, -18], sel_seongsu: [26, 20], sel_jamsil: [30, 24], sel_coex: [34, 14], sel_nami: [46, -30], sel_national: [4, -26], sel_changdeok: [9, -22], sel_war: [-14, -14], sel_leeum: [-30, 8], sel_namsangol: [4, 12],
       // 槟城 George Town
       pen_airport: [24, 34], pen_hotel: [0, 0], pen_kimberley: [4, 6], pen_lovelane: [-2, 4], pen_tohsoon: [2, 8],
       pen_mural: [-4, 2], pen_jetties: [8, -4], pen_chickenrice: [0, 6], peranakan: [-6, 0], pen_blue: [-8, 4],
-      pen_khoo: [-2, -2], pen_littleindia: [6, 2], pen_hill: [-28, -18], pen_laksa: [2, 10], pen_museum: [4, -2], pen_joohooi: [0, 8], pen_sun: [-5, 1], pen_cook: [-6, 2],
+      pen_khoo: [-2, -2], pen_littleindia: [6, 2], pen_hill: [-28, -18], pen_laksa: [2, 10], pen_museum: [4, -2], pen_joohooi: [0, 8], pen_sun: [-5, 1], pen_cook: [-6, 2], pen_keklok: [-30, -20], pen_war: [28, 24],
       // 古晋 Kuching
       kch_airport: [38, 8], kch_hotel: [0, 0], kch_waterfront: [2, 2], kch_laksa: [0, 4], kch_scv: [34, -24],
       kch_damai: [40, -30], kch_bazaar: [-2, -2], kch_chmuseum: [-4, -2], kch_tua: [4, 0], kch_topspot: [-4, 6],
-      kch_market: [-2, 4], kch_museum: [-8, 4], kch_cat: [10, -8], kch_textile: [-9, 4], kch_islamic: [-10, 4],
+      kch_market: [-2, 4], kch_museum: [-8, 4], kch_cat: [10, -8], kch_textile: [-9, 4], kch_islamic: [-10, 4], kch_semen: [30, -28], kch_fort: [-12, 0],
       // 吉隆坡 Kuala Lumpur
       kul_airport: [0, 40], kul_hotel: [0, 0], kul_merdeka: [-2, 2], kul_gallery: [-4, 2], kul_mosque: [-10, 4],
       kul_iamm: [-14, 6], kul_nasilemak: [24, 16], kul_chinatown: [-4, 14], kul_centralmarket: [-6, 12], kul_bakuteh: [8, 12],
-      kul_littleindia: [-8, 8], kul_nationalmuseum: [-12, 10], kul_chan: [-3, 16], kul_royal: [30, 22],
+      kul_littleindia: [-8, 8], kul_nationalmuseum: [-12, 10], kul_chan: [-3, 16], kul_royal: [30, 22], kul_batu: [-30, 18], kul_petronas: [6, -6], kul_tower: [10, -10],
     };
 
     let DAYS = [
@@ -2009,7 +2009,12 @@
         { name:'明洞圣堂', cat:'景点', type:'sight', addr:'首尔中区明洞路 (Jung-gu, Myeongdong Cathedral)', note:'哥特式教堂圣诞弥撒' },
         { name:'圣水洞咖啡街', cat:'玩乐', type:'relax', addr:'首尔城东区圣水洞 (Seongdong-gu, Seongsu)', note:'网红咖啡 + 圣诞限定饮品' },
         { name:'奖忠洞韩式烤肉', cat:'美食', type:'food', addr:'首尔中区奖忠洞 (Jung-gu, Jangchung)', note:'首尔老牌烤肉一条街' },
-        { name:'鹭梁津水产市场', cat:'美食', type:'food', addr:'首尔铜雀区鹭梁津路 (Dongjak-gu, Noryangjin)', note:'活海鲜现吃' }
+        { name:'鹭梁津水产市场', cat:'美食', type:'food', addr:'首尔铜雀区鹭梁津路 (Dongjak-gu, Noryangjin)', note:'活海鲜现吃' },
+        { name:'国立中央博物馆', cat:'景点', type:'sight', addr:'首尔龙山区西冰库路 (Yongsan-gu, National Museum of Korea)', note:'韩国最大博物馆，常设展免费，室内看展最舒服' },
+        { name:'昌德宫 + 秘苑', cat:'景点', type:'sight', addr:'首尔钟路区栗谷路 (Jongno-gu, Changdeokgung)', note:'世界遗产正宫+后苑，雪中庭院极美，秘苑需预约' },
+        { name:'战争纪念馆', cat:'景点', type:'sight', addr:'首尔龙山区梨泰远路 (Yongsan-gu, War Memorial)', note:'半岛近现代史，露天战机+室内史料全免费' },
+        { name:'三星美术馆 Leeum', cat:'景点', type:'sight', addr:'首尔龙山区梨泰院路 (Yongsan-gu, Leeum)', note:'顶级私立美术馆，白瓷与西方现代艺术同场' },
+        { name:'南山谷韩屋村', cat:'景点', type:'sight', addr:'首尔中区退溪路 (Jung-gu, Namsangol Hanok Village)', note:'复原五栋两班韩屋，免费入内' }
       ],
       '槟城': [
         { name:'乔治市世界遗产街头壁画', cat:'景点', type:'sight', addr:'马来西亚槟城乔治市 (George Town, Penang)', note:'散落在老街的 Ernest Zacharevic 壁画，华人南洋生活场景' },
@@ -2028,7 +2033,9 @@
         { name:'极乐寺 Kek Lok Si', cat:'景点', type:'sight', addr:'Air Itam, Penang', note:'东南亚最大华人佛寺，万佛宝塔' },
         { name:'泰式按摩 Thai Odyssey（乔治市）', cat:'玩乐', type:'relax', addr:'乔治市（槟城有多家分店）', note:'马来西亚知名泰式按摩连锁，古城逛累后来一发，解乏顺路' },
         { name:'孙中山槟城基地·阅书报社 Sun Yat-sen Museum', cat:'景点', type:'sight', addr:'120 Armenian Street, George Town, Penang', note:'辛亥革命海外策源地，策划黄花岗起义、创办《光华日报》' },
-        { name:'娘惹料理体验 Nyonya Cooking Class', cat:'玩乐', type:'activity', addr:'乔治市遗产区私厨教室（需预约）', note:'跟本地师傅学做娘惹菜，最有温度的室内人文体验' }
+        { name:'娘惹料理体验 Nyonya Cooking Class', cat:'玩乐', type:'activity', addr:'乔治市遗产区私厨教室（需预约）', note:'跟本地师傅学做娘惹菜，最有温度的室内人文体验' },
+        { name:'极乐寺 Kek Lok Si', cat:'景点', type:'sight', addr:'Air Itam, Penang', note:'东南亚最大华人佛寺，万佛宝塔融合中泰缅风格' },
+        { name:'槟城战争博物馆', cat:'景点', type:'sight', addr:'Batu Maung, Penang', note:'英军旧炮台改建，日占时期与槟城抗战史' }
       ],
       '古晋': [
         { name:'砂拉越文化村 Sarawak Cultural Village', cat:'景点', type:'activity', addr:'Pantai Damai, Santubong, Sarawak', note:'伊班、比达友、马来等原住民长屋与舞蹈表演' },
@@ -2046,7 +2053,9 @@
         { name:'三层茶 Teh C Peng Special', cat:'美食', type:'food', addr:'古晋茶室普遍有售', note:'砂拉越特色三层奶茶' },
         { name:'古晋按摩/Spa（河滨酒店或传统 URUT）', cat:'玩乐', type:'relax', addr:'古晋河滨一带 / 酒店 Spa', note:'古晋按摩选择较槟城少，推荐河滨酒店 Spa 或请前台推荐传统马来 URUT 按摩，长途飞行后放松' },
         { name:'砂拉越纺织博物馆 Sarawak Textile Museum', cat:'景点', type:'sight', addr:'Jalan Tun Haji Openg, Kuching', note:'伊班/马来传统织锦，纹样里的部落叙事' },
-        { name:'古晋伊斯兰博物馆 Kuching Islamic Museum', cat:'景点', type:'sight', addr:'Jalan P. Ramlee, Kuching', note:'砂拉越伊斯兰与马来王室文明' }
+        { name:'古晋伊斯兰博物馆 Kuching Islamic Museum', cat:'景点', type:'sight', addr:'Jalan P. Ramlee, Kuching', note:'砂拉越伊斯兰与马来王室文明' },
+        { name:'实蒙古红毛猩猩保育中心 Semenggoh', cat:'玩乐', type:'activity', addr:'Jalan Puncak Borneo, Kuching', note:'半野放红毛猩猩康复中心，下午场看猿' },
+        { name:'玛格丽特城堡 Fort Margherita', cat:'景点', type:'sight', addr:'Jalan Tun Abang Haji Openg, Kuching', note:'1879 白人拉惹河畔城堡，现警察博物馆' }
       ],
       '吉隆坡': [
         { name:'独立广场 Dataran Merdeka', cat:'景点', type:'sight', addr:'Jalan Raja, Kuala Lumpur', note:'1957年独立宣言地，殖民建筑群' },
@@ -2067,7 +2076,10 @@
         { name:'印度煎饼 Roti Canai', cat:'美食', type:'food', addr:'Mamak 档口遍布 KL', note:'配 dal 或咖喱，国民早餐' },
         { name:'泰式按摩 Thai Odyssey（武吉免登）', cat:'玩乐', type:'relax', addr:'Bukit Bintang, Kuala Lumpur', note:'知名泰式按摩连锁，武吉免登逛街/夜市后放松，顺路' },
         { name:'陈氏书院 Chan She Shu Yuen', cat:'景点', type:'sight', addr:'172 Jalan Petaling, Kuala Lumpur', note:'百年岭南宗祠，灰塑砖雕讲述广府南来史' },
-        { name:'皇家雪兰莪锡器工坊 Royal Selangor', cat:'玩乐', type:'activity', addr:'Setapak, Kuala Lumpur', note:'全球最大锡器品牌，免费导览+敲锡体验，最稳室内手作' }
+        { name:'皇家雪兰莪锡器工坊 Royal Selangor', cat:'玩乐', type:'activity', addr:'Setapak, Kuala Lumpur', note:'全球最大锡器品牌，免费导览+敲锡体验，最稳室内手作' },
+        { name:'黑风洞 Batu Caves', cat:'景点', type:'activity', addr:'Gombak, Kuala Lumpur', note:'272 级彩色阶梯通向印度教神殿与石灰岩洞' },
+        { name:'双子塔 KLCC', cat:'景点', type:'sight', addr:'KLCC, Kuala Lumpur', note:'城市天际线标志，空中步道+阳光广场' },
+        { name:'吉隆坡塔 KL Tower', cat:'景点', type:'sight', addr:'Jalan Punchak, Kuala Lumpur', note:'420 米观景塔，俯瞰 KL 与双子塔同框' }
       ]
     };
 
@@ -2095,7 +2107,12 @@
           { id: 's2_food1', name: '广藏市场 美食（绿豆煎饼·生拌牛肉·紫菜包饭）', time: '18:00-20:00', type: 'food', loc: 'sel_gwangjang', checked: false, addr: '广藏市场 Gwangjang Market', hours: '约 08:30-23:00', duration: '约 2 小时', notes: '韩剧同款：绿豆煎饼（bindaetteok）、生拌牛肉（yukhoe）、紫菜包饭、辣炒年糕。老市场烟火气十足。', ticket: '', tips: '必试：绿豆煎饼、生拌牛肉配生鸡蛋；现金更顺', warning: null },
           { id: 's2_r1', name: '弘大 圣诞街艺 + 咖啡', time: '20:00-22:00', type: 'relax', loc: 'sel_hongdae', checked: false, recommended: true, addr: '弘大 Hongdae', hours: '傍晚-凌晨', duration: '约 2 小时', notes: '年轻人聚集地，圣诞街头表演、霓虹与独立咖啡馆，活力满满。', ticket: '免费', tips: 'Live 公演免费；咖啡馆圣诞限定饮品', warning: null },
           { id: 's2_r2', name: '乐天世界 / COEX 星空图书馆 圣诞', time: '14:00-17:00', type: 'sight', loc: 'sel_jamsil', checked: false, recommended: true, addr: '蚕室乐天世界 / 江南 COEX 星空图书馆', hours: '乐天 约 10:00-22:00', duration: '约 2.5 小时', notes: '乐天世界魔法冰宫圣诞装饰梦幻；COEX 星空图书馆巨型书墙 + 圣诞装置，室内不怕冷。', ticket: '乐天入场约 ₩59000', tips: '带娃/怕冷首选室内；江南 COEX 与乐天二选一', warning: null },
-          { id: 's2_r3', name: '南怡岛 圣诞灯光（近郊一日）', time: '09:00-17:00', type: 'activity', loc: 'sel_nami', checked: false, recommended: true, addr: '南怡岛 Nami Island（春川，首尔东北约 1.5 小时）', hours: '轮渡 07:30-21:40', duration: '约 1 天', notes: '冬季「南怡岛星光花园」圣诞灯海 + 雪林小火车，韩剧《冬季恋歌》取景地，圣诞氛围绝绝子。', ticket: '含往返+船票约 ₩24000+', tips: '距市区较远，需整段安排；雪天路滑穿防滑鞋', warning: 'info' }
+          { id: 's2_r3', name: '南怡岛 圣诞灯光（近郊一日）', time: '09:00-17:00', type: 'activity', loc: 'sel_nami', checked: false, recommended: true, addr: '南怡岛 Nami Island（春川，首尔东北约 1.5 小时）', hours: '轮渡 07:30-21:40', duration: '约 1 天', notes: '冬季「南怡岛星光花园」圣诞灯海 + 雪林小火车，韩剧《冬季恋歌》取景地，圣诞氛围绝绝子。', ticket: '含往返+船票约 ₩24000+', tips: '距市区较远，需整段安排；雪天路滑穿防滑鞋', warning: 'info' },
+          { id: 's2_r4', name: '国立中央博物馆（室内·免费）', time: '13:00-16:30', type: 'sight', loc: 'sel_national', checked: false, recommended: true, addr: '首尔龙山区西冰库路 (Yongsan-gu, National Museum of Korea)', hours: '10:00-18:00（周一闭馆）', duration: '约 2 小时', notes: '韩国最大博物馆，馆藏从史前到朝鲜王朝，常设展免费。室内空调足，圣诞冷天里看展最舒服的人文补给站。', ticket: '免费', tips: '与龙山 Family Park 相邻；周一闭馆', warning: null },
+          { id: 's2_r5', name: '昌德宫 + 秘苑（需预约）', time: '10:00-13:00', type: 'sight', loc: 'sel_changdeok', checked: false, recommended: true, addr: '首尔钟路区栗谷路 (Jongno-gu, Changdeokgung)', hours: '09:00-17:30（周一闭馆）', duration: '约 2 小时', notes: '联合国教科文世界遗产，朝鲜正宫中保存最完整的木构与后苑（秘苑）。后苑需预约导览，雪中庭院极美。', ticket: '宫殿 ₩3000 / 秘苑 ₩8000', tips: '秘苑导览名额少，官网提前预约；韩服免宫殿票', warning: null },
+          { id: 's2_r6', name: '战争纪念馆（室内·免费）', time: '14:00-17:00', type: 'sight', loc: 'sel_war', checked: false, recommended: true, addr: '首尔龙山区梨泰院路 (Yongsan-gu, War Memorial)', hours: '09:30-18:00（周一闭馆）', duration: '约 2 小时', notes: '露天战机坦克 + 室内朝鲜战争史料，了解半岛近现代史最直接的窗口，全免费。', ticket: '免费', tips: '室外展区可登坦克合影；周一闭馆', warning: null },
+          { id: 's2_r7', name: '三星美术馆 Leeum（室内）', time: '14:00-16:30', type: 'sight', loc: 'sel_leeum', checked: false, recommended: true, addr: '首尔龙山区梨泰院路 (Yongsan-gu, Leeum Museum)', hours: '10:00-18:00（周一闭馆）', duration: '约 1.5 小时', notes: '韩国顶级私立美术馆，传统白瓷与西方现代艺术同场，建筑本身就是作品。', ticket: '约 ₩10000', tips: '邻近战争纪念馆，可一并安排；周一闭馆', warning: null },
+          { id: 's2_r8', name: '南山谷韩屋村（免费·韩屋）', time: '15:00-17:00', type: 'sight', loc: 'sel_namsangol', checked: false, recommended: true, addr: '首尔中区退溪路 (Jung-gu, Namsangol Hanok Village)', hours: '09:00-21:00', duration: '约 1 小时', notes: '复原五栋两班韩屋与传统庭院，免费入内，离明洞/南山近，感受韩式住居美学。', ticket: '免费', tips: '可穿韩服拍照；傍晚有传统演出', warning: null }
         ] },
       { id: 's3', date: '12.27', weekday: '周日', title: '圣诞礼拜 · 采购 · 返程南京', city: '首尔', color: '#2563eb',
         weather: { icon: '☁️', high: 5, low: -3, desc: '多云转晴·返程', tip: '返程行李别超免税额度；预留退税' },
@@ -2139,6 +2156,8 @@
           { id: 'm2_2', name: '乔治市街头壁画', time: '09:00-11:00', type: 'sight', loc: 'pen_mural', checked: false, addr: 'George Town 老街巷（Armenian St / Ah Quee St 等）', hours: '全天', duration: '约 2 小时', notes: 'Ernest Zacharevic 壁画与本地创作，骑楼老街本身就是南洋生活博物馆。', ticket: '免费', tips: '早去避热避人；可租自行车或随地图寻宝', warning: null },
           { id: 'm2_r3', name: '孙中山槟城基地·阅书报社 Sun Yat-sen Museum', time: '约 11:00-11:45', type: 'sight', loc: 'pen_sun', checked: false, recommended: true, addr: '120 Armenian Street, George Town, Penang', hours: '9:00-17:00', duration: '约 45 分钟', notes: '辛亥革命海外策源地：孙中山在此召开「槟城会议」、创办《光华日报》、策划黄花岗起义。南洋华人救国史最硬核一站，就在壁画街 Armenian St 上，看完壁画顺路进。', ticket: '成人 RM20', tips: '与街头壁画同街，可合并游览；馆小但史料极厚', warning: null },
           { id: 'm2_r4', name: '娘惹料理体验 Nyonya Cooking Class', time: '约 14:00-16:30', type: 'activity', loc: 'pen_cook', checked: false, recommended: true, addr: '乔治市遗产区私厨教室（需预约）', hours: '需提前预约，约半日', duration: '约 2.5 小时', notes: '在娘惹老屋跟本地师傅学做亚参叻沙、娘惹粽、咖喱，边做边吃，最有温度的室内人文体验。', ticket: '约 RM120-180/人', tips: '需提前 1-2 天预约；与下午侨生博物馆/蓝屋择一深度体验，或单独约一场', warning: null },
+          { id: 'm2_r5', name: '极乐寺 Kek Lok Si（万佛宝塔）', time: '12:00-14:00', type: 'sight', loc: 'pen_keklok', checked: false, recommended: true, addr: 'Air Itam, Penang（近升旗山山脚）', hours: '8:30-17:30', duration: '约 1.5 小时', notes: '东南亚最大华人佛寺，万佛宝塔融合中泰缅风格，山脚到山顶的华人信仰全景。可与升旗山同半天。', ticket: '免费（缆车另计）', tips: '与升旗山同方向，打车到 Air Itam 顺路', warning: null },
+          { id: 'm2_r6', name: '槟城战争博物馆（二战人文）', time: '14:00-16:00', type: 'sight', loc: 'pen_war', checked: false, recommended: true, addr: 'Batu Maung, Penang（岛南端）', hours: '9:00-18:00', duration: '约 1.5 小时', notes: '由英军旧炮台改建，重现日占时期与槟城抗战史，南洋华人苦难与韧性的实地课本。', ticket: '约 RM15', tips: '离市区较远，建议打车；与极乐寺不同方向', warning: null },
           { id: 'm2_3', name: '姓氏桥 Clan Jetties', time: '11:00-12:00', type: 'sight', loc: 'pen_jetties', checked: false, addr: 'Weld Quay, George Town, Penang', hours: '约 9:00-21:00', duration: '约 1 小时', notes: '华人宗族海上聚落，周姓桥规模最大。木板栈道、妈祖庙、渔家生活，是下南洋最直接的现场。', ticket: '免费', tips: '尊重居民；清晨或傍晚光线最好', warning: null },
           { id: 'm2_food1', name: '伍秀泽海南鸡饭 / 潮州煎蕊', time: '12:30-14:00', type: 'food', loc: 'pen_chickenrice', checked: false, addr: 'Chulia St / Penang Road, George Town', hours: '午市为主', duration: '约 1 小时', notes: '海南鸡饭配鸡油饭，饭后一碗潮州煎蕊，槟城式午餐。', ticket: '', tips: '煎蕊认准 Penang Road Famous Teochew Chendul', warning: null },
           { id: 'm2_4', name: '侨生博物馆 Pinang Peranakan Mansion', time: '14:00-15:30', type: 'sight', loc: 'peranakan', checked: false, addr: '29 Church St, George Town, Penang', hours: '9:30-17:00', duration: '约 1.5 小时', notes: '娘惹峇峇豪宅，金漆屏风、珠绣拖鞋、晚清瓷器。了解闽粤移民与马来女子通婚后形成的独特文化。', ticket: '成人 RM25', tips: '有中文导览场次；馆内可拍照', warning: null },
@@ -2169,6 +2188,7 @@
           { id: 'm4_3', name: '亚答街 Main Bazaar', time: '16:00-17:30', type: 'sight', loc: 'kch_bazaar', checked: false, addr: 'Main Bazaar, Kuching, Sarawak', hours: '约 9:00-18:00', duration: '约 1.5 小时', notes: '百年白屋店屋，曾是华人进出口商行与胡椒贸易据点。现在仍有古董店、手工艺品店。', ticket: '免费', tips: '华族历史文物馆就在街上', warning: null },
           { id: 'm4_4', name: '华族历史文物馆', time: '17:00-18:00', type: 'sight', loc: 'kch_chmuseum', checked: false, addr: '1 Main Bazaar, Kuching, Sarawak', hours: '约 9:00-16:30（周一闭馆）', duration: '约 1 小时', notes: '闽粤华人来砂拉越开垦、经商、落地生根的史料。', ticket: '免费', tips: '周一闭馆请改去大伯公庙', warning: null },
           { id: 'm4_5', name: '大伯公庙 Tua Pek Kong', time: '18:00-18:30', type: 'sight', loc: 'kch_tua', checked: false, addr: 'Jalan Tunku Abdul Rahman, Kuching, Sarawak', hours: '全天', duration: '约 30 分钟', notes: '古晋最古老华人庙宇，河边红墙，见证了 19 世纪华人移民史。', ticket: '免费', tips: '傍晚亮灯后很美', warning: null },
+          { id: 'm4_r1', name: '实蒙古红毛猩猩保育中心 Semenggoh', time: '14:30-16:00', type: 'activity', loc: 'kch_semen', checked: false, recommended: true, addr: 'Jalan Puncak Borneo, Kuching（市区西南约 20km）', hours: '14:00-16:00（下午场）', duration: '约 2 小时（含往返）', notes: '半野放红毛猩猩康复中心，下午场常能看到幼猿与母猿在林间觅食，婆罗洲生态人文的活教材。', ticket: '成人 RM10', tips: '下午场 14:00 开放，建议 14:00 前到；与砂拉越文化村择一或连做半天', warning: null },
           { id: 'm4_food1', name: 'Topspot 海鲜大排档', time: '19:00-21:00', type: 'food', loc: 'kch_topspot', checked: false, addr: 'Jalan Bukit Mata, Kuching', hours: '约 17:00-22:00', duration: '约 2 小时', notes: '本地人气海鲜楼，奶油虾、黑胡椒蟹、蒸鱼。', ticket: '', tips: '人多可点多种；提前定位', warning: null }
         ] },
       { id: 'm5', date: '10.6', weekday: '周二', title: '古晋半日 → 吉隆坡 · 首都夜色', city: 'kuching', color: '#0ea5e9',
@@ -2178,6 +2198,7 @@
           { id: 'm5_2', name: '砂拉越博物馆', time: '10:30-12:00', type: 'sight', loc: 'kch_museum', checked: false, addr: 'Jalan Tun Abang Haji Openg, Kuching, Sarawak', hours: '约 9:00-16:45（周一闭馆）', duration: '约 1.5 小时', notes: '殖民时期建筑，婆罗洲自然史与原住民文物。', ticket: '免费', tips: '周一闭馆可改去猫博物馆', warning: null },
           { id: 'm5_r1', name: '砂拉越纺织博物馆 Sarawak Textile Museum', time: '约 12:00-12:45', type: 'sight', loc: 'kch_textile', checked: false, recommended: true, addr: 'Jalan Tun Haji Openg, Kuching（紧邻砂拉越博物馆）', hours: '约 9:00-16:45', duration: '约 45 分钟', notes: '伊班族、比达友族与马来传统织锦（pua kumbu、kain songket），纹样背后的图腾与部落叙事，是婆罗洲手工艺的精华。', ticket: '免费', tips: '就在砂拉越博物馆旁，看完主馆顺路进；建议出行前确认开放日', warning: null },
           { id: 'm5_r2', name: '古晋伊斯兰博物馆 Kuching Islamic Museum', time: '约 11:00-11:45', type: 'sight', loc: 'kch_islamic', checked: false, recommended: true, addr: 'Jalan P. Ramlee, Kuching（近砂拉越博物馆）', hours: '约 9:00-16:45', duration: '约 45 分钟', notes: '砂拉越伊斯兰文明与马来王室器物，与博物馆群同区，补全多元宗教人文拼图。', ticket: '免费', tips: '与纺织博物馆同属博物馆群；建议出行前确认开放日', warning: null },
+          { id: 'm5_r3', name: '玛格丽特城堡 Fort Margherita', time: '10:30-12:00', type: 'sight', loc: 'kch_fort', checked: false, recommended: true, addr: 'Jalan Tun Abang Haji Openg, Kuching（砂拉越河边）', hours: '9:00-16:45', duration: '约 1 小时', notes: '1879 年白人拉惹建的河畔城堡，现为警察博物馆，望向对岸阿斯塔纳与河景，殖民史与河城格局一目了然。', ticket: '免费', tips: '与博物馆群、大伯公庙同片区，步行可达', warning: null },
           { id: 'm5_3', name: '猫博物馆', time: '12:00-13:00', type: 'sight', loc: 'kch_cat', checked: false, addr: 'Bukit Siol, Petra Jaya, Kuching, Sarawak', hours: '9:00-16:45', duration: '约 1 小时', notes: 'Kuching 在马来语中就是「猫」，猫城标志博物馆，轻松有趣。', ticket: '免费（相机费另计）', tips: '打车到山上；可与博物馆二选一', warning: null },
           { id: 'm5_f1', name: '古晋机场 出发', time: '约 17:00 到机场', type: 'flight', loc: 'kch_airport', checked: false, addr: 'Kuching International Airport, Sarawak', hours: '19:00 起飞', duration: '候机', notes: '亚航 AK5213 古晋→吉隆坡，19:00 起飞，20:45 抵达。', ticket: '', tips: '东马出州需再盖章；提前 2 小时到', boarding: '提前 2 小时', warning: null, flightNo: 'AK5213' },
           { id: 'm5_f2', name: '吉隆坡国际 T2 落地', time: '20:45', type: 'flight', loc: 'kul_airport', checked: false, addr: 'Kuala Lumpur International Airport T2', hours: '24h', duration: '入境+打车约 1 小时', notes: '吉隆坡与国内无时差，Grab 到市区约 50 分钟。', ticket: '', tips: 'KLIA T2 是亚航大本营； ATM 取现方便', warning: null },
@@ -2195,7 +2216,10 @@
           { id: 'm6_r1', name: '陈氏书院 Chan She Shu Yuen', time: '约 16:00-16:45', type: 'sight', loc: 'kul_chan', checked: false, recommended: true, addr: '172 Jalan Petaling, Kuala Lumpur（茨厂街口）', hours: '约 9:00-17:00', duration: '约 45 分钟', notes: '百年岭南陈氏书院，灰塑、砖雕、木雕讲述广府华人南来史，是全马最精美的宗祠建筑之一，就在茨厂街牌楼旁。', ticket: '免费（自愿捐款）', tips: '逛茨厂街前先看，紧邻牌楼；注意保护古建勿触摸雕饰', warning: null },
           { id: 'm6_6', name: '中央市场 + 马里安曼印度庙', time: '18:00-19:30', type: 'sight', loc: 'kul_centralmarket', checked: false, addr: 'Jalan Hang Kasturi / Jalan Bandar, Kuala Lumpur', hours: '约 10:00-21:00', duration: '约 1.5 小时', notes: '中央市场买蜡染、手作；印度庙塔门雕刻华丽，是唐人街多元一景。', ticket: '免费', tips: '进入印度庙需脱鞋', warning: null },
           { id: 'm6_food2', name: '新峰肉骨茶 / Jalan Alor 夜市', time: '19:30-21:30', type: 'food', loc: 'kul_bakuteh', checked: false, recommended: true, addr: 'Jalan Bulan 1, Bukit Bintang / Jalan Alor, Kuala Lumpur', hours: '约 17:00-凌晨', duration: '约 2 小时', notes: '肉骨茶药膳汤或 Jalan Alor 海鲜大排档，都是 KL 夜晚的地道选择。', ticket: '', tips: 'Jalan Alor 游客多但热闹；肉骨茶推荐加油条', warning: null },
-          { id: 'm6_r1', name: '泰式按摩 Thai Odyssey（武吉免登，顺路放松）', time: '21:30-23:00', type: 'relax', loc: 'kul_bakuteh', checked: false, recommended: true, addr: 'Bukit Bintang, Kuala Lumpur（武吉免登有多家分店）', hours: '约 11:00-24:00', duration: '约 1.5 小时', notes: '武吉免登逛街/夜市后顺路来一发泰式按摩。连锁店环境稳、力道标准，适合旅行中解乏。', ticket: '泰式按摩约 RM80-150', tips: '可现场 walk-in；武吉免登分店多营业到深夜', warning: null }
+          { id: 'm6_r2', name: '泰式按摩 Thai Odyssey（武吉免登，顺路放松）', time: '21:30-23:00', type: 'relax', loc: 'kul_bakuteh', checked: false, recommended: true, addr: 'Bukit Bintang, Kuala Lumpur（武吉免登有多家分店）', hours: '约 11:00-24:00', duration: '约 1.5 小时', notes: '武吉免登逛街/夜市后顺路来一发泰式按摩。连锁店环境稳、力道标准，适合旅行中解乏。', ticket: '泰式按摩约 RM80-150', tips: '可现场 walk-in；武吉免登分店多营业到深夜', warning: null },
+          { id: 'm6_r3', name: '黑风洞 Batu Caves（彩梯石窟）', time: '10:30-12:30', type: 'activity', loc: 'kul_batu', checked: false, recommended: true, addr: 'Gombak, Kuala Lumpur（市区北约 13km）', hours: '约 7:00-21:00', duration: '约 2 小时（含往返）', notes: '272 级彩色阶梯通往石灰岩洞与印度教神殿，马来西亚印度教圣地，视觉震撼。', ticket: '免费（洞内博物馆另计）', tips: '上午较凉快；需爬梯，穿运动鞋；与市区景点择一上午', warning: null },
+          { id: 'm6_r4', name: '双子塔 KLCC（天空步道+商场）', time: '19:00-21:00', type: 'sight', loc: 'kul_petronas', checked: false, recommended: true, addr: 'KLCC, Kuala Lumpur', hours: '商场 10:00-22:00（Skybridge 需预约）', duration: '约 1.5 小时', notes: '城市天际线标志，底层阳光广场逛街、登双子塔空中步道看夜景，室内空调不怕雨。', ticket: '商场免费 / Skybridge 约 RM80', tips: '夜晚灯光最出片；与武吉免登夜市顺路', warning: null },
+          { id: 'm6_r5', name: '吉隆坡塔 KL Tower（城市夜景）', time: '15:00-16:30', type: 'sight', loc: 'kul_tower', checked: false, recommended: true, addr: 'Jalan Punchak, Kuala Lumpur（Bukit Nanas）', hours: '9:00-22:00', duration: '约 1 小时', notes: '420 米观景塔，俯瞰 KL 全景与双子塔同框，比双子塔更高视角。', ticket: '观景台约 RM30', tips: '傍晚登塔看黄昏+夜景最佳；与独立广场片区近', warning: null }
         ] },
       { id: 'm7', date: '10.8', weekday: '周四', title: '吉隆坡 → 南京 · 返程', city: 'kualalumpur', color: '#94a3b8',
         weather: { icon: '⛅', high: 33, low: 24, desc: '返程日', tip: '下午航班，上午从容收尾' },
