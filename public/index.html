@@ -3346,9 +3346,15 @@
 
     // ===== 初始化：尝试从 URL / localStorage 恢复行程码 =====
     // ===== 当前进行中 / 下一站 定位 =====
-    // 行程基准日：Day1 = 7月31日（2026年）
-    const TRIP_BASE = new Date(2026, 6, 31);
+    // 行程基准日：以「当前行程」的出发日为准（不再写死泰国 7.31），按行程国家/年份自适应
     let nowRef = null; // 当前时间锚点（预留，目前恒为真实时间）
+    function tripBaseDate(){
+      const t = currentTrip();
+      const yr = (t && t.year!=null && !isNaN(t.year)) ? Number(t.year) : new Date().getFullYear();
+      const md = parseMD(t && t.start) || parseMD(DAYS[0] && DAYS[0].date);
+      if (!md) return new Date(); // 兜底：用今天，避免 NaN
+      return new Date(yr, md.m-1, md.d);
+    }
 
     function getSortedChecked(day) {
       return day.spots.filter(s => s.checked && s.loc).sort((a, b) => timeToMin(a.time) - timeToMin(b.time));
@@ -3374,8 +3380,9 @@
     function getNowDate() { return nowRef ? new Date(nowRef) : new Date(); }
     function getNowMin() { const d = getNowDate(); return d.getHours() * 60 + d.getMinutes(); }
     function getNowDayIdx() {
+      const base = tripBaseDate();
       const d = getNowDate();
-      const diff = Math.round((d - TRIP_BASE) / 86400000);
+      const diff = Math.round((d - base) / 86400000);
       if (diff < 0) return -1;
       if (diff >= DAYS.length) return -2;
       return diff;
@@ -3398,13 +3405,33 @@
     function renderNowBanner() {
       const bn = document.getElementById('nowBanner');
       if (!bn) return;
+      const bt = document.getElementById('nowBannerText');
+      const bt2 = document.getElementById('nowBannerTime');
+      const t = currentTrip();
+      const status = tripTimeStatus(t);
+      // 未开始的行程：按真实出发日提示，而不是误报「已结束」
+      if (status === 'upcoming') {
+        const md = parseMD(t && t.start) || parseMD(DAYS[0] && DAYS[0].date);
+        const ds = md ? (md.m + '.' + md.d) : '';
+        bn.className = 'now-banner show';
+        bt.textContent = '📅 旅行尚未开始' + (ds ? '（' + ds + ' 出发）' : '');
+        bt2.textContent = '';
+        return;
+      }
+      // 已结束 / 已归档的行程
+      if (status === 'closed') {
+        const nowStr = minToTime(Math.round(getNowMin()));
+        bn.className = 'now-banner show';
+        bt.textContent = '🎉 旅行已结束！';
+        bt2.textContent = nowStr;
+        return;
+      }
+      // 进行中：实时定位当前 / 下一站
       const ns = computeNowSpot();
       const nowMin = getNowMin();
       const nowStr = minToTime(Math.round(nowMin));
-      const bt = document.getElementById('nowBannerText');
-      const bt2 = document.getElementById('nowBannerTime');
-      if (ns.dayIdx === -1) { bn.classList.remove('show'); bt.textContent = '📅 旅行尚未开始（7月31日出发）'; bt2.textContent = ''; return; }
-      if (ns.dayIdx === -2) { bn.classList.add('show'); bt.textContent = '🎉 旅行已结束！'; bt2.textContent = nowStr; return; }
+      if (ns.dayIdx === -1) { bn.classList.remove('show'); bt.textContent = '📅 旅行尚未开始'; bt2.textContent = ''; return; }
+      if (ns.dayIdx === -2) { bn.className = 'now-banner show'; bt.textContent = '🎉 旅行已结束！'; bt2.textContent = nowStr; return; }
       const day = DAYS[ns.dayIdx];
       const label = `Day${ns.dayIdx + 1}·${day.date} ${day.weekday}`;
       if (ns.spot) {
